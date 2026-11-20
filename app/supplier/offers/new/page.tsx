@@ -1,111 +1,440 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+
 import { useState } from 'react';
-import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
-import { api, ApiError } from '@/lib/api';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { createOffer } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
-import { nairaToUsdcStroops } from '@/lib/disputes';
-import { formatUsdc } from '@/lib/format';
-import { uploadEvidence } from '@/lib/upload';
+import { AreaPicker } from '@/components/forms/AreaPicker';
+import { SelectedArea } from '@/lib/areas';
 
-const CATEGORIES = ['rice', 'beans', 'garri', 'oil', 'sugar', 'noodles', 'seasoning', 'beverage', 'toiletry', 'fabric', 'phoneacc', 'stationery', 'cement', 'roofing', 'packaging'];
-const input = 'h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg';
-interface TierRow { minUnits: string; priceNgn: string }
+interface TierRow {
+  minUnits: number;
+  priceNaira: number;
+}
 
-export default function NewOffer() {
+type Tab = 'form' | 'preview';
+
+function OfferPreviewCard({
+  title,
+  brand,
+  unitLabel,
+  category,
+  description,
+  tiers,
+  deliveryAreas,
+  maxUnits,
+  maxPerMember,
+  leadTimeHours,
+  validDays,
+}: {
+  title: string;
+  brand: string;
+  unitLabel: string;
+  category: string;
+  description: string;
+  tiers: TierRow[];
+  deliveryAreas: SelectedArea[];
+  maxUnits: number;
+  maxPerMember: number;
+  leadTimeHours: number;
+  validDays: number;
+}) {
   const t = useTranslations('supplier.offer');
-  const common = useTranslations('common');
-  const router = useRouter();
-  const { ready } = useRequireAuth();
-  // The live preview needs today's rate; when sources disagree the server refuses to quote and we say so.
-  const fx = useQuery({ queryKey: ['fx'], queryFn: () => api<{ ngnPerUsd: number }>('/fx/quote', { auth: false }), enabled: ready, refetchInterval: 60_000, retry: false });
-  const [f, setF] = useState({ title: '', brand: '', unitLabel: '', category: 'rice', description: '', maxUnits: '200', maxPerMember: '60', leadTimeHours: '72', validDays: '7' });
-  const [tiers, setTiers] = useState<TierRow[]>([{ minUnits: '50', priceNgn: '' }, { minUnits: '100', priceNgn: '' }]);
-  const [images, setImages] = useState<string[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<unknown>(null);
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
-  if (!ready) return <p>{common('loading')}</p>;
 
-  const usd = (ngn: string) => (fx.data && /^\d+$/.test(ngn) && ngn !== '0' ? formatUsdc(nairaToUsdcStroops(BigInt(ngn), fx.data.ngnPerUsd)) : null);
-  const valid = f.title.length > 2 && f.unitLabel && f.description.length > 2 && images.length >= 2 && tiers.every((x) => /^\d+$/.test(x.minUnits) && /^\d+$/.test(x.priceNgn) && x.priceNgn !== '0');
+  const lowestTier = tiers.length > 0 ? Math.min(...tiers.map((t) => t.priceNaira)) : 0;
+  const highestTier = tiers.length > 0 ? Math.max(...tiers.map((t) => t.priceNaira)) : 0;
 
-  async function addPhoto(file?: File) {
-    if (!file) return;
-    setBusy(true);
-    setError(null);
-    try {
-      setImages((i) => [...i, '']);
-      const r = await uploadEvidence('PRODUCT', undefined, file);
-      setImages((i) => [...i.slice(0, -1), r.evidenceId]);
-    } catch (e) {
-      setImages((i) => i.slice(0, -1));
-      setError(e);
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function publish() {
-    setBusy(true);
-    setError(null);
-    try {
-      const first = Number(tiers[0]!.minUnits);
-      const created = await api<{ id: string }>('/offers', { body: {
-        title: f.title, brand: f.brand || undefined, branded: !!f.brand, description: f.description, unitLabel: f.unitLabel, category: f.category, perishable: false,
-        images: images.filter(Boolean), tiersNgn: tiers.map((x) => ({ minUnits: Number(x.minUnits), priceNgn: x.priceNgn })), moq: first,
-        maxUnits: Number(f.maxUnits), maxPerMember: Number(f.maxPerMember), leadTimeHours: Number(f.leadTimeHours), deliveryAreas: [{ state: 'FCT' }],
-        validUntil: new Date(Date.now() + Number(f.validDays) * 86400_000).toISOString(),
-      } });
-      await api(`/offers/${created.id}/publish`, { body: {} });
-      setDone(true);
-      setTimeout(() => router.replace('/supplier'), 2000);
-    } catch (e) {
-      setError(e);
-    } finally {
-      setBusy(false);
-    }
-  }
-  const field = (id: string, label: string, k: keyof typeof f, extra = '') => (<><label htmlFor={id} className="block font-medium">{label}</label><input id={id} value={f[k]} onChange={set(k)} className={`${input} ${extra}`} /></>);
+  const areaText =
+    deliveryAreas.length === 0
+      ? t('preview.noAreas')
+      : deliveryAreas
+          .map((a) => {
+            const names: Record<string, string> = {
+              AB: 'Abia', AD: 'Adamawa', AK: 'Akwa Ibom', AN: 'Anambra', BA: 'Bauchi',
+              BY: 'Bayelsa', BE: 'Benue', BO: 'Borno', CR: 'Cross River', DE: 'Delta',
+              EB: 'Ebonyi', ED: 'Edo', EK: 'Ekiti', EN: 'Enugu', FC: 'FCT',
+              GO: 'Gombe', IM: 'Imo', JI: 'Jigawa', KD: 'Kaduna', KN: 'Kano',
+              KT: 'Katsina', KB: 'Kebbi', KO: 'Kogi', KW: 'Kwara', LA: 'Lagos',
+              NA: 'Nasarawa', NI: 'Niger', OG: 'Ogun', ON: 'Ondo', OS: 'Osun',
+              OY: 'Oyo', PL: 'Plateau', RI: 'Rivers', SO: 'Sokoto', TA: 'Taraba',
+              YO: 'Yobe', ZA: 'Zamfara',
+            };
+            const stateName = names[a.state] ?? a.state;
+            return a.lga ? `${stateName} – ${a.lga}` : stateName;
+          })
+          .join(', ');
+
   return (
-    <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); void publish(); }}>
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
-      {fx.error instanceof ApiError && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm">{t('fxBlocked')}</p>}
-      {field('o-title', t('name'), 'title')}
-      {field('o-brand', t('brand'), 'brand')}
-      {field('o-unit', t('unit'), 'unitLabel')}
-      <label htmlFor="o-cat" className="block font-medium">{t('category')}</label>
-      <select id="o-cat" value={f.category} onChange={set('category')} className={input}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select>
-      <label htmlFor="o-desc" className="block font-medium">{t('description')}</label>
-      <textarea id="o-desc" value={f.description} onChange={set('description')} rows={3} className="w-full rounded-lg border border-neutral-400 p-3 text-lg" />
-      <fieldset className="space-y-2">
-        <legend className="font-medium">{t('tiers')}</legend>
-        {tiers.map((row, i) => (
-          <div key={i} className="flex items-end gap-2">
-            <div className="flex-1"><label htmlFor={`min-${i}`} className="block text-sm">{t('minUnits')}</label><input id={`min-${i}`} inputMode="numeric" value={row.minUnits} onChange={(e) => setTiers(tiers.map((x, j) => (j === i ? { ...x, minUnits: e.target.value.replace(/\D/g, '') } : x)))} className={input} /></div>
-            <div className="flex-1"><label htmlFor={`ngn-${i}`} className="block text-sm">{t('priceNgn')}</label><input id={`ngn-${i}`} inputMode="numeric" value={row.priceNgn} onChange={(e) => setTiers(tiers.map((x, j) => (j === i ? { ...x, priceNgn: e.target.value.replace(/\D/g, '') } : x)))} className={input} /></div>
-            {tiers.length > 1 && <button type="button" aria-label={`${t('removeTier')} ${i + 1}`} onClick={() => setTiers(tiers.filter((_, j) => j !== i))} className="size-12 rounded-lg border border-neutral-400 font-bold">×</button>}
-            {usd(row.priceNgn) && <p className="basis-full text-xs text-neutral-700" data-testid={`usd-${i}`}>{t('preview', { usd: usd(row.priceNgn)! })}</p>}
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
+      <div className="bg-indigo-600 px-6 py-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">{category}</p>
+            <h2 className="mt-1 text-xl font-bold text-white">{title || t('preview.untitled')}</h2>
+            {brand && <p className="mt-0.5 text-sm text-indigo-200">{brand}</p>}
           </div>
-        ))}
-        {tiers.length < 5 && <button type="button" onClick={() => setTiers([...tiers, { minUnits: '', priceNgn: '' }])} className="min-h-12 w-full rounded-xl border border-neutral-400 font-semibold">{t('addTier')}</button>}
-      </fieldset>
-      {field('o-max', t('maxUnits'), 'maxUnits')}
-      {field('o-per', t('maxPer'), 'maxPerMember')}
-      {field('o-lead', t('lead'), 'leadTimeHours')}
-      {field('o-valid', t('valid'), 'validDays')}
-      <div>
-        <p className="font-medium">{t('photos')} ({images.filter(Boolean).length})</p>
-        <label className="mt-1 flex min-h-12 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-emerald-800 font-semibold text-emerald-900">
-          {t('addPhoto')}
-          <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => { void addPhoto(e.target.files?.[0]); e.target.value = ''; }} />
-        </label>
+          {lowestTier > 0 && (
+            <div className="text-right">
+              <p className="text-xs text-indigo-200">{t('preview.priceFrom')}</p>
+              <p className="text-2xl font-bold text-white">₦{lowestTier.toLocaleString()}</p>
+              <p className="text-xs text-indigo-200">/{unitLabel || t('preview.unit')}</p>
+            </div>
+          )}
+        </div>
       </div>
-      <button disabled={busy || !valid || done} className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60">{t('publish')}</button>
-      {done && <p role="status" className="rounded-xl bg-emerald-50 p-4 font-bold text-emerald-900">{t('published')}</p>}
-      {error !== null && <ErrorExplainer error={error} />}
-    </form>
+
+      <div className="px-6 py-5 space-y-5">
+        {description && (
+          <p className="text-sm text-gray-700 dark:text-gray-300">{description}</p>
+        )}
+
+        {tiers.length > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+              {t('preview.tierBreaks')}
+            </h3>
+            <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                      {t('preview.minUnits')}
+                    </th>
+                    <th className="text-right px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                      {t('preview.pricePerUnit')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tiers.map((tier, i) => (
+                    <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
+                      <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                        {tier.minUnits}+
+                      </td>
+                      <td className="px-4 py-2 text-right font-semibold text-gray-900 dark:text-gray-100">
+                        ₦{tier.priceNaira.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {lowestTier !== highestTier && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {t('preview.savingsRange', {
+                  pct: Math.round(((highestTier - lowestTier) / highestTier) * 100),
+                })}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.poolCap')}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">
+              {maxUnits > 0 ? `${maxUnits} ${unitLabel || t('preview.units')}` : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.maxPerMember')}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">
+              {maxPerMember > 0 ? `${maxPerMember} ${unitLabel || t('preview.units')}` : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.leadTime')}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">
+              {leadTimeHours > 0 ? `${leadTimeHours}h` : '—'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.validFor')}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">
+              {validDays > 0 ? `${validDays} days` : '—'}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('preview.deliveryAreas')}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{areaText}</p>
+        </div>
+
+        <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 px-4 py-3 text-xs text-indigo-700 dark:text-indigo-300">
+          {t('preview.trustNote')}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function NewOfferPage() {
+  const t = useTranslations('supplier.offer');
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const auth = useRequireAuth();
+
+  const [tab, setTab] = useState<Tab>('form');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [title, setTitle] = useState('');
+  const [brand, setBrand] = useState('');
+  const [unitLabel, setUnitLabel] = useState('');
+  const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
+  const [maxUnits, setMaxUnits] = useState(0);
+  const [maxPerMember, setMaxPerMember] = useState(0);
+  const [leadTimeHours, setLeadTimeHours] = useState(0);
+  const [validDays, setValidDays] = useState(30);
+  const [tiers, setTiers] = useState<TierRow[]>([{ minUnits: 1, priceNaira: 0 }]);
+  const [deliveryAreas, setDeliveryAreas] = useState<SelectedArea[]>([]);
+
+  if (!auth) return null;
+
+  function addTier() {
+    setTiers((prev) => [...prev, { minUnits: 0, priceNaira: 0 }]);
+  }
+
+  function updateTier(idx: number, field: keyof TierRow, val: number) {
+    setTiers((prev) => prev.map((t, i) => (i === idx ? { ...t, [field]: val } : t)));
+  }
+
+  function removeTier(idx: number) {
+    setTiers((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      await createOffer({
+        title,
+        brand,
+        unitLabel,
+        category,
+        description,
+        maxUnits,
+        maxPerMember,
+        leadTimeHours,
+        validDays,
+        tiers,
+        deliveryAreas,
+      });
+      await queryClient.invalidateQueries({ queryKey: ['supplier-offers'] });
+      router.push('/supplier');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('submitError'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('newTitle')}</h1>
+
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+        {(['form', 'preview'] as Tab[]).map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+              tab === id
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            {id === 'form' ? t('formTab') : t('previewTab')}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'preview' ? (
+        <OfferPreviewCard
+          title={title}
+          brand={brand}
+          unitLabel={unitLabel}
+          category={category}
+          description={description}
+          tiers={tiers}
+          deliveryAreas={deliveryAreas}
+          maxUnits={maxUnits}
+          maxPerMember={maxPerMember}
+          leadTimeHours={leadTimeHours}
+          validDays={validDays}
+        />
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <fieldset className="space-y-4">
+            <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('productSection')}</legend>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('titleLabel')}</label>
+              <input
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('brandLabel')}</label>
+                <input
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('unitLabel')}</label>
+                <input
+                  value={unitLabel}
+                  onChange={(e) => setUnitLabel(e.target.value)}
+                  placeholder="kg, pcs, bag…"
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('categoryLabel')}</label>
+              <input
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('descriptionLabel')}</label>
+              <textarea
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('tiersSection')}</legend>
+            {tiers.map((tier, idx) => (
+              <div key={idx} className="flex gap-3 items-end">
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('minUnitsLabel')}</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={tier.minUnits}
+                    onChange={(e) => updateTier(idx, 'minUnits', Number(e.target.value))}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('priceNairaLabel')}</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={tier.priceNaira}
+                    onChange={(e) => updateTier(idx, 'priceNaira', Number(e.target.value))}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  />
+                </div>
+                {tiers.length > 1 && (
+                  <button type="button" onClick={() => removeTier(idx)} className="text-red-500 text-sm pb-2">
+                    {t('removeTierButton')}
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addTier}
+              className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              {t('addTierButton')}
+            </button>
+          </fieldset>
+
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('deliverySection')}</legend>
+            <AreaPicker value={deliveryAreas} onChange={setDeliveryAreas} />
+          </fieldset>
+
+          <fieldset className="space-y-4">
+            <legend className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('poolSettingsSection')}</legend>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('maxUnitsLabel')}</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={maxUnits}
+                  onChange={(e) => setMaxUnits(Number(e.target.value))}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('maxPerMemberLabel')}</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={maxPerMember}
+                  onChange={(e) => setMaxPerMember(Number(e.target.value))}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('leadTimeLabel')}</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={leadTimeHours}
+                  onChange={(e) => setLeadTimeHours(Number(e.target.value))}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('validDaysLabel')}</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={validDays}
+                  onChange={(e) => setValidDays(Number(e.target.value))}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setTab('preview')}
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              {t('previewButton')}
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
+            >
+              {submitting ? t('publishing') : t('publishButton')}
+            </button>
+          </div>
+        </form>
+      )}
+    </main>
   );
 }

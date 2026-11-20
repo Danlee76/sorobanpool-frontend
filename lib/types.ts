@@ -115,3 +115,30 @@ export interface CategoryRow {
   /** The on-chain allow-list entry, or null when the chain has no entry for this category yet. */
   onChain: boolean | null;
 }
+
+export interface RatingEntry {
+  score: number;
+  comment: string | null;
+  ratedAt: string;
+  itemName?: string;
+}
+
+export interface DisputeHistoryEntry {
+  id: string;
+  itemName?: string;
+  outcome: 'WON' | 'LOST' | 'SETTLED';
+  resolution?: 'REFUND' | 'REPLACE' | 'REJECT';
+  openedAt: string;
+  resolvedAt?: string;
+}
+
+export interface SupplierReputation {
+  averageRating: number;
+  totalRatings: number;
+  completedPools: number;
+  onTimeDeliveryPct: number;
+  totalDisputes: number;
+  disputesWon: number;
+  recentRatings: RatingEntry[];
+  disputeHistory: DisputeHistoryEntry[];
+}
