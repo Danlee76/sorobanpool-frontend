@@ -18,3 +18,18 @@ export function timelineStatus(state: PoolState, iCollected: boolean): { step: n
 
 /** End states: nothing more happens on-chain except refund claims (brief 3.3). */
 export const FINAL_STATES: readonly PoolState[] = ['Settled', 'Expired', 'Failed', 'Cancelled'];
+
+/** Organizer action ordering: actionable states come first. */
+export function organizerNextAction(state: PoolState): { label: string; needsAction: boolean } {
+  switch (state) {
+    case 'Accepted':
+    case 'Dispatched': return { label: 'Confirm delivery when goods arrive', needsAction: true };
+    case 'Open': return { label: 'Share this group buy to invite members', needsAction: true };
+    case 'Filled': return { label: 'Waiting for supplier acceptance', needsAction: false };
+    case 'Delivered': return { label: 'Waiting for members to collect', needsAction: false };
+    case 'Settled': return { label: 'Completed', needsAction: false };
+    case 'Expired':
+    case 'Failed':
+    case 'Cancelled': return { label: 'Closed — member refunds apply', needsAction: false };
+  }
+}

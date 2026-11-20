@@ -12,6 +12,7 @@ import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import { useSession } from '@/lib/store';
 import type { PoolCard } from '@/lib/types';
+import { organizerNextAction } from '@/lib/timeline';
 
 /** One-time on-chain activation of the organizer role, after support has approved the account. */
 function ActivateOrganizer() {
@@ -54,7 +55,7 @@ export default function Organize() {
   const q = useQuery({ queryKey: ['pools', 'mine'], queryFn: () => api<PoolCard[]>('/pools?mine=true'), enabled: ready && isOrganizer, refetchInterval: 15_000 });
   if (!ready) return <p>{common('loading')}</p>;
   if (!isOrganizer) return <p role="status" className="rounded-xl bg-amber-50 p-4">{t('notOrganizer')}</p>;
-  const mine = (q.data ?? []).filter((p) => p.organizer === me?.walletAddress);
+  const mine = (q.data ?? []).filter((p) => p.organizer === me?.walletAddress).sort((a, b) => Number(organizerNextAction(b.state).needsAction) - Number(organizerNextAction(a.state).needsAction));
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
@@ -66,7 +67,11 @@ export default function Organize() {
       <ul className="space-y-3">
         {mine.map((p) => (
           <li key={p.id} className="rounded-xl border border-neutral-200 bg-white p-4">
-            <Link href={`/pools/${p.id}`} className="block min-h-12"><UserText as="span" className="font-semibold" value={p.title} /><span className="block text-sm text-neutral-700">{p.state} · {p.totalUnits}/{p.moq}</span></Link>
+            <Link href={`/pools/${p.id}`} className="block min-h-12"><UserText as="span" className="font-semibold" value={p.title} /><span className="block text-sm text-neutral-700">{p.state} · {p.totalUnits}/{p.moq ?? '—'} units</span></Link>
+            <progress className="mt-2 w-full accent-emerald-800" max={100} value={Math.max(0, Math.min(100, p.progressPct))} aria-label="Pool progress" />
+            <p className="text-sm">{Math.round(p.progressPct)}% toward minimum · Closes {new Date(p.fillDeadline).toLocaleString()}</p>
+            <p className="mt-2 font-semibold" role="status">{organizerNextAction(p.state).needsAction ? 'Needs your action: ' : 'Next: '}{organizerNextAction(p.state).label}</p>
+            <button type="button" className="mt-2 min-h-12 rounded-lg border border-emerald-800 px-3 font-semibold text-emerald-900" onClick={() => void navigator.clipboard.writeText(`Join our group buy: ${p.title ?? 'Group buy'}. ${window.location.origin}/p/${p.shareSlug}`)}>Copy share text</button>
             {(p.state === 'Accepted' || p.state === 'Dispatched') && (
               <Link href={`/organize/${p.id}/delivery`} className="mt-2 flex min-h-12 items-center justify-center rounded-lg border-2 border-emerald-800 font-semibold text-emerald-900">{t('delivery.title')}</Link>
             )}

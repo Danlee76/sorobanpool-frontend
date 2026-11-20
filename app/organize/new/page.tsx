@@ -40,6 +40,7 @@ export default function NewPool() {
   const offer = offers.data?.find((o) => o.id === offerId);
 
   async function create() {
+    if (step !== 5 || !offer || !validHub || !validFee || !deadline) return;
     setBusy(true);
     setError(null);
     try {
@@ -75,7 +76,14 @@ export default function NewPool() {
     );
   }
 
-  const canNext = (step === 1 && !!offerId) || (step === 2 && !!deadline) || (step === 3 && address.length > 2 && contact.length > 4 && !!from && !!to) || step === 4;
+  const validPhone = /^(?:\+234|0)[789][01]\d{8}$/.test(contact.replace(/[\s-]/g, ''));
+  const expectedDelivery = offer ? new Date(new Date(deadline).getTime() + offer.leadTimeHours * 3600_000).getTime() : NaN;
+  const fromTime = new Date(from).getTime();
+  const toTime = new Date(to).getTime();
+  const validWindow = Number.isFinite(expectedDelivery) && Number.isFinite(fromTime) && Number.isFinite(toTime) && fromTime > expectedDelivery && toTime > fromTime && toTime - fromTime <= 7 * 86400_000;
+  const validHub = address.trim().length >= 5 && validPhone && validWindow;
+  const validFee = feePct.trim() !== '' && Number.isFinite(Number(feePct)) && Number(feePct) >= 0 && Number(feePct) <= 1;
+  const canNext = (step === 1 && !!offerId) || (step === 2 && !!deadline) || (step === 3 && validHub) || (step === 4 && validFee);
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
@@ -92,30 +100,32 @@ export default function NewPool() {
       {step === 2 && (<div className="space-y-2"><label htmlFor="deadline" className="block font-medium">{t('deadlineLabel')}</label><input id="deadline" type="datetime-local" min={limits.min} max={limits.max} value={deadline} onChange={(e) => setDeadline(e.target.value)} className={input} /><p className="text-sm text-neutral-700">{t('deadlineHelp')}</p></div>)}
       {step === 3 && (
         <div className="space-y-3">
-          <label htmlFor="addr" className="block font-medium">{t('hubAddress')}</label><input id="addr" value={address} onChange={(e) => setAddress(e.target.value)} className={input} />
-          <label htmlFor="contact" className="block font-medium">{t('hubContact')}</label><input id="contact" type="tel" value={contact} onChange={(e) => setContact(e.target.value)} className={input} />
-          <label htmlFor="from" className="block font-medium">{t('windowFrom')}</label><input id="from" value={from} onChange={(e) => setFrom(e.target.value)} className={input} placeholder="Mon 9am" />
-          <label htmlFor="to" className="block font-medium">{t('windowTo')}</label><input id="to" value={to} onChange={(e) => setTo(e.target.value)} className={input} placeholder="Mon 5pm" />
+          <label htmlFor="addr" className="block font-medium">{t('hubAddress')}</label><input id="addr" required minLength={5} value={address} onChange={(e) => setAddress(e.target.value)} className={input} />
+          <label htmlFor="contact" className="block font-medium">{t('hubContact')}</label><input id="contact" type="tel" required aria-invalid={contact.length > 0 && !validPhone} value={contact} onChange={(e) => setContact(e.target.value)} className={input} />
+          {contact.length > 0 && !validPhone && <p role="alert" className="text-red-700">Enter a valid Nigerian phone number.</p>}
+          <label htmlFor="from" className="block font-medium">{t('windowFrom')}</label><input id="from" type="datetime-local" min={Number.isFinite(expectedDelivery) ? toLocal(new Date(expectedDelivery + 60_000)) : undefined} value={from} onChange={(e) => setFrom(e.target.value)} className={input} placeholder="Mon 9am" />
+          <label htmlFor="to" className="block font-medium">{t('windowTo')}</label><input id="to" type="datetime-local" min={from || undefined} value={to} onChange={(e) => setTo(e.target.value)} className={input} placeholder="Mon 5pm" />
+          {(from || to) && !validWindow && <p role="alert" className="text-red-700">Pickup must start after expected delivery and end within seven days of pickup start.</p>}
         </div>
       )}
       {step === 4 && (
         <div className="space-y-3">
           <label htmlFor="fee" className="block font-medium">{t('feeLabel')}</label><input id="fee" inputMode="decimal" value={feePct} onChange={(e) => setFeePct(e.target.value.replace(/[^\d.]/g, ''))} className={input} />
-          <p className="text-sm text-neutral-700">{t('feeHelp')}</p>
+          <p className="text-sm text-neutral-700">{t('feeHelp')}</p>{!validFee && <p role="alert" className="text-red-700">Fee must be between 0% and 1%.</p>}
           <label className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={clusterOnly} onChange={(e) => setClusterOnly(e.target.checked)} className="size-5" />{t('restrict')}</label>
         </div>
       )}
       {step === 5 && (
         <dl className="space-y-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm">
-          <div><dt className="font-semibold">{t('step1')}</dt><UserText as="dd" value={offer?.title} /></div>
-          <div><dt className="font-semibold">{t('deadlineLabel')}</dt><dd>{new Date(deadline).toLocaleString()}</dd></div>
-          <div><dt className="font-semibold">{t('hubAddress')}</dt><dd>{address} · {contact}</dd></div>
-          <div><dt className="font-semibold">{t('feeLabel')}</dt><dd>{feePct}%{clusterOnly ? ` · ${t('restrict')}` : ''}</dd></div>
+          <div><dt className="font-semibold">{t('step1')}</dt><UserText as="dd" value={offer?.title} /><dd>{offer?.unitLabel} · minimum {offer?.moq} units</dd><dd>Price tiers: {offer?.tiersUsdc.map(tier => `${tier.minUnits}+ units at ${tier.unitPrice} stroops`).join('; ')}</dd><button type="button" onClick={() => setStep(1)} className="underline">Edit offer</button></div>
+          <div><dt className="font-semibold">{t('deadlineLabel')}</dt><dd>{new Date(deadline).toLocaleString()}</dd><button type="button" onClick={() => setStep(2)} className="underline">Edit deadline</button></div>
+          <div><dt className="font-semibold">{t('hubAddress')}</dt><dd>{address} · {contact}</dd><dd>Pickup: {new Date(from).toLocaleString()} – {new Date(to).toLocaleString()}</dd><button type="button" onClick={() => setStep(3)} className="underline">Edit pickup details</button></div>
+          <div><dt className="font-semibold">{t('feeLabel')}</dt><dd>{feePct}%{clusterOnly ? ` · ${t('restrict')}` : ''}</dd><button type="button" onClick={() => setStep(4)} className="underline">Edit fee</button></div><div><dt className="font-semibold">What members see</dt><dd>Offer, price tiers, closing deadline, pickup address and window, and organizer fee.</dd></div>
         </dl>
       )}
       <div className="flex gap-3">
         {step > 1 && <button type="button" onClick={() => setStep(step - 1)} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold">{common('back')}</button>}
-        {step < 5 ? <button type="button" disabled={!canNext} onClick={() => setStep(step + 1)} className={`${primary} flex-1`}>{common('next')}</button> : <button type="button" disabled={busy} onClick={() => void create()} className={`${primary} flex-1`}>{busy ? t('creating') : t('create')}</button>}
+        {step < 5 ? <button type="button" disabled={!canNext} onClick={() => setStep(step + 1)} className={`${primary} flex-1`}>{common('next')}</button> : <button type="button" disabled={busy || !validHub || !validFee || !offerId} onClick={() => void create()} className={`${primary} flex-1`}>{busy ? t('creating') : t('create')}</button>}
       </div>
       {error !== null && <ErrorExplainer error={error} />}
       {dialog}
