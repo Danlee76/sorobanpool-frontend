@@ -9,6 +9,8 @@ import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
 import { NairaDeposit } from './NairaDeposit';
+import { UnitsStepper } from './UnitsStepper';
+import { RefundEstimate } from '@/components/money/RefundEstimate';
 import type { PoolView } from '@/lib/types';
 
 /** Units -> "most you pay now" and "refund if more people join" -> approve on the device. */
@@ -61,44 +63,15 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
     <section aria-labelledby="join-h" className="space-y-4 rounded-xl border border-neutral-300 bg-white p-4">
       <h2 id="join-h" className="text-lg font-bold">{mine > 0 ? t('addMore') : t('join')}</h2>
       {mine > 0 && <p className="text-sm text-emerald-900">{t('youHave', { count: mine })}</p>}
-      <div>
-        <label htmlFor="units" className="block text-sm font-medium">{t('unitsLabel')}</label>
-        <div className="mt-1 flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Decrease units"
-            onClick={() => setUnits(Math.max(1, clamped - 1))}
-            className="size-12 rounded-lg border border-neutral-400 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
-          >
-            −
-          </button>
-          <input
-            id="units"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={clamped}
-            onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 1)}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                setUnits(Math.min(room, clamped + 1));
-              } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                setUnits(Math.max(1, clamped - 1));
-              }
-            }}
-            className="h-12 w-20 rounded-lg border border-neutral-400 text-center text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
-          />
-          <button
-            type="button"
-            aria-label="Increase units"
-            onClick={() => setUnits(Math.min(room, clamped + 1))}
-            className="size-12 rounded-lg border border-neutral-400 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
-          >
-            +
-          </button>
-        </div>
-      </div>
+      <UnitsStepper
+        id="units"
+        label={t('unitsLabel')}
+        value={clamped}
+        onChange={setUnits}
+        min={1}
+        max={Math.max(room, 1)}
+        helpText={mine > 0 ? t('youHave', { count: mine }) : undefined}
+      />
       {p && (
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between"><dt>{t('maxNow')}</dt><dd className="font-bold" data-testid="max-now">{naira(p.maxNow)}</dd></div>
@@ -107,6 +80,15 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
         </dl>
       )}
       <p className="text-xs text-neutral-700">{t('indicative')}</p>
+      {p && pool.ngnPerUsd && (
+        <RefundEstimate
+          totalUnits={pool.totalUnits}
+          units={clamped}
+          tiers={tiers}
+          ngnPerUsd={pool.ngnPerUsd}
+          toNaira={(s) => stroopsToNairaCeil(s, pool.ngnPerUsd!)}
+        />
+      )}
       {p && (
         <details className="text-xs text-neutral-700">
           <summary className="min-h-12 content-center font-medium cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800">{common('learnMore')}</summary>

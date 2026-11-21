@@ -8,6 +8,8 @@ import { Countdown } from './pool/Countdown';
 import { ShareButton } from './pool/ShareButton';
 import { ErrorExplainer, explain } from './feedback/ErrorExplainer';
 import { useConfirm } from './ConfirmDialog';
+import { AmountInput } from './money/AmountInput';
+import { UnitsStepper } from './pool/UnitsStepper';
 import { ApiError } from '@/lib/api';
 import { UserDeclined } from '@/lib/tx';
 import { timelineStatus } from '@/lib/timeline';
@@ -144,5 +146,94 @@ describe('useConfirm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     await vi.waitFor(() => expect(results).toEqual([true, false]));
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});
+
+describe('AmountInput', () => {
+  it('accepts digits and formats with grouping', () => {
+    const onChange = vi.fn();
+    renderIntl(<AmountInput value={null} onChange={onChange} min={0n} max={1000000n} label="Amount" id="amount" />);
+    const input = screen.getByLabelText('Amount') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: '1500000' } });
+    expect(onChange).toHaveBeenCalledWith(1500000n);
+    expect(input.value).toBe('1,500,000');
+  });
+
+  it('handles pasting text with commas and naira sign', () => {
+    const onChange = vi.fn();
+    renderIntl(<AmountInput value={null} onChange={onChange} min={0n} max={10000000n} label="Amount" id="amount" />);
+    const input = screen.getByLabelText('Amount');
+    fireEvent.paste(input, { clipboardData: { getData: () => '₦2,500,000' } });
+    expect(onChange).toHaveBeenCalledWith(2500000n);
+  });
+
+  it('shows validation errors for min and max', () => {
+    const onChange = vi.fn();
+    renderIntl(<AmountInput value={50n} onChange={onChange} min={100n} max={1000n} label="Amount" id="amount" />);
+    expect(screen.getByRole('alert')).toHaveTextContent('Minimum is ₦100');
+    renderIntl(<AmountInput value={2000n} onChange={onChange} min={100n} max={1000n} label="Amount" id="amount2" />);
+    expect(screen.getByRole('alert')).toHaveTextContent('Maximum is ₦1,000');
+  });
+
+  it('returns null for empty input', () => {
+    const onChange = vi.fn();
+    renderIntl(<AmountInput value={1000n} onChange={onChange} min={0n} max={10000n} label="Amount" id="amount" />);
+    const input = screen.getByLabelText('Amount');
+    fireEvent.change(input, { target: { value: '' } });
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
+  it('handles backspace and zero correctly', () => {
+    const onChange = vi.fn();
+    renderIntl(<AmountInput value={100n} onChange={onChange} min={0n} max={10000n} label="Amount" id="amount" />);
+    const input = screen.getByLabelText('Amount');
+    fireEvent.change(input, { target: { value: '0' } });
+    expect(onChange).toHaveBeenCalledWith(0n);
+  });
+});
+
+describe('UnitsStepper', () => {
+  it('increments and decrements with button clicks', () => {
+    const onChange = vi.fn();
+    renderIntl(<UnitsStepper value={5} onChange={onChange} min={1} max={10} label="Units" id="units" />);
+    fireEvent.click(screen.getByLabelText('Increase units'));
+    expect(onChange).toHaveBeenCalledWith(6);
+    fireEvent.click(screen.getByLabelText('Decrease units'));
+    expect(onChange).toHaveBeenCalledWith(4);
+  });
+
+  it('enforces min and max limits', () => {
+    const onChange = vi.fn();
+    renderIntl(<UnitsStepper value={1} onChange={onChange} min={1} max={5} label="Units" id="units" />);
+    expect(screen.getByLabelText('Decrease units')).toBeDisabled();
+    renderIntl(<UnitsStepper value={5} onChange={onChange} min={1} max={5} label="Units" id="units2" />);
+    expect(screen.getByLabelText('Increase units')).toBeDisabled();
+  });
+
+  it('supports long press with acceleration', () => {
+    vi.useFakeTimers();
+    const onChange = vi.fn();
+    renderIntl(<UnitsStepper value={1} onChange={onChange} min={1} max={100} label="Units" id="units" />);
+    const btn = screen.getByLabelText('Increase units');
+    fireEvent.mouseDown(btn);
+    expect(onChange).toHaveBeenCalledTimes(1); // Initial click
+    act(() => void vi.advanceTimersByTime(200)); // Repeats start
+    expect(onChange.mock.calls.length).toBeGreaterThan(1);
+    fireEvent.mouseUp(btn);
+    vi.useRealTimers();
+  });
+
+  it('allows direct keyboard input', () => {
+    const onChange = vi.fn();
+    renderIntl(<UnitsStepper value={5} onChange={onChange} min={1} max={20} label="Units" id="units" />);
+    const input = screen.getByDisplayValue('5');
+    fireEvent.change(input, { target: { value: '15' } });
+    expect(onChange).toHaveBeenCalledWith(15);
+  });
+
+  it('shows limit information', () => {
+    renderIntl(<UnitsStepper value={10} onChange={vi.fn()} min={1} max={10} label="Units" id="units" />);
+    expect(screen.getByText(/Limits: 1 – 10 units/)).toBeInTheDocument();
+    expect(screen.getByText('Maximum reached')).toBeInTheDocument();
   });
 });
