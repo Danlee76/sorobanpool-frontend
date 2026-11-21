@@ -13,6 +13,7 @@ import { useRequireAuth } from '@/lib/auth';
 import { useSession } from '@/lib/store';
 import type { PoolCard } from '@/lib/types';
 import { organizerNextAction } from '@/lib/timeline';
+import { PoolQr } from '@/components/pool/PoolQr';
 
 /** One-time on-chain activation of the organizer role, after support has approved the account. */
 function ActivateOrganizer() {
@@ -72,6 +73,9 @@ export default function Organize() {
             <p className="text-sm">{Math.round(p.progressPct)}% toward minimum · Closes {new Date(p.fillDeadline).toLocaleString()}</p>
             <p className="mt-2 font-semibold" role="status">{organizerNextAction(p.state).needsAction ? 'Needs your action: ' : 'Next: '}{organizerNextAction(p.state).label}</p>
             <button type="button" className="mt-2 min-h-12 rounded-lg border border-emerald-800 px-3 font-semibold text-emerald-900" onClick={() => void navigator.clipboard.writeText(`Join our group buy: ${p.title ?? 'Group buy'}. ${window.location.origin}/p/${p.shareSlug}`)}>Copy share text</button>
+            <div className="mt-3">
+              <PoolQr slug={p.shareSlug} title={p.title ?? 'Group buy'} />
+            </div>
             {(p.state === 'Accepted' || p.state === 'Dispatched') && (
               <Link href={`/organize/${p.id}/delivery`} className="mt-2 flex min-h-12 items-center justify-center rounded-lg border-2 border-emerald-800 font-semibold text-emerald-900">{t('delivery.title')}</Link>
             )}
