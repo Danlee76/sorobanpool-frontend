@@ -1,12 +1,13 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
 import type { ErrorAction } from '@/lib/errors/map';
 import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
+import { computeNextBreak, usePoolLiveProgress, type StreamFactory } from '@/lib/pool-stream';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
 import { NairaDeposit } from './NairaDeposit';
@@ -14,15 +15,25 @@ import { FailureExplainer } from './FailureExplainer';
 import type { PoolView } from '@/lib/types';
 
 /** Units -> "most you pay now" and "refund if more people join" -> approve on the device. */
-export function JoinPanel({ pool }: { pool: PoolView }) {
+export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFactory?: StreamFactory }) {
   const t = useTranslations('pool');
   const common = useTranslations('common');
   const qc = useQueryClient();
   const { ask, dialog } = useConfirm();
   const mine = pool.myCommitment?.units ?? 0;
   const maxPer = pool.offer?.maxPerMember ?? 1;
-  const room = Math.max(0, Math.min(maxPer - mine, (pool.maxUnits ?? Infinity) - pool.totalUnits));
-  const [units, setUnits] = useState(Math.min(1, room) || 1);
+  const initialRoom = Math.max(0, Math.min(maxPer - mine, (pool.maxUnits ?? Infinity) - pool.totalUnits));
+
+  const live = usePoolLiveProgress(pool, {
+    enabled: pool.state === 'Open' && initialRoom > 0,
+    make: streamFactory,
+  });
+
+  const liveTotalUnits = live.totalUnits;
+  const liveMembers = live.members;
+  const room = Math.max(0, Math.min(maxPer - mine, (pool.maxUnits ?? Infinity) - liveTotalUnits));
+
+  const [units, setUnits] = useState(Math.min(1, initialRoom) || 1);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<unknown>(null);
@@ -31,10 +42,31 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
   const doneRef = useRef<HTMLParagraphElement>(null);
   const payBtnRef = useRef<HTMLButtonElement>(null);
   const naira2 = useTranslations('naira');
-  const tiers = pool.tiersUsdc.map((x) => ({ minUnits: x.minUnits, unitPrice: BigInt(x.unitPrice) }));
-  const clamped = Math.max(1, Math.min(units, Math.max(room, 1)));
-  const p = tiers.length ? payPreview(tiers, pool.totalUnits, clamped) : null;
+
+  const tiers = useMemo(
+    () => pool.tiersUsdc.map((x) => ({ minUnits: x.minUnits, unitPrice: BigInt(x.unitPrice) })),
+    [pool.tiersUsdc],
+  );
+  const nextBreakInfo = useMemo(
+    () => computeNextBreak(tiers, liveTotalUnits, pool.maxUnits),
+    [tiers, liveTotalUnits, pool.maxUnits],
+  );
+
+  // Never overwrite what the user entered on live updates; validate if live room shrinks below chosen units.
+  const unitsInvalid = units > room || room === 0;
+  const effectiveUnits = Math.max(1, units);
+  const p = tiers.length ? payPreview(tiers, liveTotalUnits, effectiveUnits) : null;
   const naira = (s: bigint) => (pool.ngnPerUsd ? formatNaira(stroopsToNairaCeil(s, pool.ngnPerUsd)) : '—');
+
+  const progressTarget = pool.maxUnits ?? pool.moq ?? (tiers[tiers.length - 1]?.minUnits || 1);
+  const progressPct = Math.min(100, Math.max(0, Math.round((liveTotalUnits / Math.max(1, progressTarget)) * 100)));
+
+  const liveAnnouncement =
+    live.announcement === 'full'
+      ? t('poolFillAnnounce')
+      : live.announcement === 'tier'
+        ? t('tierChangeAnnounce')
+        : '';
 
   useEffect(() => {
     if (done) {
@@ -43,13 +75,18 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
   }, [done]);
 
   if (pool.state !== 'Open') return null;
-  if (room === 0) return null;
+  if (initialRoom === 0) return null;
 
   async function pay() {
+    if (unitsInvalid) return;
     setBusy(true);
     setError(null);
     try {
-      await runAction(() => api<Prepared>(`/pools/${pool.id}/${mine > 0 ? 'increase' : 'commit'}/prepare`, { body: { units: clamped } }), ask, p?.maxNow);
+      await runAction(
+        () => api<Prepared>(`/pools/${pool.id}/${mine > 0 ? 'increase' : 'commit'}/prepare`, { body: { units: effectiveUnits } }),
+        ask,
+        p?.maxNow,
+      );
       setDone(true);
       await qc.invalidateQueries({ queryKey: ['pool', pool.id] });
     } catch (e) {
@@ -74,6 +111,54 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
   return (
     <section aria-labelledby="join-h" className="space-y-4 rounded-xl border border-neutral-300 bg-white p-4">
       <h2 id="join-h" className="text-lg font-bold">{mine > 0 ? t('addMore') : t('join')}</h2>
+
+      {/* Live pool progress block with reserved min-height to prevent layout shift */}
+      <div
+        className="min-h-[5.5rem] space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm"
+        data-testid="live-pool-progress"
+        data-stream-status={live.streamStatus}
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div className="flex items-center gap-2 font-semibold text-neutral-900">
+            <span data-testid="live-units">{t('liveUnitsCount', { count: liveTotalUnits })}</span>
+            <span aria-hidden="true" className="text-neutral-400">·</span>
+            <span data-testid="live-members">{t('liveMembersCount', { count: liveMembers })}</span>
+          </div>
+          {live.streamStatus === 'stale' && (
+            <span data-testid="stream-stale" className="text-xs font-medium text-amber-800">
+              {t('streamStale')}
+            </span>
+          )}
+        </div>
+
+        <div
+          role="progressbar"
+          aria-label={t('liveProgressLabel')}
+          aria-valuemin={0}
+          aria-valuemax={progressTarget}
+          aria-valuenow={Math.min(liveTotalUnits, progressTarget)}
+          className="h-2 w-full overflow-hidden rounded-full bg-neutral-200"
+        >
+          <div
+            className="h-full rounded-full bg-emerald-700 transition-[width] duration-300 motion-reduce:transition-none"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+
+        <p data-testid="live-next-break" className="text-xs font-medium text-neutral-700">
+          {nextBreakInfo.isFull
+            ? t('poolFull')
+            : nextBreakInfo.unitsToNextBreak !== null
+              ? t('unitsToNextBreak', { count: nextBreakInfo.unitsToNextBreak })
+              : t('topTierReached')}
+        </p>
+
+        {/* Polite live region restricted strictly to tier changes and pool filling */}
+        <p role="status" aria-live="polite" className="sr-only" data-testid="pool-live-announcement">
+          {liveAnnouncement}
+        </p>
+      </div>
+
       {mine > 0 && <p className="text-sm text-emerald-900">{t('youHave', { count: mine })}</p>}
       <div>
         <label htmlFor="units" className="block text-sm font-medium">{t('unitsLabel')}</label>
@@ -81,7 +166,7 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
           <button
             type="button"
             aria-label="Decrease units"
-            onClick={() => setUnits(Math.max(1, clamped - 1))}
+            onClick={() => setUnits(Math.max(1, units - 1))}
             className="size-12 rounded-lg border border-neutral-500 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           >
             −
@@ -90,15 +175,20 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
             id="units"
             inputMode="numeric"
             pattern="[0-9]*"
-            value={clamped}
-            onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 1)}
+            aria-invalid={unitsInvalid || undefined}
+            aria-describedby={unitsInvalid ? 'units-error' : undefined}
+            value={units}
+            onChange={(e) => {
+              const parsed = Number(e.target.value.replace(/\D/g, '')) || 1;
+              setUnits(Math.max(1, Math.min(parsed, Math.max(room, 1))));
+            }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                setUnits(Math.min(room, clamped + 1));
+                setUnits(Math.min(Math.max(room, 1), units + 1));
               } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                setUnits(Math.max(1, clamped - 1));
+                setUnits(Math.max(1, units - 1));
               }
             }}
             className="h-12 w-20 rounded-lg border border-neutral-500 text-center text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
@@ -106,12 +196,17 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
           <button
             type="button"
             aria-label="Increase units"
-            onClick={() => setUnits(Math.min(room, clamped + 1))}
+            onClick={() => setUnits(Math.min(Math.max(room, 1), units + 1))}
             className="size-12 rounded-lg border border-neutral-500 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           >
             +
           </button>
         </div>
+        {unitsInvalid && (
+          <p id="units-error" role="alert" className="mt-1.5 text-xs font-medium text-red-700">
+            {t('exceedsAvailableUnits', { available: room })}
+          </p>
+        )}
       </div>
       {p && (
         <dl className="space-y-2 text-sm">
@@ -149,7 +244,7 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
       <button
         type="button"
         ref={payBtnRef}
-        disabled={busy || done || (method === 'NGN' && !nairaPaid)}
+        disabled={busy || done || unitsInvalid || (method === 'NGN' && !nairaPaid)}
         onClick={() => void pay()}
         className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60 hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
       >

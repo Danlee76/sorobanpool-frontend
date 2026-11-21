@@ -200,7 +200,17 @@
       "shortDelivery": "Some items are missing",
       "shortDeliveryAnswer": "You can report a problem within 48 hours. An arbiter reviews your evidence and decides. If upheld, you get a refund for the affected units.",
       "learnMoreDisputes": "Learn more about disputes"
-    }
+    },
+    "liveProgressLabel": "Live pool progress",
+    "liveUnitsCount": "{count, plural, one {# unit} other {# units}}",
+    "liveMembersCount": "{count, plural, one {# member} other {# members}}",
+    "unitsToNextBreak": "{count, plural, one {# unit} other {# units}} to next price break",
+    "topTierReached": "Best price unlocked — no further price break",
+    "poolFull": "Pool is full — no further price break",
+    "tierChangeAnnounce": "Price drop: a lower price tier has been unlocked.",
+    "poolFillAnnounce": "This pool is now full.",
+    "streamStale": "Reconnecting — showing last known counts",
+    "exceedsAvailableUnits": "{available, plural, =0 {No units are left in this pool.} one {Only # unit is left in this pool.} other {Only # units are left in this pool.}}"
   },
   "organize": {
     "title": "Organize a group buy",

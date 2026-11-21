@@ -200,7 +200,17 @@
       "shortDelivery": "Some things no reach",
       "shortDeliveryAnswer": "You fit report problem within 48 hours. Arbiter go check your evidence and decide. If e correct, you go collect refund for the units wey no reach.",
       "learnMoreDisputes": "Learn more about disputes"
-    }
+    },
+    "liveProgressLabel": "How the pool dey move",
+    "liveUnitsCount": "{count, plural, one {# unit} other {# units}}",
+    "liveMembersCount": "{count, plural, one {# member} other {# members}}",
+    "unitsToNextBreak": "{count, plural, one {# unit} other {# units}} remain for next price drop",
+    "topTierReached": "Best price don unlock — no other price drop remain",
+    "poolFull": "Pool don full — no other price drop remain",
+    "tierChangeAnnounce": "Price don drop: better price tier don unlock.",
+    "poolFillAnnounce": "This pool don full now.",
+    "streamStale": "E dey reconnect — we dey show the last count we get",
+    "exceedsAvailableUnits": "{available, plural, =0 {No unit remain for this pool.} one {Na only # unit remain for this pool.} other {Na only # units remain for this pool.}}"
   },
   "organize": {
     "title": "Organize group buy",
