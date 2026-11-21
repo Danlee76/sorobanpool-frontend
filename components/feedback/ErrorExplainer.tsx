@@ -74,36 +74,39 @@ export function ErrorExplainer({
     <div role="alert" aria-live="assertive" aria-atomic="true" className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-900">
       <p className="font-semibold">{t(what)}</p>
       <p className="mt-1 text-sm">{t(todo)}</p>
-      {(hasAction || onRetry) && (
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          {action.type === 'route' && isAllowedErrorRoute(action.route) && (
-            <Link
-              href={action.route}
-              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-800 px-4 py-2 font-semibold text-white hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
-            >
-              {t(action.labelKey, action.params)}
-            </Link>
-          )}
-          {action.type === 'in-page' && (
-            <button
-              type="button"
-              onClick={() => handleInPageAction(action)}
-              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-800 px-4 py-2 font-semibold text-white hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
-            >
-              {t(action.labelKey, action.params)}
-            </button>
-          )}
-          {onRetry && (
-            <button
-              type="button"
-              onClick={onRetry}
-              className="min-h-12 rounded-lg border border-red-700 px-4 font-semibold hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
-            >
-              {t('common.retry')}
-            </button>
-          )}
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        {action.type === 'route' && isAllowedErrorRoute(action.route) && (
+          <Link
+            href={action.route}
+            className="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-800 px-4 py-2 font-semibold text-white hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
+          >
+            {t(action.labelKey, action.params)}
+          </Link>
+        )}
+        {action.type === 'in-page' && (
+          <button
+            type="button"
+            onClick={() => handleInPageAction(action)}
+            className="inline-flex min-h-12 items-center justify-center rounded-lg bg-red-800 px-4 py-2 font-semibold text-white hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
+          >
+            {t(action.labelKey, action.params)}
+          </button>
+        )}
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="min-h-12 rounded-lg border border-red-700 px-4 font-semibold hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
+          >
+            {t('common.retry')}
+          </button>
+        )}
+        {!hasAction && !onRetry && (
+          <Link href="/help" className="inline-flex min-h-12 items-center rounded-lg border border-red-700 px-4 font-semibold hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800">
+            {t('common.learnMore')}
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
