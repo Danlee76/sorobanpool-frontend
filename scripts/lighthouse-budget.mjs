@@ -73,7 +73,7 @@ export function parseConfig(env = process.env) {
  */
 export function parseBudgets(args = process.argv.slice(2)) {
   const [base = 'http://localhost:3000', ...rest] = args;
-  const budgetList = rest.length ? rest : ['/:170'];
+  const budgetList = rest.length ? rest : ['/:170', '/admin:250', '/arbiter:250'];
   const budgets = budgetList.map((a) => {
     const i = a.lastIndexOf(':');
     if (i === -1) {

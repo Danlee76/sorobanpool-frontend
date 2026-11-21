@@ -1,9 +1,9 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { EvidenceGallery } from '@/components/evidence/EvidenceGallery';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
@@ -12,6 +12,22 @@ import { outcomePreview, sha256Hex, type EvidenceItem, type OutcomeInput, type O
 import { formatUsdc, toStroops } from '@/lib/format';
 import { runAction, type Prepared } from '@/lib/tx';
 import type { DisputeView } from '@/lib/types';
+
+const EvidenceGallery = dynamic(
+  () => import('@/components/evidence/EvidenceGallery').then((m) => m.EvidenceGallery),
+  {
+    loading: () => (
+      <div
+        role="status"
+        aria-label="Loading evidence gallery"
+        className="min-h-[6rem] rounded-xl border border-neutral-200 bg-neutral-50 p-6 text-center text-sm text-neutral-600"
+      >
+        <span className="sr-only">Loading evidence gallery</span>
+        <p>Loading evidence…</p>
+      </div>
+    ),
+  },
+);
 
 interface Workspace {
   dispute: DisputeView;

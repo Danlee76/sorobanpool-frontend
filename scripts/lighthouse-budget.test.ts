@@ -100,7 +100,11 @@ describe('parseBudgets', () => {
   it('parses default budget when no arguments provided', () => {
     const { base, budgets } = parseBudgets([]);
     expect(base).toBe('http://localhost:3000');
-    expect(budgets).toEqual([{ path: '/', maxKb: 170 }]);
+    expect(budgets).toEqual([
+      { path: '/', maxKb: 170 },
+      { path: '/admin', maxKb: 250 },
+      { path: '/arbiter', maxKb: 250 },
+    ]);
   });
 
   it('parses custom base URL and multiple budgets', () => {
