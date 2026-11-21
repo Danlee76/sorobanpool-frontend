@@ -25,11 +25,11 @@ export default function Users() {
       setError(e);
     }
   }
-  const btn = 'min-h-12 rounded-lg border border-neutral-400 px-3 text-sm font-semibold';
+  const btn = 'min-h-12 rounded-lg border border-neutral-500 px-3 text-sm font-semibold';
   return (
     <div className="space-y-3">
       <label htmlFor="user-q" className="block font-medium">{t('search')}</label>
-      <input id="user-q" value={q} onChange={(e) => setQ(e.target.value)} className="h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg" />
+      <input id="user-q" value={q} onChange={(e) => setQ(e.target.value)} className="h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg" />
       {list.error && <ErrorExplainer error={list.error} />}
       <ul className="space-y-3">
         {list.data?.map((u) => (

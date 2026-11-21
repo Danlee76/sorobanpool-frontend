@@ -27,7 +27,7 @@ export function SessionGuard() {
         <h2 id="idle-h" className="text-lg font-bold">{t('idleTitle')}</h2>
         <p className="mt-2 text-sm text-neutral-700">{t('idleBody', { seconds: secondsLeft })}</p>
         <div className="mt-4 flex gap-3">
-          <button type="button" onClick={signOut} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold">{t('signOut')}</button>
+          <button type="button" onClick={signOut} className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-semibold">{t('signOut')}</button>
           <button type="button" autoFocus onClick={extend} className="min-h-12 flex-1 rounded-xl bg-emerald-800 font-semibold text-white">{t('stay')}</button>
         </div>
       </div>

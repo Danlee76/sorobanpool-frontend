@@ -29,8 +29,8 @@ export function XdrExport({ xdr, filename }: { xdr: string; filename: string }) 
     <section aria-label={t('label')} className="space-y-3">
       <p className="text-sm text-neutral-700">{t('help')}</p>
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={download} className="min-h-12 rounded-xl border border-neutral-400 px-4 font-semibold">{t('download')}</button>
-        <button type="button" onClick={() => void copy()} className="min-h-12 rounded-xl border border-neutral-400 px-4 font-semibold">{copied ? t('copied') : t('copy')}</button>
+        <button type="button" onClick={download} className="min-h-12 rounded-xl border border-neutral-500 px-4 font-semibold">{t('download')}</button>
+        <button type="button" onClick={() => void copy()} className="min-h-12 rounded-xl border border-neutral-500 px-4 font-semibold">{copied ? t('copied') : t('copy')}</button>
       </div>
       <label className="block text-sm font-semibold" htmlFor="xdr-text">{t('label')}</label>
       <textarea id="xdr-text" readOnly value={xdr} rows={5} className="w-full rounded-lg border border-neutral-300 p-2 font-mono text-xs" />

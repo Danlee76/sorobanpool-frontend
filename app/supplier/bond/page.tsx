@@ -11,7 +11,7 @@ import { formatUsdc } from '@/lib/format';
 import { runAction, type Prepared } from '@/lib/tx';
 import type { BondInfo } from '@/lib/types';
 
-const input = 'h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg';
+const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 
 export default function BondPage() {
   const t = useTranslations('bond');
@@ -71,7 +71,7 @@ export default function BondPage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3">
-        <Link href="/supplier" className="text-sm text-neutral-500 hover:text-neutral-700">&larr; {t('back')}</Link>
+        <Link href="/supplier" className="text-sm text-neutral-600 hover:text-neutral-700">&larr; {t('back')}</Link>
         <h1 className="text-2xl font-bold">{t('title')}</h1>
       </div>
 
@@ -91,14 +91,14 @@ export default function BondPage() {
           </div>
           <div className="flex justify-between" data-testid="bond-reserved">
             <dt className="text-neutral-600">{t('reserved')}</dt>
-            <dd className="font-medium text-amber-700">{info ? formatUsdc(info.reserved) : '—'} USD</dd>
+            <dd className="font-medium text-amber-800">{info ? formatUsdc(info.reserved) : '—'} USD</dd>
           </div>
           <div className="flex justify-between border-t border-neutral-100 pt-1" data-testid="bond-free">
             <dt className="font-semibold">{t('free')}</dt>
             <dd className="font-bold text-emerald-800">{freeUsdc ? formatUsdc(freeUsdc) : '—'} USD</dd>
           </div>
         </dl>
-        <p className="text-xs text-neutral-500">{t('reservedNote')}</p>
+        <p className="text-xs text-neutral-600">{t('reservedNote')}</p>
       </section>
 
       {/* Deposit */}
@@ -137,7 +137,7 @@ export default function BondPage() {
           placeholder="0.00"
         />
         {withdrawAmount && !withdrawOk && withdrawNum > freeNum && (
-          <p className="text-sm text-red-600" data-testid="withdraw-limit-error">{t('withdrawLimitError')}</p>
+          <p className="text-sm text-red-700" data-testid="withdraw-limit-error">{t('withdrawLimitError')}</p>
         )}
         <button
           disabled={busy || !withdrawOk}

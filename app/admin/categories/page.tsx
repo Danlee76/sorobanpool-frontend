@@ -45,7 +45,7 @@ export default function AdminCategories() {
                 type="button"
                 disabled={prepare.isPending}
                 onClick={() => setPending(row)}
-                className="min-h-12 rounded-xl border border-neutral-400 px-4 font-semibold disabled:opacity-60"
+                className="min-h-12 rounded-xl border border-neutral-500 px-4 font-semibold disabled:opacity-60"
               >
                 {row.enabled ? t('disable') : t('enable')}
               </button>
@@ -60,7 +60,7 @@ export default function AdminCategories() {
             <h2 id="cat-confirm-h" className="text-lg font-bold">{t('confirmTitle', { name: pending.name })}</h2>
             <p className="mt-2 text-sm text-neutral-700">{t('confirmBody')}</p>
             <div className="mt-4 flex gap-3">
-              <button type="button" onClick={() => setPending(null)} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold">{t('cancel')}</button>
+              <button type="button" onClick={() => setPending(null)} className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-semibold">{t('cancel')}</button>
               <button
                 type="button"
                 autoFocus

@@ -29,7 +29,7 @@ function ConfirmDialog({ onAnswer }: { onAnswer: (v: boolean) => void }) {
         <h2 id="confirm-h" className="text-lg font-bold">{t('pool.confirmTitle')}</h2>
         <p className="mt-2 text-sm text-neutral-700">{t('pool.confirmBody')}</p>
         <div className="mt-4 flex gap-3">
-          <button type="button" onClick={() => onAnswer(false)} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold">{t('common.cancel')}</button>
+          <button type="button" onClick={() => onAnswer(false)} className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-semibold">{t('common.cancel')}</button>
           <button type="button" autoFocus onClick={() => onAnswer(true)} className="min-h-12 flex-1 rounded-xl bg-emerald-800 font-semibold text-white">{t('common.confirm')}</button>
         </div>
       </div>

@@ -16,7 +16,7 @@ const STEP_NO: Record<Step, number> = { phone: 1, code: 1, profile: 2, wallet: 3
 const TOTAL_STEPS = 4;
 const TESTNET = process.env.NEXT_PUBLIC_STELLAR_NETWORK !== 'mainnet';
 
-const input = 'h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg';
+const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 const primary = 'min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60';
 
 function Onboarding() {
@@ -146,7 +146,7 @@ function Onboarding() {
           <input id="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="0803 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} className={input} />
           <p className="text-sm text-neutral-700">{t('phoneHelp')}</p>
           <button disabled={busy || phone.length < 10} className={primary}>{t('sendCode')}</button>
-          {passkeySupport && <button type="button" onClick={() => void passkeyLogin()} disabled={busy} className="min-h-12 w-full rounded-xl border border-neutral-400 font-semibold">{t('passkeySignIn')}</button>}
+          {passkeySupport && <button type="button" onClick={() => void passkeyLogin()} disabled={busy} className="min-h-12 w-full rounded-xl border border-neutral-500 font-semibold">{t('passkeySignIn')}</button>}
         </form>
       )}
       {step === 'code' && (
@@ -180,7 +180,7 @@ function Onboarding() {
             <p role="alert" className="rounded-xl bg-amber-50 p-4 text-amber-900">{t('passkeyNeeded')}</p>
           )}
           {TESTNET && (
-            <button disabled={busy} onClick={() => void setupDeviceWallet()} className="min-h-12 w-full rounded-xl border border-neutral-400 font-semibold">{t('walletDeviceFallback')}</button>
+            <button disabled={busy} onClick={() => void setupDeviceWallet()} className="min-h-12 w-full rounded-xl border border-neutral-500 font-semibold">{t('walletDeviceFallback')}</button>
           )}
         </div>
       )}

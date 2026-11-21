@@ -23,7 +23,7 @@ export default async function Home() {
   ];
   return (
     <div className="page-enter space-y-12 md:space-y-16">
-      <section className="relative isolate overflow-hidden rounded-[2rem] bg-emerald-950 px-6 py-10 text-white shadow-2xl shadow-emerald-950/10 md:px-12 md:py-14">
+      <section className="surface-dark relative isolate overflow-hidden rounded-[2rem] bg-emerald-950 px-6 py-10 text-white shadow-2xl shadow-emerald-950/10 md:px-12 md:py-14">
         <div aria-hidden="true" className="absolute -right-20 -top-24 -z-10 size-80 rounded-full bg-emerald-400/20 blur-3xl" />
         <div aria-hidden="true" className="absolute -bottom-40 left-1/3 -z-10 size-80 rounded-full bg-amber-400/10 blur-3xl" />
         <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr]">
@@ -39,7 +39,7 @@ export default async function Home() {
             <p className="mt-5 max-w-xl text-base leading-7 text-emerald-50/85 md:text-lg">{t('heroBody')}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/explore" className="group flex min-h-13 items-center justify-center gap-3 rounded-full bg-amber-300 px-6 font-bold text-emerald-950 shadow-lg shadow-black/10 hover:bg-amber-200">
-                {t('heroCta')} <ArrowIcon className="size-5 transition-transform group-hover:translate-x-1" />
+                {t('heroCta')} <ArrowIcon className="size-5 motion-safe:transition-transform motion-safe:group-hover:translate-x-1" />
               </Link>
               <HeroSignIn />
             </div>
@@ -72,7 +72,7 @@ export default async function Home() {
         <h2 id="how-h" className="text-2xl font-bold tracking-tight md:text-3xl">{t('howItWorks')}</h2>
         <ol className="mt-6 grid gap-4 sm:grid-cols-3">
           {steps.map(({ icon: Icon, title, body }, i) => (
-            <li key={title} className="rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:p-6">
+            <li key={title} className="rounded-3xl border border-neutral-200 bg-white p-5 shadow-sm transition-all motion-safe:hover:-translate-y-1 hover:shadow-lg md:p-6">
               <div className="flex items-center justify-between">
                 <span className="grid size-11 place-items-center rounded-2xl bg-emerald-900 text-white"><Icon className="size-5" /></span>
                 <span aria-hidden="true" className="text-xs font-bold tracking-[.18em] text-emerald-800">0{i + 1}</span>

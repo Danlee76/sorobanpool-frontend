@@ -59,7 +59,7 @@ function ParamEditor({ specs }: { specs: ParamSpec[] }) {
                   setDraft((d) => ({ ...d, [spec.key]: next }));
                   propose.reset();
                 }}
-                className="mt-1 min-h-12 w-full rounded-lg border border-neutral-400 px-3"
+                className="mt-1 min-h-12 w-full rounded-lg border border-neutral-500 px-3"
               />
               {!check.ok && <p role="alert" className="mt-1 text-sm text-red-800">{t(`error.${check.error}`, { min: spec.min, max: spec.max, unit: spec.unit })}</p>}
             </div>

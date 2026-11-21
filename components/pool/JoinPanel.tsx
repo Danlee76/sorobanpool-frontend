@@ -56,9 +56,9 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
       <div>
         <label htmlFor="units" className="block text-sm font-medium">{t('unitsLabel')}</label>
         <div className="mt-1 flex items-center gap-2">
-          <button type="button" aria-label="−" onClick={() => setUnits(Math.max(1, clamped - 1))} className="size-12 rounded-lg border border-neutral-400 text-xl font-bold">−</button>
-          <input id="units" inputMode="numeric" pattern="[0-9]*" value={clamped} onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 1)} className="h-12 w-20 rounded-lg border border-neutral-400 text-center text-lg" />
-          <button type="button" aria-label="+" onClick={() => setUnits(Math.min(room, clamped + 1))} className="size-12 rounded-lg border border-neutral-400 text-xl font-bold">+</button>
+          <button type="button" aria-label="−" onClick={() => setUnits(Math.max(1, clamped - 1))} className="size-12 rounded-lg border border-neutral-500 text-xl font-bold">−</button>
+          <input id="units" inputMode="numeric" pattern="[0-9]*" value={clamped} onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 1)} className="h-12 w-20 rounded-lg border border-neutral-500 text-center text-lg" />
+          <button type="button" aria-label="+" onClick={() => setUnits(Math.min(room, clamped + 1))} className="size-12 rounded-lg border border-neutral-500 text-xl font-bold">+</button>
         </div>
       </div>
       {p && (

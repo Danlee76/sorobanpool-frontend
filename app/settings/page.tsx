@@ -49,7 +49,7 @@ export default function Settings() {
     await qc.invalidateQueries({ queryKey: ['passkeys'] });
   }
   if (!ready) return <p>{common('loading')}</p>;
-  const btn = 'min-h-12 w-full rounded-xl border border-neutral-400 font-semibold';
+  const btn = 'min-h-12 w-full rounded-xl border border-neutral-500 font-semibold';
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t('title')}</h1>

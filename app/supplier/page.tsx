@@ -16,7 +16,7 @@ import { runAction, type Prepared } from '@/lib/tx';
 import { uploadEvidence } from '@/lib/upload';
 import type { PoolCard, PoolView, SupplierProfile } from '@/lib/types';
 
-const input = 'h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg';
+const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 
 function ApplyForm({ onDone }: { onDone: () => void }) {
   const t = useTranslations('supplier');
@@ -138,7 +138,7 @@ export function PoolRow({ card }: { card: PoolCard }) {
           {payout && <p className="text-sm font-medium">{t('payout', { amount: payout })}</p>}
           <div className="flex gap-2">
             <button disabled={busy} onClick={() => void act('accept')} className={`${btn} bg-emerald-800 text-white`}>{t('accept')}</button>
-            <button disabled={busy} onClick={() => void act('reject')} className={`${btn} border border-neutral-400`}>{t('reject')}</button>
+            <button disabled={busy} onClick={() => void act('reject')} className={`${btn} border border-neutral-500`}>{t('reject')}</button>
           </div>
         </>
       )}
@@ -168,13 +168,13 @@ export function PoolRow({ card }: { card: PoolCard }) {
             <button
               disabled={busy}
               onClick={() => void dispatchPool(false)}
-              className={`${btn} border border-neutral-400 text-sm`}
+              className={`${btn} border border-neutral-500 text-sm`}
               data-testid="dispatch-skip-waybill"
             >
               {t('dispatchSkipWaybill')}
             </button>
           </div>
-          <button type="button" onClick={() => { setShowWaybill(false); setWaybillFile(null); setWaybillPreview(null); }} className="w-full text-sm text-neutral-500 hover:text-neutral-700">
+          <button type="button" onClick={() => { setShowWaybill(false); setWaybillFile(null); setWaybillPreview(null); }} className="w-full text-sm text-neutral-600 hover:text-neutral-700">
             {t('cancel')}
           </button>
         </div>
@@ -196,7 +196,7 @@ function BondPanel() {
       {freeUsdc !== null && (
         <p className="text-sm text-emerald-800">{t('bondFree', { free: `${freeUsdc} USD` })}</p>
       )}
-      <Link href="/supplier/bond" className="flex min-h-10 items-center justify-center rounded-lg border border-neutral-400 text-sm font-semibold">
+      <Link href="/supplier/bond" className="flex min-h-10 items-center justify-center rounded-lg border border-neutral-500 text-sm font-semibold">
         {t('bondManage')}
       </Link>
     </section>
@@ -230,7 +230,7 @@ export default function Supplier() {
             {pools.data?.filter((p) => p.supplier === me?.walletAddress).length === 0 && <p className="text-neutral-700">{t('noPools')}</p>}
             <ul className="space-y-3">{pools.data?.filter((p) => p.supplier === me?.walletAddress).map((p) => <PoolRow key={p.id} card={p} />)}</ul>
           </section>
-          <Link href="/supplier/statement" className="flex min-h-12 items-center justify-center rounded-xl border border-neutral-400 px-4 font-semibold">{t('statementLink')}</Link>
+          <Link href="/supplier/statement" className="flex min-h-12 items-center justify-center rounded-xl border border-neutral-500 px-4 font-semibold">{t('statementLink')}</Link>
           <BondPanel />
         </>
       )}
