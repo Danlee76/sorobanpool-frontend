@@ -116,6 +116,32 @@ SPONSOR_SECRET=S... pnpm test:e2e            # Playwright against the backend de
 
 Measured on a mobile Lighthouse run: home 167 KB of JavaScript (budget 170), onboarding 313 KB (budget 400), offline page 163 KB.
 
+## Bundle Analysis
+
+To analyze the production bundle and inspect module breakdown:
+
+```bash
+pnpm analyze
+# Or:
+ANALYZE=true pnpm build
+```
+
+This runs `@next/bundle-analyzer` and outputs deterministic HTML reports to `.next/analyze/`:
+- `client.html`: Client-side bundles downloaded and parsed by browser clients.
+- `nodejs.html`: Server-side runtime chunks executed in Node.js.
+- `edge.html`: Edge runtime chunks.
+
+### Reading the report
+
+- **Client vs Server bundles**: Focus primarily on `client.html`, as client chunks directly consume mobile user bandwidth and memory on lower-end devices. `nodejs.html` reflects server-only modules.
+- **Parsed vs Gzip size**: Parsed size shows the uncompressed JavaScript size evaluated by the browser engine after minification. Gzip size shows the actual compressed transfer size over the network.
+- **Finding largest modules per route**: Hover over chunks in the treemap or filter by route paths (e.g. `app/page`, `app/onboarding/page`, `app/offline/page`) to identify heavy libraries or unexpected transitive dependencies.
+- **Relationship to Lighthouse budgets**: CI enforces performance budgets on public routes via Lighthouse mobile emulation:
+  - `/` (Home): ≤ 170 KB JavaScript
+  - `/onboarding`: ≤ 400 KB JavaScript
+  - `/offline`: ≤ 170 KB JavaScript
+  The bundle analyzer report reveals the individual module compositions that account for the bytes measured against these budgets. In CI, pull request builds automatically run with `ANALYZE=true` and upload `.next/analyze` as the `bundle-analysis` workflow artifact.
+
 ## Repository map
 
 ```text

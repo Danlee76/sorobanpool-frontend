@@ -3,6 +3,21 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
+const withBundleAnalyzer =
+  process.env.ANALYZE === "true"
+    ? (() => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          return require("@next/bundle-analyzer")({
+            enabled: true,
+            openAnalyzer: false,
+          });
+        } catch {
+          return (config: NextConfig) => config;
+        }
+      })()
+    : (config: NextConfig) => config;
+
 /** Applied to every route. Documented in docs/decisions/0004-security-headers-and-csp.md. */
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -31,4 +46,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(withNextIntl(nextConfig));
