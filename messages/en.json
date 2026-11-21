@@ -261,6 +261,18 @@
     "walletPasskey": "Your wallet is protected by your passkey. There is no secret to write down: on a new phone, sign in with the same passkey."
   },
   "errors": {
+    "actions": {
+      "viewOtherPools": "Browse other pools",
+      "reduceUnits": "Reduce units",
+      "reduceUnitsTo": "Reduce units to {count}",
+      "topUpNaira": "Top up with Naira",
+      "viewHistory": "View past group buys",
+      "topUpBond": "Top up supplier bond"
+    },
+    "INSUFFICIENT_BALANCE": {
+      "what": "Your dollar balance is not enough for this payment.",
+      "todo": "Top up with a Naira bank transfer to continue."
+    },
     "generic": {
       "what": "Something went wrong.",
       "todo": "Please try again. If it keeps happening, contact support."

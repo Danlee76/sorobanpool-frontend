@@ -261,6 +261,18 @@
     "walletPasskey": "Na your passkey dey protect your wallet. No secret to write down: for new phone, sign in with the same passkey."
   },
   "errors": {
+    "actions": {
+      "viewOtherPools": "Check other pools",
+      "reduceUnits": "Reduce the units",
+      "reduceUnitsTo": "Reduce units to {count}",
+      "topUpNaira": "Add money with Naira",
+      "viewHistory": "Check group buys wey don pass",
+      "topUpBond": "Add money to supplier bond"
+    },
+    "INSUFFICIENT_BALANCE": {
+      "what": "Your dollar balance no reach for this payment.",
+      "todo": "Add money with Naira bank transfer make you fit continue."
+    },
     "generic": {
       "what": "Something don go wrong.",
       "todo": "Abeg try again. If e continue, talk to support."

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
+import type { ErrorAction } from '@/lib/errors/map';
 import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
@@ -55,6 +56,18 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
       setError(e);
     } finally {
       setBusy(false);
+    }
+  }
+
+  function handleErrorAction(action: ErrorAction) {
+    if (action.type !== 'in-page') return;
+    if (action.action === 'focus-units') {
+      if (action.remainingAllowance !== undefined && action.remainingAllowance >= 1) {
+        setUnits(Math.min(action.remainingAllowance, Math.max(room, 1)));
+      }
+      document.getElementById('units')?.focus();
+    } else if (action.action === 'select-naira' && pool.ngnPerUsd) {
+      setMethod('NGN');
     }
   }
 
@@ -152,7 +165,7 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
           {t('joined')}
         </p>
       )}
-      {error !== null && <ErrorExplainer error={error} onRetry={() => void pay()} />}
+      {error !== null && <ErrorExplainer error={error} onRetry={() => void pay()} onAction={handleErrorAction} />}
       {dialog}
     </section>
   );
