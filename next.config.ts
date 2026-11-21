@@ -18,6 +18,19 @@ const withBundleAnalyzer =
       })()
     : (config: NextConfig) => config;
 
+const getBuildId = () => {
+  if (process.env.BUILD_ID) return process.env.BUILD_ID;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { execSync } = require("child_process");
+    return execSync("git rev-parse --short HEAD").toString().trim();
+  } catch {
+    return "production-build";
+  }
+};
+
+const currentBuildId = getBuildId();
+
 /** Applied to every route. Documented in docs/decisions/0004-security-headers-and-csp.md. */
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -32,9 +45,21 @@ const securityHeaders = [
 const EVIDENCE_ROUTES = ["/organize/:id/delivery", "/supplier/offers/new", "/pools/:id"];
 
 const nextConfig: NextConfig = {
+  generateBuildId: async () => currentBuildId,
+  env: {
+    NEXT_PUBLIC_BUILD_ID: currentBuildId,
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+        ],
+      },
       // Listed after the global rule so the camera is allowed only on these routes.
       ...EVIDENCE_ROUTES.map((source) => ({
         source,

@@ -25,6 +25,10 @@
     "offline": "You no get network. Na the last thing wey we see dey show.",
     "learnMore": "How e dey work?",
     "signInFirst": "Abeg sign in first.",
+    "updateAvailable": "New version of SorobanPool don ready.",
+    "refreshToUpdate": "Refresh to update am",
+    "updateBannerLabel": "App update notification",
+    "dismiss": "Dismiss",
     "error": "Something don spoil. Abeg try again."
   },
   "trust": {

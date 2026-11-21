@@ -142,6 +142,15 @@ This runs `@next/bundle-analyzer` and outputs deterministic HTML reports to `.ne
   - `/offline`: ≤ 170 KB JavaScript
   The bundle analyzer report reveals the individual module compositions that account for the bytes measured against these budgets. In CI, pull request builds automatically run with `ANALYZE=true` and upload `.next/analyze` as the `bundle-analysis` workflow artifact.
 
+## Service Worker Lifecycle & Versioning
+
+The app's offline shell and pool cache are managed by a service worker (`public/sw.js`) versioned by build ID:
+
+1. **Build ID Injection**: `scripts/build-sw.mjs` generates `public/sw.js` at build time from `public/sw.template.js`, stamping `BUILD_ID` (derived from git commit hash or `BUILD_ID` environment variable). `next.config.ts` configures `generateBuildId` and serves `/sw.js` with `no-cache, no-store, must-revalidate` headers.
+2. **Namespaced Caches**: Cache names are prefixed by app namespace and build ID (`sorobanpool-static-<buildId>`, `sorobanpool-pages-<buildId>`, `sorobanpool-api-<buildId>`). On activation, the worker deletes outdated `sorobanpool-*` caches while leaving caches of other apps on the origin untouched.
+3. **Controlled Updates**: Unconditional `skipWaiting()` is disabled. On first install without an existing controller, the worker activates silently. When a new version is detected for an already-controlled client, the worker enters the `waiting` state and an accessible notification banner (`role="status"`) appears.
+4. **Single-Reload Activation**: Tapping "Refresh to update" posts `SKIP_WAITING` to the waiting worker. Once the worker activates, `controllerchange` reloads the page exactly once in the accepting tab, guarded against reload loops. Other open tabs do not automatically reload, avoiding disruption of unsubmitted forms or in-progress transactions.
+
 ## Repository map
 
 ```text
