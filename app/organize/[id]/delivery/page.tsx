@@ -69,7 +69,7 @@ export default function Delivery() {
       <p className="text-neutral-700">{t('intro')}</p>
       <div>
         <label htmlFor="received" className="block font-medium">{t('received')}</label>
-        <input id="received" inputMode="numeric" pattern="[0-9]*" type="number" min={0} max={pool.totalUnits} step={1} value={rawCount} onChange={(e) => setReceived(e.target.value)} aria-invalid={!validCount} aria-describedby="received-error" className="mt-1 h-12 w-28 rounded-lg border border-neutral-400 px-3 text-center text-lg" />
+        <input id="received" inputMode="numeric" pattern="[0-9]*" type="number" min={0} max={pool.totalUnits} step={1} value={rawCount} onChange={(e) => setReceived(e.target.value)} aria-invalid={!validCount} aria-describedby="received-error" className="mt-1 h-12 w-28 rounded-lg border border-neutral-500 px-3 text-center text-lg" />
         <p className="mt-1 text-sm text-neutral-700">{t('ordered', { count: pool.totalUnits })}</p>
         {!validCount && <p id="received-error" role="alert" className="text-red-700">Enter a whole number between 0 and {pool.totalUnits}.</p>}
         {short > 0 && <p role="alert" className="mt-2 rounded-lg bg-amber-50 p-3 text-sm">{t('short', { count: short })} The received units are allocated proportionally across member orders; members receive refunds for unallocated units.</p>}

@@ -39,8 +39,8 @@ function SlaChip({ msToSla, state }: { msToSla: number; state: DisputeState }) {
         breached
           ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
           : hrs <= 12
-          ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300'
-          : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+          ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300'
+          : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
       }`}
     >
       {breached ? t('slaBreached') : t('slaHours', { hrs })}
@@ -106,7 +106,7 @@ function ResponseForm({
         <select
           value={form.resolution}
           onChange={(e) => setForm((f) => ({ ...f, resolution: e.target.value as ResponseFormState['resolution'] }))}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
         >
           <option value="REFUND">{t('resolutionRefund')}</option>
           <option value="REPLACE">{t('resolutionReplace')}</option>
@@ -122,7 +122,7 @@ function ResponseForm({
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
           placeholder={t('messagePlaceholder')}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
         />
       </div>
 
@@ -134,11 +134,11 @@ function ResponseForm({
           onChange={(e) => setForm((f) => ({ ...f, evidenceFile: e.target.files?.[0] ?? null }))}
           className="text-sm text-gray-700 dark:text-gray-300"
         />
-        <p className="mt-1 text-xs text-gray-400">{t('evidenceHint')}</p>
+        <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('evidenceHint')}</p>
       </div>
 
       {(uploadError || mutation.error) && (
-        <p className="text-sm text-red-600 dark:text-red-400">
+        <p className="text-sm text-red-700 dark:text-red-400">
           {uploadError ?? (mutation.error as Error).message}
         </p>
       )}
@@ -147,14 +147,14 @@ function ResponseForm({
         <button
           type="submit"
           disabled={mutation.isPending || uploading}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
         >
           {mutation.isPending || uploading ? t('submitting') : t('submitButton')}
         </button>
         <button
           type="button"
           onClick={onDone}
-          className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
+          className="rounded-md border border-gray-500 dark:border-gray-600 px-4 py-2 text-sm text-gray-700 dark:text-gray-300"
         >
           {t('cancelButton')}
         </button>
@@ -174,7 +174,7 @@ function DisputeCard({ dispute }: { dispute: DisputeItem }) {
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
             {dispute.itemName ?? t('unknownItem')}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
             {t('openedBy', { opener: dispute.opener.slice(0, 8) + '…' })}
           </p>
         </div>
@@ -202,7 +202,7 @@ function DisputeCard({ dispute }: { dispute: DisputeItem }) {
         <button
           type="button"
           onClick={() => setResponding(true)}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
         >
           {t('respondButton')}
         </button>
@@ -234,7 +234,7 @@ export default function SupplierDisputesPage() {
   if (isLoading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-gray-500 dark:text-gray-400">{t('loading')}</p>
+        <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
       </main>
     );
   }
@@ -242,7 +242,7 @@ export default function SupplierDisputesPage() {
   if (error) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-red-600 dark:text-red-400">{t('loadError')}</p>
+        <p className="text-red-700 dark:text-red-400">{t('loadError')}</p>
       </main>
     );
   }
@@ -256,12 +256,12 @@ export default function SupplierDisputesPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h1>
 
       {open.length === 0 && closed.length === 0 && (
-        <p className="text-gray-500 dark:text-gray-400">{t('empty')}</p>
+        <p className="text-gray-600 dark:text-gray-400">{t('empty')}</p>
       )}
 
       {open.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
             {t('openSection')} ({open.length})
           </h2>
           {open.map((d) => <DisputeCard key={d.id} dispute={d} />)}
@@ -270,7 +270,7 @@ export default function SupplierDisputesPage() {
 
       {closed.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
             {t('closedSection')} ({closed.length})
           </h2>
           {closed.map((d) => <DisputeCard key={d.id} dispute={d} />)}

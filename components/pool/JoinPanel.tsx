@@ -68,7 +68,7 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
             type="button"
             aria-label="Decrease units"
             onClick={() => setUnits(Math.max(1, clamped - 1))}
-            className="size-12 rounded-lg border border-neutral-400 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+            className="size-12 rounded-lg border border-neutral-500 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           >
             −
           </button>
@@ -87,13 +87,13 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
                 setUnits(Math.max(1, clamped - 1));
               }
             }}
-            className="h-12 w-20 rounded-lg border border-neutral-400 text-center text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+            className="h-12 w-20 rounded-lg border border-neutral-500 text-center text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           />
           <button
             type="button"
             aria-label="Increase units"
             onClick={() => setUnits(Math.min(room, clamped + 1))}
-            className="size-12 rounded-lg border border-neutral-400 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+            className="size-12 rounded-lg border border-neutral-500 text-xl font-bold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           >
             +
           </button>

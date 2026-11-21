@@ -26,30 +26,47 @@ export function Countdown({ deadline, warnHours = 6, criticalHours = 1, showExpl
   const now = useSyncExternalStore(subscribe, snapshot, () => null);
   if (now === null) return <span aria-hidden className="inline-block h-5 w-32 rounded bg-neutral-100" />;
   const c = countdown(deadline, now);
-  if (c.done) return <span className="font-semibold text-neutral-700">{t('closed')}</span>;
 
   const msRemaining = new Date(deadline).getTime() - now;
   const hoursRemaining = msRemaining / 3_600_000;
-  const isCritical = hoursRemaining < criticalHours;
-  const isWarning = !isCritical && hoursRemaining < warnHours;
+  const isCritical = !c.done && hoursRemaining < criticalHours;
+  const isWarning = !c.done && !isCritical && hoursRemaining < warnHours;
 
   const colorClass = isCritical
-    ? 'font-bold text-red-600'
+    ? 'font-bold text-red-700'
     : isWarning
-      ? 'font-semibold text-amber-600'
+      ? 'font-semibold text-amber-800'
       : 'font-semibold text-neutral-700';
 
   const parts = [c.days ? `${c.days}d` : '', `${c.hours}h`, `${c.minutes}m`, c.days ? '' : `${c.seconds}s`].filter(Boolean).join(' ');
 
+  // What a screen reader gets: whole days/hours/minutes only (no seconds), so this string changes at most once a
+  // minute, and once an hour or less while days remain. React leaves the DOM untouched when the string is equal,
+  // so the per-second re-renders below never reach assistive tech.
+  const spoken = [
+    c.days ? t('unitDays', { count: c.days }) : '',
+    c.hours ? t('unitHours', { count: c.hours }) : '',
+    !c.days && c.minutes ? t('unitMinutes', { count: c.minutes }) : '',
+  ].filter(Boolean).join(' ') || t('lessThanMinute');
+  const urgency = isCritical ? t('urgentCritical') : isWarning ? t('urgentWarning') : '';
+
   return (
     <span>
-      <span className={`tabular-nums ${colorClass}`} aria-label={`${t('closes')} ${parts}`}>
-        {t('closes')} {parts}
-        {isCritical && <span className="ml-1 text-xs uppercase tracking-wide">{t('urgentCritical')}</span>}
-        {isWarning && <span className="ml-1 text-xs">{t('urgentWarning')}</span>}
-      </span>
+      {!c.done && (
+        <>
+          {/* The ticking timer is visual only: announcing it every second floods screen readers. */}
+          <span aria-hidden="true" className={`tabular-nums ${colorClass}`}>
+            {t('closes')} {parts}
+            {isCritical && <span className="ml-1 text-xs uppercase tracking-wide">{t('urgentCritical')}</span>}
+            {isWarning && <span className="ml-1 text-xs">{t('urgentWarning')}</span>}
+          </span>
+          <span className="sr-only" data-testid="countdown-description">{`${t('closes')} ${spoken}${urgency ? ` ${urgency}` : ''}`}</span>
+        </>
+      )}
+      {/* Always mounted, so the change to "closed" is announced once (a live region added with its text is often missed). */}
+      <span role="status" className={c.done ? 'font-semibold text-neutral-700' : 'sr-only'}>{c.done ? t('closed') : ''}</span>
       {showExplainer && (isWarning || isCritical) && (
-        <span className="ml-2 text-xs text-neutral-600">
+        <span className="ml-2 text-xs text-neutral-700">
           {t('acceptWindowExplainer')}
         </span>
       )}

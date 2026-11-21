@@ -17,7 +17,7 @@ function StarRating({ score }: { score: number }) {
           fill={n <= filled ? 'currentColor' : 'none'}
           stroke="currentColor"
           strokeWidth={1.5}
-          className={`h-5 w-5 ${n <= filled ? 'text-amber-400' : 'text-gray-300 dark:text-gray-600'}`}
+          className={`h-5 w-5 ${n <= filled ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-gray-600'}`}
         >
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
@@ -29,9 +29,9 @@ function StarRating({ score }: { score: number }) {
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 text-center">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">{label}</p>
       <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+      {sub && <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400">{sub}</p>}
     </div>
   );
 }
@@ -51,7 +51,7 @@ export default function SupplierReputationPage() {
   if (isLoading) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-gray-500 dark:text-gray-400">{t('loading')}</p>
+        <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
       </main>
     );
   }
@@ -59,7 +59,7 @@ export default function SupplierReputationPage() {
   if (error || !data) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <p className="text-red-600 dark:text-red-400">{t('loadError')}</p>
+        <p className="text-red-700 dark:text-red-400">{t('loadError')}</p>
       </main>
     );
   }
@@ -73,7 +73,7 @@ export default function SupplierReputationPage() {
     <main className="mx-auto max-w-2xl px-4 py-8 space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
       </div>
 
       <section className="space-y-4">
@@ -82,7 +82,7 @@ export default function SupplierReputationPage() {
             {data.averageRating.toFixed(1)}
           </p>
           <StarRating score={data.averageRating} />
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('basedOn', { count: data.totalRatings })}
           </p>
         </div>
@@ -111,7 +111,7 @@ export default function SupplierReputationPage() {
 
       {data.recentRatings.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
             {t('recentRatingsSection')}
           </h2>
           <ul className="space-y-3">
@@ -122,7 +122,7 @@ export default function SupplierReputationPage() {
               >
                 <div className="flex items-center justify-between">
                   <StarRating score={r.score} />
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {new Date(r.ratedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export default function SupplierReputationPage() {
                   <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{r.comment}"</p>
                 )}
                 {r.itemName && (
-                  <p className="text-xs text-gray-400">{r.itemName}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{r.itemName}</p>
                 )}
               </li>
             ))}
@@ -140,7 +140,7 @@ export default function SupplierReputationPage() {
 
       {data.disputeHistory.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
             {t('disputeHistorySection')}
           </h2>
           <ul className="space-y-3">
@@ -154,7 +154,7 @@ export default function SupplierReputationPage() {
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {d.itemName ?? t('unknownItem')}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       {new Date(d.resolvedAt ?? d.openedAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -171,7 +171,7 @@ export default function SupplierReputationPage() {
                   </span>
                 </div>
                 {d.resolution && (
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
                     {t('resolutionLabel')}: {t(`resolution${d.resolution}`)}
                   </p>
                 )}
@@ -182,7 +182,7 @@ export default function SupplierReputationPage() {
       )}
 
       {data.recentRatings.length === 0 && data.disputeHistory.length === 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{t('noHistory')}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{t('noHistory')}</p>
       )}
     </main>
   );

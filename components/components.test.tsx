@@ -25,13 +25,37 @@ describe('TierLadder', () => {
     renderIntl(<TierLadder tiers={tiers} totalUnits={250} ngnPerUsd={1500} />);
     const rows = screen.getAllByTestId('tier');
     expect(rows.map((r) => r.getAttribute('data-reached'))).toEqual(['true', 'true', 'false']);
-    expect(screen.getByText('You are here').closest('li')).toHaveTextContent('200+ units');
+    expect(screen.getByText('Current price').closest('li')).toHaveTextContent('200+ units');
     expect(rows[1]).toHaveTextContent('₦1,350'); // 0.9 USDC at 1500
   });
   it('highlights the first tier before the minimum is reached', () => {
     renderIntl(<TierLadder tiers={tiers} totalUnits={10} ngnPerUsd={1500} />);
     expect(screen.getAllByTestId('tier').map((r) => r.getAttribute('data-reached'))).toEqual(['false', 'false', 'false']);
-    expect(screen.getByText('You are here').closest('li')).toHaveTextContent('100+ units');
+    expect(screen.getByText('Current price').closest('li')).toHaveTextContent('100+ units');
+  });
+  // Issue #60: status must not depend on colour, and must read tier, then price, then status.
+  it('spells out reached, current and upcoming tiers in text, in reading order', () => {
+    renderIntl(<TierLadder tiers={tiers} totalUnits={250} ngnPerUsd={1500} />);
+    const rows = screen.getAllByTestId('tier');
+    expect(rows.map((r) => r.getAttribute('data-status'))).toEqual(['reached', 'current', 'upcoming']);
+    // textContent follows DOM order, which is the screen-reader order. The decorative glyph is aria-hidden.
+    expect(rows[0]!.textContent).toMatch(/^100\+ units₦1,500.*Reached$/);
+    expect(rows[1]!.textContent).toMatch(/^200\+ units₦1,350.*Current price$/);
+    expect(rows[2]!.textContent).toMatch(/^400\+ units₦1,200.*Not reached yet$/);
+    for (const r of rows) expect(r.querySelector('[aria-hidden="true"]')).not.toBeNull();
+    expect(rows.map((r) => r.getAttribute('aria-current'))).toEqual([null, 'true', null]);
+  });
+  it('gives every tier a different non-colour cue (shape and border), so they differ in grayscale', () => {
+    renderIntl(<TierLadder tiers={tiers} totalUnits={250} ngnPerUsd={1500} />);
+    const glyphs = screen.getAllByTestId('tier').map((r) => r.querySelector('[aria-hidden="true"]')!.textContent);
+    expect(new Set(glyphs).size).toBe(3);
+    expect(screen.getAllByTestId('tier')[2]!.className).toMatch(/border-dashed/);
+  });
+  it('says so in Pidgin too', () => {
+    renderIntl(<TierLadder tiers={tiers} totalUnits={250} ngnPerUsd={1500} />, 'pcm');
+    expect(screen.getByText('E don reach')).toBeInTheDocument();
+    expect(screen.getByText('Price wey dey now')).toBeInTheDocument();
+    expect(screen.getByText('E never reach')).toBeInTheDocument();
   });
   it('shows a dash instead of a wrong price when the rate is unknown', () => {
     renderIntl(<TierLadder tiers={tiers} totalUnits={0} ngnPerUsd={null} />);
@@ -80,7 +104,7 @@ describe('Countdown', () => {
     vi.setSystemTime(new Date('2026-10-05T10:00:00Z'));
     renderIntl(<Countdown deadline="2026-10-05T10:01:05Z" />);
     act(() => void vi.advanceTimersByTime(0));
-    expect(screen.getByLabelText(/Closes in 0h 1m 5s/)).toBeInTheDocument();
+    expect(screen.getByText(/Closes in 0h 1m 5s/)).toBeInTheDocument(); // the visual timer, with seconds
     act(() => void vi.advanceTimersByTime(66_000));
     expect(screen.getByText('Closed for joining')).toBeInTheDocument();
   });

@@ -52,7 +52,7 @@ export function AreaPicker({ value, onChange }: AreaPickerProps) {
             id={stateSelectId}
             value={selectedStateCode}
             onChange={(e) => { setSelectedStateCode(e.target.value); setSelectedLga(''); }}
-            className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">{t('statePlaceholder')}</option>
             {NIGERIA_STATES.map((s) => (
@@ -70,7 +70,7 @@ export function AreaPicker({ value, onChange }: AreaPickerProps) {
               id={lgaSelectId}
               value={selectedLga}
               onChange={(e) => setSelectedLga(e.target.value)}
-              className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">{t('lgaAllOption')}</option>
               {chosenState.lgas.map((lga) => (
@@ -85,7 +85,7 @@ export function AreaPicker({ value, onChange }: AreaPickerProps) {
           type="button"
           onClick={addArea}
           disabled={!selectedStateCode}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {t('addButton')}
         </button>
@@ -113,7 +113,7 @@ export function AreaPicker({ value, onChange }: AreaPickerProps) {
       )}
 
       {value.length === 0 && (
-        <p className="text-xs text-gray-400">{t('emptyHint')}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{t('emptyHint')}</p>
       )}
     </div>
   );

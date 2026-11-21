@@ -47,12 +47,12 @@ export default function Users() {
     }
   }
 
-  const btn = 'min-h-12 rounded-lg border border-neutral-400 px-3 text-sm font-semibold hover:bg-neutral-50';
+  const btn = 'min-h-12 rounded-lg border border-neutral-500 px-3 text-sm font-semibold hover:bg-neutral-50';
 
   return (
     <div className="space-y-3">
       <label htmlFor="user-q" className="block font-medium">{t('search')}</label>
-      <input id="user-q" value={q} onChange={(e) => setQ(e.target.value)} className="h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg" />
+      <input id="user-q" value={q} onChange={(e) => setQ(e.target.value)} className="h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg" />
       {list.error && <ErrorExplainer error={list.error} />}
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">

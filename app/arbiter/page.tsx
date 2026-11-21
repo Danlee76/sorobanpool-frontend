@@ -35,14 +35,14 @@ function ArbiterQueueList() {
       <div className="flex flex-wrap gap-3">
         <label className="flex flex-col text-sm font-medium">
           {t('sortBy')}
-          <select value={sort} onChange={(e) => setParam('sort', e.target.value)} className="min-h-12 rounded-lg border border-neutral-400 px-3">
+          <select value={sort} onChange={(e) => setParam('sort', e.target.value)} className="min-h-12 rounded-lg border border-neutral-500 px-3">
             <option value="sla">{t('sortSla')}</option>
             <option value="value">{t('sortValue')}</option>
           </select>
         </label>
         <label className="flex flex-col text-sm font-medium">
           {t('reason')}
-          <select value={reason} onChange={(e) => setParam('reason', e.target.value)} className="min-h-12 rounded-lg border border-neutral-400 px-3">
+          <select value={reason} onChange={(e) => setParam('reason', e.target.value)} className="min-h-12 rounded-lg border border-neutral-500 px-3">
             <option value="">{t('reasonAll')}</option>
             {DISPUTE_REASONS.map((r) => <option key={r} value={r}>{t(`reasons.${r}`)}</option>)}
           </select>

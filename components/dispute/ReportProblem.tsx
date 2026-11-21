@@ -50,17 +50,17 @@ export function ReportProblem({ poolId, maxUnits }: { poolId: string; maxUnits: 
     }
   }
   if (done) return <p role="status" className="rounded-xl bg-emerald-50 p-4 font-semibold text-emerald-900">{t('sent')}</p>;
-  if (!open) return <button type="button" onClick={() => setOpen(true)} className="min-h-12 w-full rounded-xl border border-neutral-400 font-semibold">{t('report')}</button>;
+  if (!open) return <button type="button" onClick={() => setOpen(true)} className="min-h-12 w-full rounded-xl border border-neutral-500 font-semibold">{t('report')}</button>;
   return (
     <section aria-labelledby="dispute-h" className="space-y-3 rounded-xl border border-neutral-300 bg-white p-4">
       <h2 id="dispute-h" className="text-lg font-bold">{t('title')}</h2>
       <p className="text-sm text-neutral-700">{t('window')}</p>
       <label htmlFor="reason" className="block font-medium">{t('reason')}</label>
-      <select id="reason" value={reason} onChange={(e) => setReason(e.target.value as typeof reason)} className="h-12 w-full rounded-lg border border-neutral-400 px-2 text-lg">
+      <select id="reason" value={reason} onChange={(e) => setReason(e.target.value as typeof reason)} className="h-12 w-full rounded-lg border border-neutral-500 px-2 text-lg">
         {REASONS.map((r) => <option key={r} value={r}>{t(`reasons.${r}`)}</option>)}
       </select>
       <label htmlFor="d-units" className="block font-medium">{t('units')}</label>
-      <input id="d-units" inputMode="numeric" pattern="[0-9]*" value={units} onChange={(e) => setUnits(Math.min(maxUnits, Math.max(1, Number(e.target.value.replace(/\D/g, '')) || 1)))} className="h-12 w-24 rounded-lg border border-neutral-400 px-3 text-center text-lg" />
+      <input id="d-units" inputMode="numeric" pattern="[0-9]*" value={units} onChange={(e) => setUnits(Math.min(maxUnits, Math.max(1, Number(e.target.value.replace(/\D/g, '')) || 1)))} className="h-12 w-24 rounded-lg border border-neutral-500 px-3 text-center text-lg" />
       <div>
         <p className="font-medium">{t('photos')} ({evidence.length})</p>
         <label className="mt-1 flex min-h-12 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-emerald-800 font-semibold text-emerald-900">

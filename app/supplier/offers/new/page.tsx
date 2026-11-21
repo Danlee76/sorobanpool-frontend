@@ -71,15 +71,15 @@ function OfferPreviewCard({
       <div className="bg-indigo-600 px-6 py-4">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-200">{category}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-100">{category}</p>
             <h2 className="mt-1 text-xl font-bold text-white">{title || t('preview.untitled')}</h2>
-            {brand && <p className="mt-0.5 text-sm text-indigo-200">{brand}</p>}
+            {brand && <p className="mt-0.5 text-sm text-indigo-100">{brand}</p>}
           </div>
           {lowestTier > 0 && (
             <div className="text-right">
-              <p className="text-xs text-indigo-200">{t('preview.priceFrom')}</p>
+              <p className="text-xs text-indigo-100">{t('preview.priceFrom')}</p>
               <p className="text-2xl font-bold text-white">₦{lowestTier.toLocaleString()}</p>
-              <p className="text-xs text-indigo-200">/{unitLabel || t('preview.unit')}</p>
+              <p className="text-xs text-indigo-100">/{unitLabel || t('preview.unit')}</p>
             </div>
           )}
         </div>
@@ -92,17 +92,17 @@ function OfferPreviewCard({
 
         {tiers.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
               {t('preview.tierBreaks')}
             </h3>
             <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    <th className="text-left px-4 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
                       {t('preview.minUnits')}
                     </th>
-                    <th className="text-right px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    <th className="text-right px-4 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400">
                       {t('preview.pricePerUnit')}
                     </th>
                   </tr>
@@ -122,7 +122,7 @@ function OfferPreviewCard({
               </table>
             </div>
             {lowestTier !== highestTier && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
                 {t('preview.savingsRange', {
                   pct: Math.round(((highestTier - lowestTier) / highestTier) * 100),
                 })}
@@ -133,25 +133,25 @@ function OfferPreviewCard({
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.poolCap')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('preview.poolCap')}</p>
             <p className="font-semibold text-gray-900 dark:text-gray-100">
               {maxUnits > 0 ? `${maxUnits} ${unitLabel || t('preview.units')}` : '—'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.maxPerMember')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('preview.maxPerMember')}</p>
             <p className="font-semibold text-gray-900 dark:text-gray-100">
               {maxPerMember > 0 ? `${maxPerMember} ${unitLabel || t('preview.units')}` : '—'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.leadTime')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('preview.leadTime')}</p>
             <p className="font-semibold text-gray-900 dark:text-gray-100">
               {leadTimeHours > 0 ? `${leadTimeHours}h` : '—'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{t('preview.validFor')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('preview.validFor')}</p>
             <p className="font-semibold text-gray-900 dark:text-gray-100">
               {validDays > 0 ? `${validDays} days` : '—'}
             </p>
@@ -159,7 +159,7 @@ function OfferPreviewCard({
         </div>
 
         <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('preview.deliveryAreas')}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{t('preview.deliveryAreas')}</p>
           <p className="text-sm text-gray-700 dark:text-gray-300">{areaText}</p>
         </div>
 
@@ -247,7 +247,7 @@ export default function NewOfferPage() {
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
               tab === id
                 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                : 'border-transparent text-gray-600 hover:text-gray-800 dark:hover:text-gray-300'
             }`}
           >
             {id === 'form' ? t('formTab') : t('previewTab')}
@@ -280,7 +280,7 @@ export default function NewOfferPage() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
               />
             </div>
 
@@ -290,7 +290,7 @@ export default function NewOfferPage() {
                 <input
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -299,7 +299,7 @@ export default function NewOfferPage() {
                   value={unitLabel}
                   onChange={(e) => setUnitLabel(e.target.value)}
                   placeholder="kg, pcs, bag…"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function NewOfferPage() {
               <input
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
               />
             </div>
 
@@ -319,7 +319,7 @@ export default function NewOfferPage() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
               />
             </div>
           </fieldset>
@@ -329,27 +329,27 @@ export default function NewOfferPage() {
             {tiers.map((tier, idx) => (
               <div key={idx} className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('minUnitsLabel')}</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">{t('minUnitsLabel')}</label>
                   <input
                     type="number"
                     min={1}
                     value={tier.minUnits}
                     onChange={(e) => updateTier(idx, 'minUnits', Number(e.target.value))}
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('priceNairaLabel')}</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">{t('priceNairaLabel')}</label>
                   <input
                     type="number"
                     min={0}
                     value={tier.priceNaira}
                     onChange={(e) => updateTier(idx, 'priceNaira', Number(e.target.value))}
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                   />
                 </div>
                 {tiers.length > 1 && (
-                  <button type="button" onClick={() => removeTier(idx)} className="text-red-500 text-sm pb-2">
+                  <button type="button" onClick={() => removeTier(idx)} className="text-red-700 text-sm pb-2">
                     {t('removeTierButton')}
                   </button>
                 )}
@@ -379,7 +379,7 @@ export default function NewOfferPage() {
                   min={0}
                   value={maxUnits}
                   onChange={(e) => setMaxUnits(Number(e.target.value))}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -389,7 +389,7 @@ export default function NewOfferPage() {
                   min={0}
                   value={maxPerMember}
                   onChange={(e) => setMaxPerMember(Number(e.target.value))}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -399,7 +399,7 @@ export default function NewOfferPage() {
                   min={0}
                   value={leadTimeHours}
                   onChange={(e) => setLeadTimeHours(Number(e.target.value))}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -409,26 +409,26 @@ export default function NewOfferPage() {
                   min={1}
                   value={validDays}
                   onChange={(e) => setValidDays(Number(e.target.value))}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-gray-500 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm"
                 />
               </div>
             </div>
           </fieldset>
 
-          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-700 dark:text-red-400">{error}</p>}
 
           <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setTab('preview')}
-              className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="rounded-md border border-gray-500 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               {t('previewButton')}
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
+              className="rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
             >
               {submitting ? t('publishing') : t('publishButton')}
             </button>

@@ -45,8 +45,14 @@ a:active, button:active { transform: scale(.985); }
 .pool-card { box-shadow: 0 2px 6px rgb(24 39 32 / 4%), 0 12px 32px rgb(24 39 32 / 3%); }
 .pool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgb(24 39 32 / 7%), 0 20px 42px rgb(24 39 32 / 6%); }
 
+/*
+ * Reduced motion. Nothing may animate or transition, and nothing may move on hover or press. Entrance
+ * animations are removed outright (not just shortened): a 0.01ms animation with a delay would still hold
+ * the stagger items invisible, so state is shown immediately instead. See docs/accessibility.md.
+ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  a:active, button:active, .pool-card:hover { transform: none; }
 }
 
 /* Big, obvious focus for keyboard and switch users. */
@@ -54,3 +60,10 @@ a:active, button:active { transform: scale(.985); }
   outline: 3px solid #0b6b3a;
   outline-offset: 2px;
 }
+
+/* The browser default is currentColor at 50%, about 3.3:1 on white. This is 5.6:1 or better on white and on the page background. */
+::placeholder { color: #5b6660; opacity: 1; }
+@media (prefers-color-scheme: dark) { ::placeholder { color: #9ca3af; } }
+
+/* The green focus ring is only 2.3:1 on the dark green hero, so use a light ring on dark surfaces. */
+.surface-dark :focus-visible { outline-color: #fde68a; }
