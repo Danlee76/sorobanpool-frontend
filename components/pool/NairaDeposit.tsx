@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api, ApiError } from '@/lib/api';
 import { formatNaira, stroopsToNairaCeil } from '@/lib/format';
+import { usePaymentLeaveGuard } from '@/lib/usePaymentLeaveGuard';
 import {
   buildEstimatedQuote,
   computeQuoteRemaining,
@@ -59,6 +60,10 @@ export function NairaDeposit({
   const [unavailable, setUnavailable] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
+  // Active ONLY while confirming deposit start or waiting for an issued bank transfer to arrive.
+  // Quote countdown ticks and refreshes never activate or toggle the guard.
+  const paymentInProgress = busy || (start !== null && status === 'PENDING');
+  const { dialog: leaveGuardDialog } = usePaymentLeaveGuard(paymentInProgress);
 
   const [quoteEpochMs] = useState<number>(() => clock());
   const [refreshedQuote, setRefreshedQuote] = useState<{
@@ -371,6 +376,7 @@ export function NairaDeposit({
 
         {refreshError !== null && <ErrorExplainer error={refreshError} onRetry={() => void handleRefresh()} />}
         {error !== null && <ErrorExplainer error={error} onRetry={() => void begin()} />}
+        {leaveGuardDialog}
       </div>
     );
   }
@@ -395,6 +401,7 @@ export function NairaDeposit({
         </button>
       )}
       {error !== null && <ErrorExplainer error={error} />}
+      {leaveGuardDialog}
     </section>
   );
 }

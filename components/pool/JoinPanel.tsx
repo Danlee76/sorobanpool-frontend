@@ -10,6 +10,7 @@ import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
 import { computeNextBreak, usePoolLiveProgress, type StreamFactory } from '@/lib/pool-stream';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
+import { usePaymentLeaveGuard } from '@/lib/usePaymentLeaveGuard';
 import { NairaDeposit } from './NairaDeposit';
 import { FailureExplainer } from './FailureExplainer';
 import type { PoolView } from '@/lib/types';
@@ -39,6 +40,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   const [error, setError] = useState<unknown>(null);
   const [method, setMethod] = useState<'USDC' | 'NGN'>('USDC');
   const [nairaPaid, setNairaPaid] = useState(false);
+  const { dialog: leaveGuardDialog } = usePaymentLeaveGuard(busy);
   const doneRef = useRef<HTMLParagraphElement>(null);
   const payBtnRef = useRef<HTMLButtonElement>(null);
   const naira2 = useTranslations('naira');
@@ -262,6 +264,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
       )}
       {error !== null && <ErrorExplainer error={error} onRetry={() => void pay()} onAction={handleErrorAction} />}
       {dialog}
+      {leaveGuardDialog}
     </section>
   );
 }

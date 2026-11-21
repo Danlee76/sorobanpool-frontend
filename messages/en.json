@@ -210,7 +210,11 @@
     "tierChangeAnnounce": "Price drop: a lower price tier has been unlocked.",
     "poolFillAnnounce": "This pool is now full.",
     "streamStale": "Reconnecting — showing last known counts",
-    "exceedsAvailableUnits": "{available, plural, =0 {No units are left in this pool.} one {Only # unit is left in this pool.} other {Only # units are left in this pool.}}"
+    "exceedsAvailableUnits": "{available, plural, =0 {No units are left in this pool.} one {Only # unit is left in this pool.} other {Only # units are left in this pool.}}",
+    "leaveGuardTitle": "Leave this payment?",
+    "leaveGuardBody": "Your payment is still in progress. Leaving now may lose your choices.",
+    "leaveGuardStay": "Stay on payment",
+    "leaveGuardLeave": "Leave anyway"
   },
   "organize": {
     "title": "Organize a group buy",

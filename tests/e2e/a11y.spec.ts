@@ -301,4 +301,71 @@ test('keyboard-only completion of the join and pay flow (@smoke)', async ({ page
   await expect(dialog).toBeHidden();
   const statusMsg = page.getByRole('status').filter({ hasText: 'You are in!' });
   await expect(statusMsg).toBeVisible();
+
+  // 15. After completion, the payment leave guard is removed and navigation is not blocked
+  const exploreNav = page.getByRole('link', { name: /Explore/i }).first();
+  if (await exploreNav.isVisible()) {
+    await exploreNav.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('dialog')).toBeHidden();
+  }
+});
+
+test('leave guard intercepts in-app link during active naira deposit and Escape returns focus (@smoke)', async ({ page }) => {
+  await page.route('**/v1/pools/99', (route) =>
+    route.fulfill({
+      json: {
+        ...pool(),
+        id: '99',
+        state: 'Open',
+      },
+    }),
+  );
+  await page.route('**/v1/pools/99/stream', (route) => route.abort());
+  await page.route('**/v1/anchor/deposit/start', (route) =>
+    route.fulfill({
+      json: {
+        transferId: 'mock_guard_1',
+        amountNgn: '15300',
+        estimatedUsdc: '10.2',
+        instructions: { bank: 'Mock Bank', accountName: 'SorobanPool', accountNumber: '0000000000', reference: 'mock_guard_1' },
+      },
+    }),
+  );
+  await page.route('**/v1/anchor/transfers/mock_guard_1', (route) =>
+    route.fulfill({ json: { id: 'mock_guard_1', status: 'PENDING' } }),
+  );
+  await page.route('**/v1/me', (route) =>
+    route.fulfill({
+      json: {
+        id: 'u-guard',
+        phone: '+2348030000001',
+        displayName: 'Amina',
+        roles: ['TRADER'],
+        walletAddress: 'GB3D4CFAKEWALLETADDRESSFORTESTING12345678901234567890',
+      },
+    }),
+  );
+  await page.addInitScript(() => {
+    localStorage.setItem('sp.refresh', 'mock-test-refresh-token');
+  });
+
+  await page.goto('/pools/99');
+  await page.getByRole('radio', { name: 'Naira bank transfer' }).check();
+  await page.getByRole('button', { name: 'Get bank details' }).click();
+  await expect(page.getByText('mock_guard_1')).toBeVisible();
+
+  const navLink = page.getByRole('link', { name: /Explore/i }).first();
+  await navLink.focus();
+  await page.keyboard.press('Enter');
+
+  const guardDialog = page.getByRole('dialog');
+  await expect(guardDialog).toBeVisible();
+  await expect(guardDialog).toHaveAttribute('aria-modal', 'true');
+  await expect(page.locator(':focus')).toHaveAccessibleName('Stay on payment');
+
+  // Escape dismisses the leave guard dialog and returns focus to the triggering link
+  await page.keyboard.press('Escape');
+  await expect(guardDialog).toBeHidden();
+  await expect(navLink).toBeFocused();
 });

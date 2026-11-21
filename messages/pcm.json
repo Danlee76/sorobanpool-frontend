@@ -210,7 +210,11 @@
     "tierChangeAnnounce": "Price don drop: better price tier don unlock.",
     "poolFillAnnounce": "This pool don full now.",
     "streamStale": "E dey reconnect — we dey show the last count we get",
-    "exceedsAvailableUnits": "{available, plural, =0 {No unit remain for this pool.} one {Na only # unit remain for this pool.} other {Na only # units remain for this pool.}}"
+    "exceedsAvailableUnits": "{available, plural, =0 {No unit remain for this pool.} one {Na only # unit remain for this pool.} other {Na only # units remain for this pool.}}",
+    "leaveGuardTitle": "You wan leave this payment?",
+    "leaveGuardBody": "Your payment never finish. If you leave now, your choices fit lost.",
+    "leaveGuardStay": "Stay for payment",
+    "leaveGuardLeave": "Leave anyway"
   },
   "organize": {
     "title": "Organize group buy",
