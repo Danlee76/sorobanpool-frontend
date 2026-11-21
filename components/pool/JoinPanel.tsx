@@ -8,7 +8,7 @@ import { useConfirm } from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
 import type { ErrorAction } from '@/lib/errors/map';
 import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
-import { canPrefetch } from '@/lib/network';
+import { canPrefetch, useOnlineStatus } from '@/lib/network';
 import { computeNextBreak, usePoolLiveProgress, type StreamFactory } from '@/lib/pool-stream';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
@@ -49,6 +49,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   const payBtnRef = useRef<HTMLButtonElement>(null);
   const prefetchedRef = useRef(false);
   const router = useRouter();
+  const online = useOnlineStatus();
   const naira2 = useTranslations('naira');
 
   const handleTouchIntent = () => {
@@ -95,7 +96,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   if (initialRoom === 0) return null;
 
   async function pay() {
-    if (unitsInvalid) return;
+    if (unitsInvalid || !online) return;
     setBusy(true);
     setError(null);
     try {
@@ -273,12 +274,19 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
         type="button"
         ref={payBtnRef}
         onTouchStart={handleTouchIntent}
-        disabled={busy || done || unitsInvalid || (method === 'NGN' && !nairaPaid)}
-        onClick={() => void pay()}
+        disabled={busy || done || unitsInvalid || (method === 'NGN' && !nairaPaid) || !online}
+        aria-disabled={!online}
+        aria-describedby={!online ? 'offline-pay-explainer' : undefined}
+        onClick={() => { if (!online) return; void pay(); }}
         className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60 hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
       >
         {busy ? t('paying') : t('payNow')}
       </button>
+      {!online && (
+        <p id="offline-pay-explainer" className="text-xs font-medium text-amber-800">
+          You are offline. Joining is disabled until your connection is restored.
+        </p>
+      )}
       {done && (
         <p
           role="status"

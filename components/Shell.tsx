@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { Logo } from '@/components/brand/Logo';
 import { ServiceWorker } from '@/components/ServiceWorker';
+import { useOnlineStatus } from '@/lib/network';
 import { useSession } from '@/lib/store';
 
 // A stable reference: a selector that returns a fresh [] each time makes Zustand 5 re-render forever.
@@ -29,6 +30,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const t = useTranslations('nav');
   const f = useTranslations('footer');
   const path = usePathname();
+  const online = useOnlineStatus();
   const status = useSession((s) => s.status);
   const roles = useSession((s) => s.me?.roles ?? NO_ROLES);
   // Role tabs appear only for people who have the role, so a trader's bar stays four items wide.
@@ -42,6 +44,15 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-6xl flex-col bg-[var(--background)] text-neutral-900">
       <ServiceWorker />
+      {!online && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="bg-amber-100 px-4 py-2 text-center text-sm font-medium text-amber-950"
+        >
+          You are offline, showing saved data
+        </p>
+      )}
       <a href="#main" className="sr-only focus:not-sr-only focus:z-30 absolute top-0 left-0 bg-emerald-900 text-white px-4 py-2 font-semibold rounded-b-lg">{t('skipToContent')}</a>
       <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-neutral-200/80 bg-white/90 px-5 backdrop-blur-xl md:px-10">
         <Link href="/"><Logo /></Link>
