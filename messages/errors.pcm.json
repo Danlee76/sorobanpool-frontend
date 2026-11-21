@@ -85,7 +85,8 @@
   },
   "308": {
     "what": "We no see this pool.",
-    "todo": "Check the link and try again."
+    "todo": "Check the link and try again.",
+    "action": "Check other pools"
   },
   "309": {
     "what": "This step no dey available now.",
@@ -93,7 +94,8 @@
   },
   "310": {
     "what": "This pool don close for joining.",
-    "todo": "Find another open pool."
+    "todo": "Find another open pool.",
+    "action": "Check other pools"
   },
   "311": {
     "what": "E never reach time to do this.",
@@ -101,7 +103,8 @@
   },
   "312": {
     "what": "Choose at least 1 unit.",
-    "todo": "Pick how many units you want."
+    "todo": "Pick how many units you want.",
+    "action": "Choose units"
   },
   "313": {
     "what": "You no fit join this pool.",
@@ -113,27 +116,33 @@
   },
   "315": {
     "what": "Na more units pass wetin one person fit take for this offer.",
-    "todo": "Choose fewer units."
+    "todo": "Choose fewer units.",
+    "action": "Reduce the units"
   },
   "316": {
     "what": "One person no fit take that big share of the pool.",
-    "todo": "Choose fewer units make others fit join."
+    "todo": "Choose fewer units make others fit join.",
+    "action": "Reduce the units"
   },
   "317": {
     "what": "Units no reach for this pool again.",
-    "todo": "Choose fewer units."
+    "todo": "Choose fewer units.",
+    "action": "Reduce the units"
   },
   "318": {
     "what": "This pass the amount your account level allow.",
-    "todo": "Verify your account to increase your limit, or choose fewer units."
+    "todo": "Verify your account to increase your limit, or choose fewer units.",
+    "action": "Reduce the units"
   },
   "319": {
     "what": "This pool don get the most members wey e fit take.",
-    "todo": "Find another pool."
+    "todo": "Find another pool.",
+    "action": "Check other pools"
   },
   "320": {
     "what": "You don already join this pool.",
-    "todo": "Use Add more units instead."
+    "todo": "Use Add more units instead.",
+    "action": "Change your units"
   },
   "321": {
     "what": "You never join this pool.",
@@ -209,7 +218,8 @@
   },
   "339": {
     "what": "Nothing dey to refund now.",
-    "todo": "Check your history."
+    "todo": "Check your history.",
+    "action": "Check group buys wey don pass"
   },
   "340": {
     "what": "Dem no allow this action from here.",
@@ -293,7 +303,8 @@
   },
   "501": {
     "what": "You no get that much free bond.",
-    "todo": "Choose smaller amount."
+    "todo": "Choose smaller amount.",
+    "action": "Add money to supplier bond"
   },
   "502": {
     "what": "Dem no allow this action from here.",

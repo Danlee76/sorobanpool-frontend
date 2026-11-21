@@ -200,7 +200,21 @@
       "shortDelivery": "Some items are missing",
       "shortDeliveryAnswer": "You can report a problem within 48 hours. An arbiter reviews your evidence and decides. If upheld, you get a refund for the affected units.",
       "learnMoreDisputes": "Learn more about disputes"
-    }
+    },
+    "liveProgressLabel": "Live pool progress",
+    "liveUnitsCount": "{count, plural, one {# unit} other {# units}}",
+    "liveMembersCount": "{count, plural, one {# member} other {# members}}",
+    "unitsToNextBreak": "{count, plural, one {# unit} other {# units}} to next price break",
+    "topTierReached": "Best price unlocked — no further price break",
+    "poolFull": "Pool is full — no further price break",
+    "tierChangeAnnounce": "Price drop: a lower price tier has been unlocked.",
+    "poolFillAnnounce": "This pool is now full.",
+    "streamStale": "Reconnecting — showing last known counts",
+    "exceedsAvailableUnits": "{available, plural, =0 {No units are left in this pool.} one {Only # unit is left in this pool.} other {Only # units are left in this pool.}}",
+    "leaveGuardTitle": "Leave this payment?",
+    "leaveGuardBody": "Your payment is still in progress. Leaving now may lose your choices.",
+    "leaveGuardStay": "Stay on payment",
+    "leaveGuardLeave": "Leave anyway"
   },
   "organize": {
     "title": "Organize a group buy",
@@ -261,6 +275,18 @@
     "walletPasskey": "Your wallet is protected by your passkey. There is no secret to write down: on a new phone, sign in with the same passkey."
   },
   "errors": {
+    "actions": {
+      "viewOtherPools": "Browse other pools",
+      "reduceUnits": "Reduce units",
+      "reduceUnitsTo": "Reduce units to {count}",
+      "topUpNaira": "Top up with Naira",
+      "viewHistory": "View past group buys",
+      "topUpBond": "Top up supplier bond"
+    },
+    "INSUFFICIENT_BALANCE": {
+      "what": "Your dollar balance is not enough for this payment.",
+      "todo": "Top up with a Naira bank transfer to continue."
+    },
     "generic": {
       "what": "Something went wrong.",
       "todo": "Please try again. If it keeps happening, contact support."
@@ -657,7 +683,29 @@
     "received": "Transfer received. Now approve your payment.",
     "unavailable": "Naira payments are not available yet.",
     "simulate": "Test only: pretend the bank transfer arrived",
-    "estimate": "You will get about {usd} USD at today's rate. The rate when your transfer arrives is final."
+    "estimate": "You will get about {usd} USD at today's rate. The rate when your transfer arrives is final.",
+    "quoteHeading": "Deposit quote",
+    "quoteAmount": "Deposit amount",
+    "quoteFee": "Anchor fee",
+    "quoteRate": "Anchor rate",
+    "quoteTotal": "Total to send",
+    "quoteRateValue": "{rate} / USD",
+    "quoteFeeUnavailable": "Fee unavailable from anchor",
+    "quoteRateUnavailable": "Rate unavailable from anchor",
+    "quoteExpiryUnavailable": "Quote expiry unavailable",
+    "quoteTotalUnavailable": "Total unavailable",
+    "quoteIncompleteReason": "Cannot confirm because some quote details are missing. Refresh to try again.",
+    "quoteTotalMismatch": "The anchor total does not match the amount plus fee. Refresh for a valid quote.",
+    "quoteExpiresIn": "Quote expires in {seconds}s",
+    "quoteExpiring": "Expiring soon",
+    "quoteExpiringAnnounce": "Quote expiring soon, {seconds} seconds remaining.",
+    "quoteExpired": "Quote expired",
+    "quoteExpiredAnnounce": "Quote expired. Refresh for a new quote.",
+    "quoteOutOfDate": "Out of date",
+    "quoteRefresh": "Refresh quote",
+    "quoteRefreshing": "Refreshing quote…",
+    "confirmDisabledExpired": "This quote has expired. Refresh the quote before getting bank details.",
+    "confirmDisabledRefreshing": "Waiting for a fresh quote…"
   },
   "states": {
     "Open": "Joining",

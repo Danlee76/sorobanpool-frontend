@@ -85,7 +85,8 @@
   },
   "308": {
     "what": "We could not find this pool.",
-    "todo": "Check the link and try again."
+    "todo": "Check the link and try again.",
+    "action": "View other pools"
   },
   "309": {
     "what": "This step is not available right now.",
@@ -93,7 +94,8 @@
   },
   "310": {
     "what": "This pool has closed for joining.",
-    "todo": "Look for another open pool."
+    "todo": "Look for another open pool.",
+    "action": "View other pools"
   },
   "311": {
     "what": "It is too early to do this.",
@@ -101,7 +103,8 @@
   },
   "312": {
     "what": "Choose at least 1 unit.",
-    "todo": "Pick how many units you want."
+    "todo": "Pick how many units you want.",
+    "action": "Choose units"
   },
   "313": {
     "what": "You cannot join this pool.",
@@ -113,27 +116,33 @@
   },
   "315": {
     "what": "That is more units than one person can take from this offer.",
-    "todo": "Choose fewer units."
+    "todo": "Choose fewer units.",
+    "action": "Reduce units"
   },
   "316": {
     "what": "One person cannot take that big a share of the pool.",
-    "todo": "Choose fewer units so others can join."
+    "todo": "Choose fewer units so others can join.",
+    "action": "Reduce units"
   },
   "317": {
     "what": "Not enough units are left in this pool.",
-    "todo": "Choose fewer units."
+    "todo": "Choose fewer units.",
+    "action": "Reduce units"
   },
   "318": {
     "what": "This is above the amount your account level allows.",
-    "todo": "Verify your account to raise your limit, or choose fewer units."
+    "todo": "Verify your account to raise your limit, or choose fewer units.",
+    "action": "Reduce units"
   },
   "319": {
     "what": "This pool already has the most members it can take.",
-    "todo": "Look for another pool."
+    "todo": "Look for another pool.",
+    "action": "View other pools"
   },
   "320": {
     "what": "You already joined this pool.",
-    "todo": "Use Add more units instead."
+    "todo": "Use Add more units instead.",
+    "action": "Adjust units"
   },
   "321": {
     "what": "You have not joined this pool.",
@@ -209,7 +218,8 @@
   },
   "339": {
     "what": "There is nothing to refund right now.",
-    "todo": "Check your history."
+    "todo": "Check your history.",
+    "action": "View past group buys"
   },
   "340": {
     "what": "This action is not allowed from here.",
@@ -293,7 +303,8 @@
   },
   "501": {
     "what": "You do not have that much free bond.",
-    "todo": "Choose a smaller amount."
+    "todo": "Choose a smaller amount.",
+    "action": "Top up supplier bond"
   },
   "502": {
     "what": "This action is not allowed from here.",

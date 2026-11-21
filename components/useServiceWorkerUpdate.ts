@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { requestLeaveConfirmation } from '@/lib/usePaymentLeaveGuard';
 
 export interface ServiceWorkerUpdateState {
   updateReady: boolean;
@@ -85,8 +86,13 @@ export function useServiceWorkerUpdate(
 
   const applyUpdate = useCallback(() => {
     if (!registration?.waiting) return;
-    userAccepted.current = true;
-    registration.waiting.postMessage('SKIP_WAITING');
+    const waiting = registration.waiting;
+    const proceed = () => {
+      userAccepted.current = true;
+      waiting.postMessage('SKIP_WAITING');
+    };
+    if (requestLeaveConfirmation(proceed)) return;
+    proceed();
   }, [registration]);
 
   const dismissUpdate = useCallback(() => {

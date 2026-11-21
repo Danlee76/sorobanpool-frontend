@@ -200,7 +200,21 @@
       "shortDelivery": "Some things no reach",
       "shortDeliveryAnswer": "You fit report problem within 48 hours. Arbiter go check your evidence and decide. If e correct, you go collect refund for the units wey no reach.",
       "learnMoreDisputes": "Learn more about disputes"
-    }
+    },
+    "liveProgressLabel": "How the pool dey move",
+    "liveUnitsCount": "{count, plural, one {# unit} other {# units}}",
+    "liveMembersCount": "{count, plural, one {# member} other {# members}}",
+    "unitsToNextBreak": "{count, plural, one {# unit} other {# units}} remain for next price drop",
+    "topTierReached": "Best price don unlock — no other price drop remain",
+    "poolFull": "Pool don full — no other price drop remain",
+    "tierChangeAnnounce": "Price don drop: better price tier don unlock.",
+    "poolFillAnnounce": "This pool don full now.",
+    "streamStale": "E dey reconnect — we dey show the last count we get",
+    "exceedsAvailableUnits": "{available, plural, =0 {No unit remain for this pool.} one {Na only # unit remain for this pool.} other {Na only # units remain for this pool.}}",
+    "leaveGuardTitle": "You wan leave this payment?",
+    "leaveGuardBody": "Your payment never finish. If you leave now, your choices fit lost.",
+    "leaveGuardStay": "Stay for payment",
+    "leaveGuardLeave": "Leave anyway"
   },
   "organize": {
     "title": "Organize group buy",
@@ -261,6 +275,18 @@
     "walletPasskey": "Na your passkey dey protect your wallet. No secret to write down: for new phone, sign in with the same passkey."
   },
   "errors": {
+    "actions": {
+      "viewOtherPools": "Check other pools",
+      "reduceUnits": "Reduce the units",
+      "reduceUnitsTo": "Reduce units to {count}",
+      "topUpNaira": "Add money with Naira",
+      "viewHistory": "Check group buys wey don pass",
+      "topUpBond": "Add money to supplier bond"
+    },
+    "INSUFFICIENT_BALANCE": {
+      "what": "Your dollar balance no reach for this payment.",
+      "todo": "Add money with Naira bank transfer make you fit continue."
+    },
     "generic": {
       "what": "Something don go wrong.",
       "todo": "Abeg try again. If e continue, talk to support."
@@ -544,7 +570,29 @@
     "received": "Transfer don reach. Now approve your payment.",
     "unavailable": "Naira payment no dey available yet.",
     "simulate": "Test only: act like say bank transfer reach",
-    "estimate": "You go get about {usd} USD for today rate. The rate when your transfer reach na the final one."
+    "estimate": "You go get about {usd} USD for today rate. The rate when your transfer reach na the final one.",
+    "quoteHeading": "Naira quote",
+    "quoteAmount": "Deposit amount",
+    "quoteFee": "Anchor fee",
+    "quoteRate": "Anchor rate",
+    "quoteTotal": "Total wey you go send",
+    "quoteRateValue": "{rate} / USD",
+    "quoteFeeUnavailable": "Anchor fee no dey available",
+    "quoteRateUnavailable": "Anchor rate no dey available",
+    "quoteExpiryUnavailable": "Time wey quote go expire no dey available",
+    "quoteTotalUnavailable": "Total no dey available",
+    "quoteIncompleteReason": "You no fit confirm because some quote details no complete. Refresh to try again.",
+    "quoteTotalMismatch": "The anchor total no match the amount plus fee. Refresh make you get correct quote.",
+    "quoteExpiresIn": "Quote go expire for {seconds}s",
+    "quoteExpiring": "E dey expire soon",
+    "quoteExpiringAnnounce": "Quote dey expire soon, {seconds} seconds remain.",
+    "quoteExpired": "Quote don expire",
+    "quoteExpiredAnnounce": "Quote don expire. Refresh to get new quote.",
+    "quoteOutOfDate": "E don pass time",
+    "quoteRefresh": "Refresh quote",
+    "quoteRefreshing": "E dey refresh quote…",
+    "confirmDisabledExpired": "This quote don expire. Refresh the quote before you collect bank details.",
+    "confirmDisabledRefreshing": "Wait make fresh quote come…"
   },
   "states": {
     "Open": "People dey join",
