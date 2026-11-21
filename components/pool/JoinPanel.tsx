@@ -9,6 +9,7 @@ import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
 import { NairaDeposit } from './NairaDeposit';
+import { FailureExplainer } from './FailureExplainer';
 import type { PoolView } from '@/lib/types';
 
 /** Units -> "most you pay now" and "refund if more people join" -> approve on the device. */
@@ -131,6 +132,7 @@ export function JoinPanel({ pool }: { pool: PoolView }) {
         </fieldset>
       )}
       {method === 'NGN' && p && pool.ngnPerUsd && <NairaDeposit maxNow={p.maxNow} ngnPerUsd={pool.ngnPerUsd} onReady={() => setNairaPaid(true)} />}
+      <FailureExplainer />
       <button
         type="button"
         ref={payBtnRef}
