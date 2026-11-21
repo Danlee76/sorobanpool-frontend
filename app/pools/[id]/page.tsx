@@ -1,4 +1,5 @@
 'use client';
+import { PoolSummarySkeleton } from '@/components/ui/Skeleton';
 import { usePoolStream } from '@/lib/pool-stream';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
@@ -32,8 +33,15 @@ export default function PoolPage() {
   const [done, setDone] = useState<'pickup' | 'refund' | null>(null);
   const [error, setError] = useState<unknown>(null);
 
-  if (!ready || q.isLoading) return <p>{common('loading')}</p>;
   if (q.error) return <ErrorExplainer error={q.error} onRetry={() => void q.refetch()} />;
+  
+  if (!ready || q.isLoading) {
+    return (
+      <div className="space-y-5">
+        <PoolSummarySkeleton />
+      </div>
+    );
+  }
   const pool = q.data!;
   const mine = pool.myCommitment;
   const member = (mine?.units ?? 0) > 0;

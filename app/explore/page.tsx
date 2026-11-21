@@ -1,5 +1,6 @@
 'use client';
 import { UserText } from '@/components/ui/UserText';
+import { PoolCardSkeleton } from '@/components/ui/Skeleton';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -13,8 +14,28 @@ export default function Explore() {
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
   const q = useQuery({ queryKey: ['pools', 'open'], queryFn: () => api<PoolCard[]>('/pools?state=Open'), enabled: ready, refetchInterval: 15_000 });
-  if (!ready || q.isLoading) return <p>{common('loading')}</p>;
   if (q.error) return <ErrorExplainer error={q.error} onRetry={() => void q.refetch()} />;
+  
+  if (!ready || q.isLoading) {
+    return (
+      <div className="page-enter space-y-7">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-emerald-800">{t('eyebrow')}</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-.035em] md:text-4xl">{t('title')}</h1>
+            <p className="mt-2 max-w-lg text-sm leading-6 text-neutral-700">{t('lead')}</p>
+          </div>
+        </div>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading pools">
+          {[...Array(6)].map((_, i) => (
+            <li key={i}>
+              <PoolCardSkeleton />
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
   return (
     <div className="page-enter space-y-7">
       <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-emerald-800">{t('eyebrow')}</p><h1 className="mt-2 text-3xl font-semibold tracking-[-.035em] md:text-4xl">{t('title')}</h1><p className="mt-2 max-w-lg text-sm leading-6 text-neutral-700">{t('lead')}</p></div><span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-900">{t('openCount', { count: q.data?.length ?? 0 })}</span></div>
