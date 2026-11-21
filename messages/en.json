@@ -247,6 +247,10 @@
       "what": "You did not approve the payment.",
       "todo": "Nothing was charged. Try again when you are ready."
     },
+    "STORAGE_WARNING": {
+      "what": "Your wallet settings could not be saved permanently.",
+      "todo": "You can continue, but you will need to sign in again if you close this browser. This usually happens in private browsing mode."
+    },
     "OTP_WRONG": {
       "what": "That code is not right.",
       "todo": "Check the SMS and try again."

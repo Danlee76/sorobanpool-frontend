@@ -5,6 +5,7 @@ import { getLocale } from 'next-intl/server';
 import { Providers } from '@/components/Providers';
 import { Shell } from '@/components/Shell';
 import { APP_NAME, TAGLINE } from '@/lib/config';
+import { VitalsReporter } from '@/components/VitalsReporter';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -25,6 +26,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
             <Shell>{children}</Shell>
           </Providers>
         </NextIntlClientProvider>
+        <VitalsReporter />
       </body>
     </html>
   );

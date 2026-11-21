@@ -1,5 +1,6 @@
 'use client';
 import { UserText } from '@/components/ui/UserText';
+import { PoolListItemSkeleton } from '@/components/ui/Skeleton';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -16,8 +17,25 @@ export default function History() {
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
   const q = useQuery({ queryKey: ['pools', 'mine'], queryFn: () => api<PoolCard[]>('/pools?mine=true'), enabled: ready });
-  if (!ready || q.isLoading) return <p>{common('loading')}</p>;
   if (q.error) return <ErrorExplainer error={q.error} onRetry={() => void q.refetch()} />;
+  
+  if (!ready || q.isLoading) {
+    return (
+      <div className="page-enter space-y-5">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="mt-1 text-sm text-neutral-700">{t('lead')}</p>
+        </div>
+        <ul className="space-y-3" aria-label="Loading history">
+          {[...Array(4)].map((_, i) => (
+            <li key={i}>
+              <PoolListItemSkeleton />
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
   const done = (q.data ?? []).filter((p) => FINAL_STATES.includes(p.state)).sort((a, b) => b.fillDeadline.localeCompare(a.fillDeadline));
   return (
     <div className="page-enter space-y-5">
