@@ -71,7 +71,7 @@ export function ErrorExplainer({
     (action.type === 'route' && isAllowedErrorRoute(action.route)) || action.type === 'in-page';
 
   return (
-    <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-900">
+    <div role="alert" aria-live="assertive" aria-atomic="true" className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-900">
       <p className="font-semibold">{t(what)}</p>
       <p className="mt-1 text-sm">{t(todo)}</p>
       {(hasAction || onRetry) && (

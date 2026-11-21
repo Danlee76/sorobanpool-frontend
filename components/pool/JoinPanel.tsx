@@ -240,7 +240,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
       )}
       {p && (
         <details className="text-xs text-neutral-700">
-          <summary className="min-h-12 content-center font-medium cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800">{common('learnMore')}</summary>
+          <summary className="min-h-12 content-center font-medium">{common('learnMore')}</summary>
           <p>≈ {formatUsdc(p.maxNow)} USD (fixed price)</p>
         </details>
       )}
@@ -248,15 +248,8 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
         <fieldset className="space-y-1">
           <legend className="text-sm font-medium">{naira2('method')}</legend>
           {(['USDC', 'NGN'] as const).map((m) => (
-            <label key={m} className="flex min-h-12 items-center gap-3 rounded-lg border border-neutral-300 px-3 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-emerald-800">
-              <input
-                type="radio"
-                name="method"
-                checked={method === m}
-                onChange={() => setMethod(m)}
-                className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
-              />
-              {m === 'USDC' ? naira2('dollar') : naira2('naira')}
+            <label key={m} className="flex min-h-12 items-center gap-3 rounded-lg border border-neutral-300 px-3">
+              <input type="radio" name="method" checked={method === m} onChange={() => setMethod(m)} />{m === 'USDC' ? naira2('dollar') : naira2('naira')}
             </label>
           ))}
         </fieldset>
