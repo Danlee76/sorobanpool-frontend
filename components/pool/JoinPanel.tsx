@@ -13,6 +13,8 @@ import { runAction, type Prepared } from '@/lib/tx';
 import { usePaymentLeaveGuard } from '@/lib/usePaymentLeaveGuard';
 import { NairaDeposit } from './NairaDeposit';
 import { FailureExplainer } from './FailureExplainer';
+import { UnitsStepper } from './UnitsStepper';
+import { RefundEstimate } from '@/components/money/RefundEstimate';
 import type { PoolView } from '@/lib/types';
 
 /** Units -> "most you pay now" and "refund if more people join" -> approve on the device. */
@@ -210,6 +212,15 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
           </p>
         )}
       </div>
+      <UnitsStepper
+        id="units"
+        label={t('unitsLabel')}
+        value={clamped}
+        onChange={setUnits}
+        min={1}
+        max={Math.max(room, 1)}
+        helpText={mine > 0 ? t('youHave', { count: mine }) : undefined}
+      />
       {p && (
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between"><dt>{t('maxNow')}</dt><dd className="font-bold" data-testid="max-now">{naira(p.maxNow)}</dd></div>
@@ -218,6 +229,15 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
         </dl>
       )}
       <p className="text-xs text-neutral-700">{t('indicative')}</p>
+      {p && pool.ngnPerUsd && (
+        <RefundEstimate
+          totalUnits={pool.totalUnits}
+          units={clamped}
+          tiers={tiers}
+          ngnPerUsd={pool.ngnPerUsd}
+          toNaira={(s) => stroopsToNairaCeil(s, pool.ngnPerUsd!)}
+        />
+      )}
       {p && (
         <details className="text-xs text-neutral-700">
           <summary className="min-h-12 content-center font-medium cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800">{common('learnMore')}</summary>
