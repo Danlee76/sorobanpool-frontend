@@ -1,5 +1,6 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
@@ -7,6 +8,7 @@ import { useConfirm } from '@/components/ConfirmDialog';
 import { api } from '@/lib/api';
 import type { ErrorAction } from '@/lib/errors/map';
 import { formatNaira, formatUsdc, stroopsToNairaCeil } from '@/lib/format';
+import { canPrefetch } from '@/lib/network';
 import { computeNextBreak, usePoolLiveProgress, type StreamFactory } from '@/lib/pool-stream';
 import { payPreview } from '@/lib/pricing';
 import { runAction, type Prepared } from '@/lib/tx';
@@ -45,7 +47,17 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   const { dialog: leaveGuardDialog } = usePaymentLeaveGuard(busy);
   const doneRef = useRef<HTMLParagraphElement>(null);
   const payBtnRef = useRef<HTMLButtonElement>(null);
+  const prefetchedRef = useRef(false);
+  const router = useRouter();
   const naira2 = useTranslations('naira');
+
+  const handleTouchIntent = () => {
+    if (prefetchedRef.current) return;
+    if (canPrefetch()) {
+      prefetchedRef.current = true;
+      router.prefetch('/onboarding');
+    }
+  };
 
   const tiers = useMemo(
     () => pool.tiersUsdc.map((x) => ({ minUnits: x.minUnits, unitPrice: BigInt(x.unitPrice) })),
@@ -59,6 +71,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   // Never overwrite what the user entered on live updates; validate if live room shrinks below chosen units.
   const unitsInvalid = units > room || room === 0;
   const effectiveUnits = Math.max(1, units);
+  const clamped = Math.max(1, Math.min(units, Math.max(room, 1)));
   const p = tiers.length ? payPreview(tiers, liveTotalUnits, effectiveUnits) : null;
   const naira = (s: bigint) => (pool.ngnPerUsd ? formatNaira(stroopsToNairaCeil(s, pool.ngnPerUsd)) : '—');
 
@@ -113,7 +126,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   }
 
   return (
-    <section aria-labelledby="join-h" className="space-y-4 rounded-xl border border-neutral-300 bg-white p-4">
+    <section aria-labelledby="join-h" onTouchStart={handleTouchIntent} className="space-y-4 rounded-xl border border-neutral-300 bg-white p-4">
       <h2 id="join-h" className="text-lg font-bold">{mine > 0 ? t('addMore') : t('join')}</h2>
 
       {/* Live pool progress block with reserved min-height to prevent layout shift */}
@@ -259,6 +272,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
       <button
         type="button"
         ref={payBtnRef}
+        onTouchStart={handleTouchIntent}
         disabled={busy || done || unitsInvalid || (method === 'NGN' && !nairaPaid)}
         onClick={() => void pay()}
         className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60 hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
