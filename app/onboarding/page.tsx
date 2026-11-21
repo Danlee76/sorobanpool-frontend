@@ -62,9 +62,19 @@ function Onboarding() {
     const bound = r.user.walletAddress;
     // A passkey wallet needs nothing from this device but the passkey itself, so it works on any phone at once.
     if (bound?.startsWith('C')) {
-      await adoptPasskeyWallet(bound);
-      await reload();
-      return void router.replace(next);
+      try {
+        await adoptPasskeyWallet(bound);
+        await reload();
+        return void router.replace(next);
+      } catch (e) {
+        if (e instanceof Error && e.message === 'STORAGE_UNAVAILABLE') {
+          // Storage is completely unavailable: show a warning but allow continuation with in-memory wallet
+          setError(new Error('STORAGE_WARNING'));
+          await reload();
+          return void router.replace(next);
+        }
+        throw e;
+      }
     }
     const local = await loadWallet();
     // Returning user whose device wallet is already on this device: nothing more to set up.

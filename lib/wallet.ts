@@ -40,7 +40,9 @@ let memory: Stored | null = null; // fallback when IndexedDB is unavailable (pri
 async function read(): Promise<Stored | null> {
   try {
     return (await get<Stored>(KEY)) ?? memory;
-  } catch {
+  } catch (e) {
+    // IndexedDB unavailable (private mode, quota exceeded, or blocked): use memory fallback
+    console.warn('IndexedDB read failed, using memory fallback:', e);
     return memory;
   }
 }
@@ -49,8 +51,9 @@ async function write(s: Stored): Promise<void> {
   memory = s;
   try {
     await set(KEY, s);
-  } catch {
-    /* kept in memory only */
+  } catch (e) {
+    // IndexedDB write failed: kept in memory only for this session
+    console.warn('IndexedDB write failed, wallet stored in memory only:', e);
   }
 }
 
@@ -62,10 +65,24 @@ export async function loadWallet(): Promise<WalletInfo | null> {
 /**
  * Remembers a passkey wallet on this device. Safe to call for any passkey wallet the account owns: signing needs
  * the person's passkey, not anything stored here, so a synced passkey works on a new phone straight away.
+ * Throws 'STORAGE_UNAVAILABLE' if the wallet cannot be persisted (private mode or quota exceeded).
  */
 export async function adoptPasskeyWallet(address: string): Promise<WalletInfo> {
   if (!/^C[A-Z2-7]{55}$/.test(address)) throw new Error('NOT_A_PASSKEY_WALLET');
-  await write({ kind: 'passkey', address });
+  const stored: PasskeyStored = { kind: 'passkey', address };
+  try {
+    await set(KEY, stored);
+    memory = stored;
+  } catch (e) {
+    // Cannot persist: try memory-only fallback
+    memory = stored;
+    // If we can't even keep it in memory, something is very wrong
+    if (memory !== stored) {
+      throw new Error('STORAGE_UNAVAILABLE');
+    }
+    // Successfully stored in memory, but warn that it won't persist
+    console.warn('Passkey wallet stored in memory only (will not persist):', e);
+  }
   return { publicKey: address, kind: 'passkey' };
 }
 
@@ -90,8 +107,9 @@ export async function clearWallet(): Promise<void> {
   memory = null;
   try {
     await del(KEY);
-  } catch {
-    /* nothing stored */
+  } catch (e) {
+    // Storage unavailable, but we've cleared the in-memory copy
+    console.warn('IndexedDB delete failed:', e);
   }
 }
 

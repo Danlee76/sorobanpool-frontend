@@ -7,6 +7,7 @@ import { UnsafeTransaction } from '@/lib/verify';
 
 /** Turns any failure into "what happened" and "what to do now" in plain language. Never shows codes or stack traces. */
 export function explain(e: unknown): { what: string; todo: string } {
+  if (e instanceof Error && e.message === 'STORAGE_WARNING') return { what: 'errors.STORAGE_WARNING.what', todo: 'errors.STORAGE_WARNING.todo' };
   if (e instanceof UnsafeTransaction) return { what: 'errors.unsafe.what', todo: 'errors.unsafe.todo' };
   if (e instanceof UserDeclined) return { what: 'errors.declined.what', todo: 'errors.declined.todo' };
   if (e instanceof ApiError) {

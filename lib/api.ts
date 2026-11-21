@@ -17,9 +17,17 @@ export class ApiError extends Error {
 let accessToken: string | null = null;
 let refreshing: Promise<boolean> | null = null;
 
+/**
+ * Safe localStorage access that handles private mode, quota errors, and blocked storage.
+ * Returns null if storage is unavailable, allowing the app to continue with in-memory fallback.
+ */
 const storage = (): Storage | null => {
   try {
-    return typeof localStorage === 'undefined' ? null : localStorage;
+    if (typeof localStorage === 'undefined') return null;
+    // Test if we can actually write (some browsers allow access but throw on write in private mode)
+    localStorage.setItem('sp.test', '1');
+    localStorage.removeItem('sp.test');
+    return localStorage;
   } catch {
     return null; // private mode or blocked storage: stay signed in for this tab only
   }
@@ -28,14 +36,27 @@ const storage = (): Storage | null => {
 export const session = {
   set(tokens: { accessToken: string; refreshToken: string }): void {
     accessToken = tokens.accessToken;
-    storage()?.setItem(REFRESH_KEY, tokens.refreshToken);
+    try {
+      storage()?.setItem(REFRESH_KEY, tokens.refreshToken);
+    } catch (e) {
+      // QuotaExceededError or other storage failure: keep access token in memory for this session
+      console.warn('Failed to store refresh token:', e);
+    }
   },
   clear(): void {
     accessToken = null;
-    storage()?.removeItem(REFRESH_KEY);
+    try {
+      storage()?.removeItem(REFRESH_KEY);
+    } catch {
+      // Storage unavailable, but we've cleared the in-memory token
+    }
   },
   get hasRefresh(): boolean {
-    return !!storage()?.getItem(REFRESH_KEY);
+    try {
+      return !!storage()?.getItem(REFRESH_KEY);
+    } catch {
+      return false;
+    }
   },
   get access(): string | null {
     return accessToken;
@@ -51,7 +72,12 @@ async function raw(path: string, init: RequestInit & { auth?: boolean }): Promis
 
 /** Exchanges the stored refresh token (rotating). One refresh at a time; concurrent callers share it. */
 async function refresh(): Promise<boolean> {
-  const token = storage()?.getItem(REFRESH_KEY);
+  let token: string | null = null;
+  try {
+    token = storage()?.getItem(REFRESH_KEY) ?? null;
+  } catch {
+    return false; // Storage error, cannot retrieve refresh token
+  }
   if (!token) return false;
   refreshing ??= (async () => {
     try {
