@@ -168,6 +168,8 @@
     "rights": "If goods get problem, you fit complain within 48 hours of pickup.",
     "share": "Share for WhatsApp",
     "shareText": "Join our group buy: {product}. Price now na {price} per unit. {link}",
+    "copyLink": "Copy link",
+    "linkCopied": "Link don copy",
     "pickup": "I don collect",
     "pickupDone": "Thank you! You don collect.",
     "pickupReady": "Your goods don ready: come collect {count} units.",
@@ -337,6 +339,17 @@
     "IMAGE_INVALID": {
       "what": "We no fit read that photo.",
       "todo": "Take the photo again or choose another one."
+    },
+    "notFound": {
+      "title": "Page no dey",
+      "message": "The page wey you dey find no exist.",
+      "home": "Go home"
+    },
+    "pageError": {
+      "title": "Something don spoil",
+      "message": "One error don happen wey we no expect. Abeg try again.",
+      "retry": "Try again",
+      "home": "Go home"
     }
   },
   "supplier": {

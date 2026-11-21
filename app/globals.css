@@ -55,11 +55,24 @@ body {
     transform: translateX(0);
   }
 }
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .page-enter {
   animation: rise-in 0.48s cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 .animate-slide-in {
   animation: slide-in 0.42s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+.animate-slide-up {
+  animation: slide-up 0.42s cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 .stagger-in > * {
   animation: rise-in 0.42s cubic-bezier(0.2, 0.75, 0.25, 1) both;
@@ -111,8 +124,18 @@ button:active {
  * the stagger items invisible, so state is shown immediately instead. See docs/accessibility.md.
  */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  a:active, button:active, .pool-card:hover { transform: none; }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  a:active,
+  button:active,
+  .pool-card:hover {
+    transform: none;
+  }
 }
 
 /* Big, obvious focus for keyboard and switch users. */
@@ -122,11 +145,20 @@ button:active {
 }
 
 /* The browser default is currentColor at 50%, about 3.3:1 on white. This is 5.6:1 or better on white and on the page background. */
-::placeholder { color: #5b6660; opacity: 1; }
-@media (prefers-color-scheme: dark) { ::placeholder { color: #9ca3af; } }
+::placeholder {
+  color: #5b6660;
+  opacity: 1;
+}
+@media (prefers-color-scheme: dark) {
+  ::placeholder {
+    color: #9ca3af;
+  }
+}
 
 /* The green focus ring is only 2.3:1 on the dark green hero, so use a light ring on dark surfaces. */
-.surface-dark :focus-visible { outline-color: #fde68a; }
+.surface-dark :focus-visible {
+  outline-color: #fde68a;
+}
 
 /*
  * Support for large text and zoom (200% zoom or text enlargement).
@@ -138,13 +170,13 @@ button:active {
     overflow-x: auto;
     overflow-y: auto;
   }
-  
+
   /* Prevent overflow on main content areas */
   main {
     overflow-x: hidden;
     word-break: break-word;
   }
-  
+
   /* Ensure fixed bottom bars don't obscure content and allow scrolling beneath them */
   body {
     padding-bottom: 0;
@@ -157,8 +189,12 @@ button:active {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
-  
-  button, a[role="button"], input, select, textarea {
+
+  button,
+  a[role="button"],
+  input,
+  select,
+  textarea {
     font-size: 16px; /* Prevent zoom on iOS input focus */
   }
 }

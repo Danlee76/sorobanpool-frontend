@@ -167,6 +167,8 @@
     "rights": "If something is wrong with the goods you can report a problem within 48 hours of delivery.",
     "share": "Share on WhatsApp",
     "shareText": "Join our group buy: {product}. Price now {price} per unit. {link}",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied to clipboard",
     "pickup": "I've collected",
     "pickupDone": "Thanks! Collected.",
     "pickupReady": "Your goods are ready: collect {count} units.",
@@ -340,6 +342,17 @@
     "IMAGE_INVALID": {
       "what": "That photo could not be read.",
       "todo": "Take the photo again or choose a different one."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "message": "The page you are looking for does not exist.",
+      "home": "Go home"
+    },
+    "pageError": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "home": "Go home"
     }
   },
   "supplier": {
