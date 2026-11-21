@@ -60,20 +60,21 @@ export default function AdminDisputes() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
+              <caption className="sr-only">SLA breaches</caption>
               <thead>
                 <tr className="border-b border-neutral-300">
-                  <th className="py-2 pr-3">Dispute</th>
-                  <th className="py-2 pr-3">Pool</th>
-                  <th className="py-2 pr-3">SLA due</th>
-                  <th className="py-2">Arbiter</th>
+                  <th scope="col" className="py-2 pr-3">Dispute</th>
+                  <th scope="col" className="py-2 pr-3">Pool</th>
+                  <th scope="col" className="py-2 pr-3">SLA due</th>
+                  <th scope="col" className="py-2">Arbiter</th>
                 </tr>
               </thead>
               <tbody>
                 {overview.breached.map((d) => (
                   <tr key={d.id} className="border-b border-neutral-200">
-                    <td className="py-2 pr-3">
+                    <th scope="row" className="py-2 pr-3 font-normal">
                       <a href={`#dispute-${d.id}`} className="font-semibold underline">#{d.id}</a>
-                    </td>
+                    </th>
                     <td className="py-2 pr-3">{d.poolId}</td>
                     <td className="py-2 pr-3">{new Date(d.slaDueAt).toLocaleString()}</td>
                     <td className="py-2">{d.arbiterId ?? 'Unassigned'}</td>

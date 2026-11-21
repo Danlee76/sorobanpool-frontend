@@ -19,6 +19,14 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3000
           NEXT_PUBLIC_DEPLOYMENTS: '{"usdc":"CAAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQC526","contracts":{}}'
+          ANALYZE: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+      - name: Upload bundle analysis report
+        if: github.event_name == 'pull_request' && !cancelled()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: .next/analyze
+          retention-days: 14
       - name: JS size budget on public pages (Lighthouse, mobile emulation)
         run: |
           pnpm exec next start -p 3010 &

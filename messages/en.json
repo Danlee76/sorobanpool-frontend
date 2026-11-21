@@ -25,6 +25,10 @@
     "offline": "You are offline. Showing what we last saw.",
     "learnMore": "How does this work?",
     "signInFirst": "Please sign in first.",
+    "updateAvailable": "A new version of SorobanPool is ready.",
+    "refreshToUpdate": "Refresh to update",
+    "updateBannerLabel": "App update notification",
+    "dismiss": "Dismiss",
     "error": "Something went wrong. Please try again."
   },
   "trust": {

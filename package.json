@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/build-sw.mjs && next build",
     "start": "next start",
+    "analyze": "ANALYZE=true pnpm build",
     "lighthouse": "node scripts/lighthouse-budget.mjs",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@next/bundle-analyzer": "16.3.8",
     "@playwright/test": "1.64.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "7.0.1",

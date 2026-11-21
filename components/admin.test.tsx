@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, screen, within } from '@testing-library/react';
+import axe from 'axe-core';
 import { describe, expect, it, vi } from 'vitest';
 import { renderIntl } from '@/tests/render';
 import { ApiError } from '@/lib/api';
@@ -11,6 +12,7 @@ vi.mock('next/link', () => ({ default: ({ href, children }: { href: string; chil
 vi.mock('next/navigation', () => ({ useParams: () => ({ id: 'u1' }) }));
 
 import Risk from '@/app/admin/page';
+import Users from '@/app/admin/users/page';
 import Suppliers from '@/app/admin/suppliers/page';
 import SupplierReview from '@/app/admin/suppliers/[id]/page';
 import Audit from '@/app/admin/audit/page';
@@ -179,7 +181,7 @@ describe('admin offer moderation', () => {
     const sent: unknown[] = [];
     handler = async (p, o) => { if (p.includes('/takedown')) { sent.push([p, o?.body]); return {}; } return offers; };
     wrap(<AdminOffers />);
-    const row = (await screen.findByText('Rice 50kg')).closest('li') as HTMLElement;
+    const row = (await screen.findByText('Rice 50kg')).closest('tr, tbody, li') as HTMLElement;
     fireEvent.click(within(row).getByRole('button', { name: 'Take down' }));
     fireEvent.click(screen.getByRole('button', { name: 'Confirm takedown' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Choose a reason code before taking this offer down.');
@@ -199,7 +201,7 @@ describe('admin offer moderation', () => {
       return rows;
     };
     wrap(<AdminOffers />);
-    const row = (await screen.findByText('Rice 50kg')).closest('li') as HTMLElement;
+    const row = (await screen.findByText('Rice 50kg')).closest('tr, tbody, li') as HTMLElement;
     fireEvent.click(within(row).getByRole('button', { name: 'Take down' }));
     fireEvent.change(screen.getByLabelText(/Reason code/), { target: { value: 'MISLEADING_PRICE' } });
     fireEvent.click(screen.getByRole('button', { name: 'Confirm takedown' }));
@@ -242,5 +244,138 @@ describe('admin dispute oversight', () => {
     await screen.findByText('SLA breaches (1)');
     fireEvent.change(screen.getByLabelText('Time window'), { target: { value: '90' } });
     expect(await screen.findByText('SLA breaches (2)')).toBeInTheDocument();
+  });
+});
+
+async function violations(el: HTMLElement) {
+  const r = await axe.run(el, { rules: { 'color-contrast': { enabled: false } } });
+  return r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html).join(' | ')}`);
+}
+
+describe('admin lists semantic table markup and accessibility', () => {
+  const sampleUsers = [
+    { id: 'u1', phone: '+2348011111111', displayName: 'Alhaji Musa', walletAddress: 'GUSER1', roles: [{ role: 'TRADER', level: 1 }] },
+    { id: 'u2', phone: '+2348022222222', displayName: null, walletAddress: null, roles: [{ role: 'ORGANIZER', level: 2 }] },
+  ];
+  const sampleSuppliers = [
+    { userId: 's1', businessName: 'Tunde Foods Ltd', cacNumber: 'RC1234567', address: '12 Market Rd', state: 'FCT', lga: 'Bwari', categories: ['rice'] },
+  ];
+  const sampleOffers = [
+    { id: 'o1', title: 'Rice 50kg', category: 'food', status: 'ACTIVE', flags: [] },
+  ];
+  const sampleAudit = [
+    { id: 'e1', actorId: 'GADMIN1111', action: 'SUPPLIER_DECISION', target: 'u1', at: '2026-10-10T10:00:00Z', data: { note: 'verified' } },
+  ];
+
+  it('exposes correct roles: table, columnheader, rowheader, cell and scope attributes in users list', async () => {
+    handler = async () => sampleUsers;
+    const { container } = wrap(<Users />);
+    const table = await screen.findByRole('table');
+    expect(table).toBeInTheDocument();
+
+    // Caption present and named
+    const caption = container.querySelector('caption');
+    expect(caption).toBeInTheDocument();
+    expect(caption).toHaveTextContent('Users list');
+
+    // Column headers with scope="col"
+    const colHeaders = screen.getAllByRole('columnheader');
+    expect(colHeaders.length).toBeGreaterThanOrEqual(4);
+    for (const ch of colHeaders) {
+      expect(ch).toHaveAttribute('scope', 'col');
+    }
+
+    // Row headers with scope="row"
+    const rowHeaders = screen.getAllByRole('rowheader');
+    expect(rowHeaders).toHaveLength(2);
+    expect(rowHeaders[0]).toHaveAttribute('scope', 'row');
+    expect(rowHeaders[0]).toHaveTextContent('Alhaji Musa');
+    expect(rowHeaders[1]).toHaveAttribute('scope', 'row');
+    expect(rowHeaders[1]).toHaveTextContent('+2348022222222');
+
+    // Cells
+    const cells = screen.getAllByRole('cell');
+    expect(cells.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('handles aria-sort initial state and transitions (none -> ascending -> descending, resetting on column switch)', async () => {
+    handler = async () => sampleUsers;
+    wrap(<Users />);
+    await screen.findByRole('table');
+
+    const colHeaders = screen.getAllByRole('columnheader');
+    const userTh = colHeaders[0];
+    const phoneTh = colHeaders[1];
+    const rolesTh = colHeaders[2];
+
+    // Initial state: unsorted sortable headers have aria-sort="none", non-sortable headers have no aria-sort
+    expect(userTh).toHaveAttribute('aria-sort', 'none');
+    expect(phoneTh).toHaveAttribute('aria-sort', 'none');
+    expect(rolesTh).not.toHaveAttribute('aria-sort');
+
+    const userSortBtn = within(userTh).getByRole('button', { name: /User/i });
+    const phoneSortBtn = within(phoneTh).getByRole('button', { name: /Phone/i });
+
+    // Transition 1: none -> ascending
+    fireEvent.click(userSortBtn);
+    expect(userTh).toHaveAttribute('aria-sort', 'ascending');
+    expect(phoneTh).toHaveAttribute('aria-sort', 'none');
+
+    // Transition 2: ascending -> descending
+    fireEvent.click(userSortBtn);
+    expect(userTh).toHaveAttribute('aria-sort', 'descending');
+    expect(phoneTh).toHaveAttribute('aria-sort', 'none');
+
+    // Transition 3: switching column resets previous column to none and sets new to ascending
+    fireEvent.click(phoneSortBtn);
+    expect(userTh).toHaveAttribute('aria-sort', 'none');
+    expect(phoneTh).toHaveAttribute('aria-sort', 'ascending');
+  });
+
+  it('supports keyboard activation via Enter and Space on sortable headers', async () => {
+    handler = async () => sampleUsers;
+    wrap(<Users />);
+    await screen.findByRole('table');
+
+    const userTh = screen.getAllByRole('columnheader')[0];
+    const userSortBtn = within(userTh).getByRole('button', { name: /User/i });
+
+    expect(userTh).toHaveAttribute('aria-sort', 'none');
+
+    // Press Enter
+    fireEvent.keyDown(userSortBtn, { key: 'Enter', code: 'Enter' });
+    fireEvent.click(userSortBtn);
+    expect(userTh).toHaveAttribute('aria-sort', 'ascending');
+
+    // Press Space
+    fireEvent.keyDown(userSortBtn, { key: ' ', code: 'Space' });
+    fireEvent.click(userSortBtn);
+    expect(userTh).toHaveAttribute('aria-sort', 'descending');
+  });
+
+  it('passes axe accessibility checks on each admin list', async () => {
+    // 1. Users list
+    handler = async () => sampleUsers;
+    const usersView = wrap(<Users />);
+    await screen.findByRole('table');
+    expect(await violations(usersView.container)).toEqual([]);
+
+    // 2. Suppliers list
+    handler = async () => sampleSuppliers;
+    const supView = wrap(<Suppliers />);
+    await screen.findByRole('table');
+    expect(await violations(supView.container)).toEqual([]);
+
+    // 3. Offers list
+    handler = async () => sampleOffers;
+    const offersView = wrap(<AdminOffers />);
+    await screen.findByRole('table');
+    expect(await violations(offersView.container)).toEqual([]);
+
+    // 4. Audit list
+    handler = async () => sampleAudit;
+    const auditView = wrap(<Audit />);
+    await screen.findByRole('table');
+    expect(await violations(auditView.container)).toEqual([]);
   });
 });

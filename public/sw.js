@@ -1,28 +1,39 @@
 /* SorobanPool service worker: offline shell and last-known pool states.
  * Never caches anything that carries credentials or moves money: auth, wallets, tx, /me, uploads, evidence. */
-const VERSION = 'v1';
-const STATIC = `static-${VERSION}`;
-const PAGES = `pages-${VERSION}`;
-const API = `api-${VERSION}`;
-const KEEP = [STATIC, PAGES, API];
+const BUILD_ID = 'cca1e87';
+const PREFIX = 'sorobanpool';
+const STATIC = `${PREFIX}-static-${BUILD_ID}`;
+const PAGES = `${PREFIX}-pages-${BUILD_ID}`;
+const API = `${PREFIX}-api-${BUILD_ID}`;
+const CURRENT_CACHES = [STATIC, PAGES, API];
 // Read-only data that is safe to show stale. Pool views include the signed-in user's own commitment, so this cache
 // is wiped on sign-out (see CLEAR_API below).
 const CACHEABLE_API = /^\/v1\/(pools|p|offers)(\/|$|\?)/;
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(PAGES).then((c) => c.add('/offline')));
-  self.skipWaiting();
+  // Do not skip waiting unconditionally; wait for user confirmation.
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (!KEEP.includes(k)) await caches.delete(k);
+    const keys = await caches.keys();
+    for (const k of keys) {
+      if (k.startsWith(`${PREFIX}-`) && !CURRENT_CACHES.includes(k)) {
+        await caches.delete(k);
+      }
+    }
     await self.clients.claim();
   })());
 });
 
 self.addEventListener('message', (e) => {
-  if (e.data === 'CLEAR_API') e.waitUntil(caches.delete(API));
+  if (e.data === 'SKIP_WAITING' || (e.data && e.data.type === 'SKIP_WAITING')) {
+    self.skipWaiting();
+  }
+  if (e.data === 'CLEAR_API') {
+    e.waitUntil(caches.delete(API));
+  }
 });
 
 async function networkFirst(req, cacheName, fallbackUrl) {
