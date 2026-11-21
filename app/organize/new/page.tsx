@@ -11,7 +11,7 @@ import { useRequireAuth } from '@/lib/auth';
 import { runAction, type Prepared } from '@/lib/tx';
 import type { OfferView } from '@/lib/types';
 
-const input = 'h-12 w-full rounded-lg border border-neutral-400 px-3 text-lg';
+const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 const primary = 'min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60';
 const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
@@ -124,7 +124,7 @@ export default function NewPool() {
         </dl>
       )}
       <div className="flex gap-3">
-        {step > 1 && <button type="button" onClick={() => setStep(step - 1)} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold">{common('back')}</button>}
+        {step > 1 && <button type="button" onClick={() => setStep(step - 1)} className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-semibold">{common('back')}</button>}
         {step < 5 ? <button type="button" disabled={!canNext} onClick={() => setStep(step + 1)} className={`${primary} flex-1`}>{common('next')}</button> : <button type="button" disabled={busy || !validHub || !validFee || !offerId} onClick={() => void create()} className={`${primary} flex-1`}>{busy ? t('creating') : t('create')}</button>}
       </div>
       {error !== null && <ErrorExplainer error={error} />}

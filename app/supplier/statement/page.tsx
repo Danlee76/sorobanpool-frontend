@@ -54,7 +54,7 @@ export default function StatementPage() {
                   <tr key={l.poolId} data-testid="statement-line" className="border-b border-neutral-100 last:border-0">
                     <td className="px-4 py-3">
                       <p className="font-medium">{l.product}</p>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-600">
                         {new Date(l.settledAt).toLocaleDateString()} &middot; {l.unitsDelivered} {t('units')}
                       </p>
                     </td>

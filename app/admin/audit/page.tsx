@@ -209,7 +209,7 @@ export default function Audit() {
         <button
           type="button"
           onClick={() => setVisible((v) => v + PAGE_SIZE)}
-          className="min-h-12 w-full rounded-xl border border-neutral-400 font-semibold"
+          className="min-h-12 w-full rounded-xl border border-neutral-500 font-semibold"
         >
           Show more ({filtered.length - visible} left)
         </button>

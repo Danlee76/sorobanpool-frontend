@@ -109,7 +109,7 @@ export default function SupplierReview() {
         {reasonError && <p id="reason-error" role="alert" className="text-sm font-semibold text-red-800">{reasonError}</p>}
         <div className="flex gap-2">
           <button type="button" disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1 rounded-xl bg-emerald-800 font-bold text-white disabled:opacity-60">{t('approve')}</button>
-          <button type="button" disabled={busy} onClick={() => void decide(false)} className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-bold disabled:opacity-60">{t('reject')}</button>
+          <button type="button" disabled={busy} onClick={() => void decide(false)} className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-bold disabled:opacity-60">{t('reject')}</button>
         </div>
       </form>
 

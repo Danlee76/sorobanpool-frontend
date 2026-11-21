@@ -44,7 +44,7 @@ function EvidenceThumb({ item }: { item: EvidenceItem }) {
     return (
       <div className="space-y-1">
         {failed && <p role="alert" className="text-sm text-red-800">{t('linkFailed')}</p>}
-        <button type="button" disabled={busy} onClick={() => void load()} className="min-h-12 rounded-lg border border-neutral-400 px-3 disabled:opacity-60">
+        <button type="button" disabled={busy} onClick={() => void load()} className="min-h-12 rounded-lg border border-neutral-500 px-3 disabled:opacity-60">
           {busy ? common('loading') : failed ? t('tryAgain') : t('view')}
         </button>
       </div>

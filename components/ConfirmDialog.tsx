@@ -92,7 +92,7 @@ function ConfirmDialog({ onAnswer }: { onAnswer: (v: boolean) => void }) {
             type="button"
             ref={cancelBtnRef}
             onClick={() => onAnswer(false)}
-            className="min-h-12 flex-1 rounded-xl border border-neutral-400 font-semibold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+            className="min-h-12 flex-1 rounded-xl border border-neutral-500 font-semibold hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
           >
             {t('common.cancel')}
           </button>

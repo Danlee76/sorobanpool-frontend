@@ -15,12 +15,21 @@ export function TierLadder({ tiers, totalUnits, ngnPerUsd }: { tiers: Tier[]; to
         {tiers.map((x, i) => {
           const reached = current !== null && i <= current;
           const here = current === i || (current === null && i === 0);
+          // Status is always spelled out in text (plus a shape), never colour alone. DOM order is
+          // tier, price, status, which is also the order a screen reader reads them in.
+          const status = here ? 'current' : reached ? 'reached' : 'upcoming';
+          const label = status === 'current' ? t('tierCurrent') : status === 'reached' ? t('tierReached') : t('tierUpcoming');
+          const row = status === 'current' ? 'bg-emerald-50 ring-2 ring-emerald-700 border border-transparent'
+            : status === 'reached' ? 'bg-emerald-50 border border-emerald-800'
+              : 'bg-neutral-50 border border-dashed border-neutral-500';
           return (
-            <li key={x.minUnits} data-testid="tier" data-reached={reached} className={`flex min-h-12 items-center justify-between rounded-lg px-3 py-2 ${here ? 'bg-emerald-50 ring-2 ring-emerald-700' : 'bg-neutral-50'}`}>
+            <li key={x.minUnits} data-testid="tier" data-reached={reached} data-status={status} aria-current={here ? "true" : undefined} className={`flex min-h-12 items-center justify-between gap-2 rounded-lg px-3 py-2 ${row}`}>
               <span className="text-sm">{x.minUnits}+ units</span>
-              <span className="flex items-center gap-2">
-                {here && <span className="rounded bg-emerald-800 px-2 py-0.5 text-xs font-semibold text-white">{t('tierNow')}</span>}
+              <span className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1">
                 <span className="font-semibold">{price(x.unitPrice)}</span>
+                <span className={`rounded px-2 py-0.5 text-xs font-semibold ${status === 'current' ? 'bg-emerald-800 text-white' : status === 'reached' ? 'text-emerald-900' : 'text-neutral-700'}`}>
+                  <span aria-hidden="true">{status === 'reached' ? '✓ ' : status === 'upcoming' ? '○ ' : '● '}</span>{label}
+                </span>
               </span>
             </li>
           );

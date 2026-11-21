@@ -97,16 +97,16 @@ export default function ArbiterWorkspace() {
           );
         })}
       </fieldset>
-      {kind === 'RefundMember' && <><label htmlFor="u" className="block font-medium">{t('unitsToRefund')}</label><input id="u" inputMode="numeric" value={units} onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 0)} className="h-12 w-24 rounded-lg border border-neutral-400 px-3 text-center text-lg" /></>}
+      {kind === 'RefundMember' && <><label htmlFor="u" className="block font-medium">{t('unitsToRefund')}</label><input id="u" inputMode="numeric" value={units} onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 0)} className="h-12 w-24 rounded-lg border border-neutral-500 px-3 text-center text-lg" /></>}
       {kind === 'Split' && <><label htmlFor="p" className="block font-medium">{t('memberShare')}</label><input id="p" type="range" min={0} max={100} value={pct} onChange={(e) => setPct(Number(e.target.value))} className="w-full" /><p>{pct}%</p></>}
       <label htmlFor="why" className="block font-medium">{t('reasoning')}</label>
-      <textarea id="why" rows={4} value={reasoning} onChange={(e) => setReasoning(e.target.value)} aria-describedby="why-count why-hash" className="w-full rounded-lg border border-neutral-400 p-3 text-lg" />
+      <textarea id="why" rows={4} value={reasoning} onChange={(e) => setReasoning(e.target.value)} aria-describedby="why-count why-hash" className="w-full rounded-lg border border-neutral-500 p-3 text-lg" />
       <p id="why-count" className="text-sm text-neutral-700">{t('chars', { count: reasoning.length })}</p>
       <div id="why-hash" className="space-y-1">
         <p className="text-sm font-medium">{t('hashLabel')}</p>
         <div className="flex flex-wrap items-center gap-2">
           <code data-testid="reasoning-hash" className="break-all rounded bg-neutral-100 p-2 text-xs">{hash || '-'}</code>
-          <button type="button" disabled={!hash} onClick={() => void copyHash()} className="min-h-12 rounded-lg border border-neutral-400 px-3 disabled:opacity-60">{copied ? t('copied') : t('copyHash')}</button>
+          <button type="button" disabled={!hash} onClick={() => void copyHash()} className="min-h-12 rounded-lg border border-neutral-500 px-3 disabled:opacity-60">{copied ? t('copied') : t('copyHash')}</button>
         </div>
       </div>
       <p role="status" className="rounded-xl bg-neutral-100 p-3 text-sm" data-testid="payout-preview">{t('preview', { buyer: `${formatUsdc(preview.buyer)} USD`, supplier: `${formatUsdc(preview.supplier)} USD` })}</p>

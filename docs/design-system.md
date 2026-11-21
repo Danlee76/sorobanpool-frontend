@@ -26,7 +26,7 @@ Components use these Tailwind classes:
 | Primary action | `bg-emerald-800` with `text-white`; hover `bg-emerald-900` |
 | Selected or positive state | `bg-emerald-50` with `border-emerald-800` |
 | Secondary text | `text-neutral-700` |
-| Borders | `border-neutral-300` (cards), `border-neutral-400` (controls) |
+| Borders | `border-neutral-300` (cards), `border-neutral-500` (controls, 3:1) |
 | Error text | `text-red-800` |
 
 Do not use colour alone to show state. Pair it with text or an icon, and keep
@@ -97,7 +97,7 @@ From the quantity field in the same panel:
   pattern="[0-9]*"
   value={clamped}
   onChange={(e) => setUnits(Number(e.target.value.replace(/\D/g, '')) || 1)}
-  className="h-12 w-20 rounded-lg border border-neutral-400 text-center text-lg"
+  className="h-12 w-20 rounded-lg border border-neutral-500 text-center text-lg"
 />
 ```
 
@@ -150,7 +150,10 @@ Sheets are full width on phones and become centred on larger screens:
 
 - Keep the visible focus ring from `globals.css`. Do not remove the outline
   without a replacement.
-- Respect `prefers-reduced-motion`. The global rule in `globals.css` already
-  shortens animations; new motion must rely on it or check the media query.
+- Respect `prefers-reduced-motion`. The global rule in `globals.css` removes
+  animations and transitions; write anything that moves with the `motion-safe:`
+  variant. Details in [accessibility.md](accessibility.md#reduced-motion).
+- Check every new colour pair against [accessibility.md](accessibility.md#colour-contrast)
+  and add it to `lib/contrast.test.ts`.
 - Label every control and use semantic elements (`button`, `a`, `h1`–`h3`)
   before adding ARIA.
