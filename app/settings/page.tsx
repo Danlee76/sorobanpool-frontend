@@ -231,7 +231,7 @@ export default function Settings() {
                 {passkeyList.data.map((p) => (
                   <li key={p.id} className="flex items-center justify-between rounded-xl border border-neutral-300 p-3">
                     <span className="text-sm">{t('passkeyAddedOn', { date: new Date(p.createdAt).toLocaleDateString() })}</span>
-                    <button onClick={() => void removeOne(p.id)} className="min-h-10 rounded-lg border border-red-700 px-3 text-sm font-semibold text-red-800">{t('passkeyRemove')}</button>
+                    <button onClick={() => void removeOne(p.id)} className="flex min-h-12 min-w-12 items-center justify-center rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-800">{t('passkeyRemove')}</button>
                   </li>
                 ))}
               </ul>

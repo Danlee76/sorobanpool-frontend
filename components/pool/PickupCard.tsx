@@ -71,7 +71,7 @@ export function PickupCard({
           <button
             type="button"
             onClick={openMaps}
-            className="mt-2 inline-flex items-center text-sm font-semibold text-emerald-700 hover:underline"
+            className="mt-2 inline-flex min-h-12 items-center text-sm font-semibold text-emerald-700 hover:underline"
           >
             {t('openMaps')} →
           </button>

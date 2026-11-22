@@ -853,5 +853,13 @@
     "shareTitle": "SorobanPool Receipt",
     "shareText": "My purchase receipt for {product}",
     "notAvailable": "Receipt no dey available for this pool"
+  },
+  "install": {
+    "title": "Install SorobanPool",
+    "description": "Put SorobanPool for your phone screen make you fit open am sharp-sharp and use am well even when network dey slow.",
+    "iosInstructions": "Touch the Share button for Safari, then select \"Add to Home Screen\".",
+    "installButton": "Install app",
+    "dismissButton": "No be now",
+    "label": "App installation prompt"
   }
 }

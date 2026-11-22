@@ -85,7 +85,7 @@ export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }:
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close"
-                className="rounded-lg p-2 hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
+                className="flex min-h-12 min-w-12 items-center justify-center rounded-lg p-2 hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-800"
               >
                 <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

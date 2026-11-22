@@ -32,7 +32,7 @@ export function ServiceWorker() {
             <button
               type="button"
               onClick={applyUpdate}
-              className="min-h-10 rounded-lg bg-white px-3 py-1.5 font-bold text-emerald-950 shadow hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900"
+              className="flex min-h-12 min-w-12 items-center justify-center rounded-lg bg-white px-4 py-2 font-bold text-emerald-950 shadow hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900"
             >
               {t('refreshToUpdate')}
             </button>
@@ -40,7 +40,7 @@ export function ServiceWorker() {
               type="button"
               onClick={dismissUpdate}
               aria-label={t('dismiss')}
-              className="min-h-10 rounded-lg border border-emerald-700 px-3 py-1.5 font-semibold text-emerald-100 hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900"
+              className="flex min-h-12 min-w-12 items-center justify-center rounded-lg border border-emerald-700 px-4 py-2 font-semibold text-emerald-100 hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-900"
             >
               {t('dismiss')}
             </button>

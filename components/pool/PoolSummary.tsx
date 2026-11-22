@@ -7,6 +7,7 @@ import { TierCelebration } from './TierCelebration';
 import { MembersRow } from './MembersRow';
 import { SupplierBadge } from './SupplierBadge';
 import { DollarInfo } from '@/components/money/DollarInfo';
+import { ProductImage } from './ProductImage';
 import type { PoolView } from '@/lib/types';
 
 /** The same summary on the public WhatsApp page and inside the app: product, price, progress, deadline, pickup, trust message. */
@@ -14,6 +15,11 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
   const t = useTranslations('pool');
   const trust = useTranslations('trust');
   const open = pool.state === 'Open';
+
+  const productTitle = pool.offer?.title ?? 'Product';
+  const mainImage = pool.offer?.images?.[0];
+  const secondaryImages = pool.offer?.images?.slice(1) ?? [];
+
   return (
     <div className="space-y-4">
       {pool.currentTierLevel && pool.currentTierLevel > 1 && (
@@ -24,6 +30,29 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
           tierLevel={pool.currentTierLevel}
         />
       )}
+
+      {/* Main above-the-fold product photo with priority loading */}
+      <ProductImage
+        src={mainImage}
+        alt={productTitle}
+        priority
+      />
+
+      {/* Secondary images with lazy loading if present */}
+      {secondaryImages.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          {secondaryImages.map((img, idx) => (
+            <ProductImage
+              key={idx}
+              src={img}
+              alt={`${productTitle} - image ${idx + 2}`}
+              priority={false}
+              sizes="(min-width: 1152px) 260px, (min-width: 768px) 25vw, 25vw"
+            />
+          ))}
+        </div>
+      )}
+
       <header>
         <UserText as="h1" className="text-2xl font-bold" value={pool.offer?.title ?? '—'} />
         <p className="text-neutral-700"><UserText value={pool.offer?.unitLabel} />{pool.offer?.brand ? <>{' · '}<UserText value={pool.offer.brand} /></> : null}</p>

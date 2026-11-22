@@ -953,5 +953,13 @@
     "shareTitle": "SorobanPool Receipt",
     "shareText": "My purchase receipt for {product}",
     "notAvailable": "Receipt not available for this pool"
+  },
+  "install": {
+    "title": "Install SorobanPool",
+    "description": "Install SorobanPool on your phone for quick access and a smoother experience, even with poor network.",
+    "iosInstructions": "Tap the Share button in Safari, then select \"Add to Home Screen\".",
+    "installButton": "Install app",
+    "dismissButton": "Not now",
+    "label": "App installation prompt"
   }
 }

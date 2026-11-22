@@ -87,7 +87,7 @@ export function TierCelebration({
         <button
           type="button"
           onClick={handleDismiss}
-          className="text-emerald-900 hover:text-emerald-700"
+          className="flex min-h-12 min-w-12 items-center justify-center rounded-lg p-2 text-emerald-900 hover:text-emerald-700"
           aria-label="Dismiss"
         >
           <svg 
