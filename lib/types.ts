@@ -56,6 +56,10 @@ export interface PoolView {
   myCommitment?: { units: number; paid: string; pickedUp: boolean } | null;
   /** Hours the supplier has to accept after the pool fills. Defaults to 24 when absent. */
   acceptWindowHours?: number;
+  /** Refund breakdown fields */
+  tierDifferenceRefund?: string;
+  shortfallRefund?: string;
+  disputeRefund?: string;
 }
 
 export interface PoolCard {

@@ -1,6 +1,6 @@
 /* SorobanPool service worker: offline shell and last-known pool states.
  * Never caches anything that carries credentials or moves money: auth, wallets, tx, /me, uploads, evidence. */
-const BUILD_ID = 'cca1e87';
+const BUILD_ID = '4d202ab';
 const PREFIX = 'sorobanpool';
 const STATIC = `${PREFIX}-static-${BUILD_ID}`;
 const PAGES = `${PREFIX}-pages-${BUILD_ID}`;

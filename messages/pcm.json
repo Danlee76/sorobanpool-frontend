@@ -125,14 +125,27 @@
     "openCount": "{count} dey open now",
     "openBadge": "Open to join",
     "pricePerUnit": "Price for one unit",
-    "filled": "{pct}% don fill"
+    "filled": "{pct}% don fill",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "category": "Search products",
+    "location": "Location",
+    "sortBy": "Sort by",
+    "sortDefault": "Default",
+    "sortEndingSoon": "E go close soon",
+    "sortPriceLow": "Price: Small to Big",
+    "sortPriceHigh": "Price: Big to Small",
+    "sortProgress": "Wey don fill well well",
+    "searchPlaceholder": "Search for products...",
+    "locationPlaceholder": "Search location...",
+    "noResults": "No pool match your filters"
   },
   "pool": {
     "price": "Price now",
     "perUnit": "{price} per unit",
     "tiers": "Price breaks",
     "tierCurrent": "Price wey dey now",
-    "tierReached": "E don reach",
+    "tierReached": "Better price don unlock!",
     "tierUpcoming": "E never reach",
     "toNext": "{count} more units for {price} per unit",
     "progress": "{count} of {moq} units to start",
@@ -195,7 +208,6 @@
     "approved": "Payment don approve.",
     "perUnitLabel": "per unit",
     "nextBreakShort": "{count} more units and price go drop",
-    "tierReached": "Better price don unlock!",
     "newPrice": "New price",
     "savingsNow": "You dey save {amount} per unit",
     "failureExplainer": {
@@ -279,7 +291,20 @@
     "passkeyUnsupported": "This phone no support passkey.",
     "passkeyAddedOn": "Passkey wey you add {date}",
     "passkeyRemove": "Remove am",
-    "walletPasskey": "Na your passkey dey protect your wallet. No secret to write down: for new phone, sign in with the same passkey."
+    "walletPasskey": "Na your passkey dey protect your wallet. No secret to write down: for new phone, sign in with the same passkey.",
+    "notifications": "Notifications",
+    "notificationsHelp": "Control how we go tell you about group buys",
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "push": "Push Notifications",
+    "priceBreaks": "Price don drop",
+    "priceBreaksHelp": "When your pool reach better price",
+    "reminders": "Reminders",
+    "remindersHelp": "Deadline and pickup reminders",
+    "pickup": "Pickup don ready",
+    "pickupHelp": "When your goods ready to collect",
+    "criticalMessages": "Critical messages dem go always send",
+    "criticalMessagesHelp": "Security alerts and payment confirmation no fit off"
   },
   "errors": {
     "actions": {
@@ -672,7 +697,8 @@
     "title": "History",
     "lead": "Group buys wey don finish. Open one to see your goods, refund or report.",
     "empty": "No group buy don finish yet.",
-    "link": "See group buys wey don pass"
+    "link": "See group buys wey don pass",
+    "viewReceipt": "See Receipt"
   },
   "footer": {
     "tagline": "Buy together. Pay when goods reach.",
@@ -750,5 +776,37 @@
     "section5Body": "You fit request copy of your data or ask us make we delete your account. Note say transactions wey dem record for blockchain, dem no fit delete am.",
     "section6Title": "6. Changes to This Policy",
     "section6Body": "We fit update this policy from time to time. When we do am, we go notify you and ask you make you review the changes."
+  },
+  "refundBreakdown": {
+    "title": "Wetin dem refund",
+    "tierDifference": "Price tier difference",
+    "shortfall": "Shortfall refund",
+    "dispute": "Dispute resolution",
+    "total": "Total refund"
+  },
+  "receipt": {
+    "title": "Purchase Receipt",
+    "receiptId": "Receipt ID",
+    "date": "Date",
+    "productDetails": "Product Details",
+    "unknownProduct": "Unknown Product",
+    "units": "Units wey you buy",
+    "unitPrice": "Price for one unit",
+    "totalPaid": "Total wey you pay",
+    "refunds": "Refunds",
+    "tierRefund": "Tier price difference",
+    "shortfallRefund": "Shortfall refund",
+    "disputeRefund": "Dispute refund",
+    "totalRefund": "Total Refund",
+    "supplierDetails": "Supplier Details",
+    "supplier": "Supplier",
+    "pickupLocation": "Where to collect",
+    "blockchainRef": "Blockchain Reference",
+    "footer": "Thank you for using SorobanPool",
+    "print": "Print Receipt",
+    "share": "Share",
+    "shareTitle": "SorobanPool Receipt",
+    "shareText": "My purchase receipt for {product}",
+    "notAvailable": "Receipt no dey available for this pool"
   }
 }
