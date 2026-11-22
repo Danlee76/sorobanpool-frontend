@@ -784,7 +784,11 @@
     "title": "History",
     "lead": "Group buys that have finished. Open one to see your goods, refund or report.",
     "empty": "No finished group buys yet.",
-    "link": "See past group buys"
+    "link": "See past group buys",
+    "tabGroupBuys": "Group buys",
+    "tabActivity": "Wallet activity",
+    "activityTitle": "Wallet Activity",
+    "emptyActivity": "No wallet activity yet."
   },
   "footer": {
     "tagline": "Buy together. Pay on delivery.",

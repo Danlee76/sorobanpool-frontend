@@ -174,3 +174,39 @@ export interface PickupMemberEvent {
   seq?: number;
   timestamp?: number;
 }
+
+export type WalletActivityKind = 'pool_payment' | 'refund' | 'deposit';
+
+export interface BaseWalletActivity {
+  id: string;
+  timestamp: string; // ISO date string
+  amountUsdc: string; // stroops or USDC decimal string
+  amountNaira?: string;
+  poolId?: string;
+  poolTitle?: string;
+}
+
+export interface PoolPaymentActivity extends BaseWalletActivity {
+  kind: 'pool_payment';
+  poolId: string;
+}
+
+export interface RefundActivity extends BaseWalletActivity {
+  kind: 'refund';
+  reason?: string;
+}
+
+export interface DepositActivity extends BaseWalletActivity {
+  kind: 'deposit';
+}
+
+export interface UnknownActivity extends BaseWalletActivity {
+  kind: 'unknown';
+  rawKind?: string;
+}
+
+export type WalletActivity =
+  | PoolPaymentActivity
+  | RefundActivity
+  | DepositActivity
+  | UnknownActivity;
