@@ -44,10 +44,32 @@ const securityHeaders = [
 /** Routes where a photo is captured (delivery proof, supplier product photos, dispute evidence). */
 const EVIDENCE_ROUTES = ["/organize/:id/delivery", "/supplier/offers/new", "/pools/:id"];
 
+const apiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000");
+
 const nextConfig: NextConfig = {
   generateBuildId: async () => currentBuildId,
   env: {
     NEXT_PUBLIC_BUILD_ID: currentBuildId,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: apiOrigin.protocol.replace(":", "") as "http" | "https",
+        hostname: apiOrigin.hostname,
+        port: apiOrigin.port || undefined,
+        pathname: "/**",
+      },
+      ...(apiOrigin.hostname === "localhost" && apiOrigin.port !== "3100"
+        ? [
+            {
+              protocol: "http" as const,
+              hostname: "localhost",
+              port: "3100",
+              pathname: "/**",
+            },
+          ]
+        : []),
+    ],
   },
   async headers() {
     return [
