@@ -1,6 +1,13 @@
+import { enqueueAction, initOfflineQueue, type WhitelistedActionType } from './offline-queue';
+
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 export const apiUrl = (path: string): string => `${BASE}/v1${path}`;
 const REFRESH_KEY = 'sp.refresh';
+
+// Initialize offline queue replay listeners on startup
+if (typeof window !== 'undefined') {
+  initOfflineQueue();
+}
 
 export class ApiError extends Error {
   constructor(
@@ -95,10 +102,42 @@ async function refresh(): Promise<boolean> {
   return refreshing;
 }
 
-export async function api<T = unknown>(path: string, opts: { method?: string; body?: unknown; auth?: boolean } = {}): Promise<T> {
+export async function api<T = unknown>(
+  path: string,
+  opts: { method?: string; body?: unknown; auth?: boolean; actionType?: WhitelistedActionType } = {},
+): Promise<T> {
+  // If whitelisted action and device is offline, enqueue immediately without throwing
+  if (opts.actionType && typeof navigator !== 'undefined' && !navigator.onLine) {
+    const queued = await enqueueAction(opts.actionType, opts.body);
+    return queued as unknown as T;
+  }
+
   const init = { method: opts.method ?? (opts.body ? 'POST' : 'GET'), body: opts.body === undefined ? undefined : JSON.stringify(opts.body), auth: opts.auth };
-  let res = await raw(path, init);
-  if (res.status === 401 && opts.auth !== false && (await refresh())) res = await raw(path, init);
+
+  let res: Response;
+  try {
+    res = await raw(path, init);
+  } catch (err) {
+    // If a whitelisted action fails due to a network error, queue it safely
+    if (opts.actionType) {
+      const queued = await enqueueAction(opts.actionType, opts.body);
+      return queued as unknown as T;
+    }
+    throw err;
+  }
+
+  if (res.status === 401 && opts.auth !== false && (await refresh())) {
+    try {
+      res = await raw(path, init);
+    } catch (err) {
+      if (opts.actionType) {
+        const queued = await enqueueAction(opts.actionType, opts.body);
+        return queued as unknown as T;
+      }
+      throw err;
+    }
+  }
+
   if (res.status === 204) return undefined as T;
   const text = await res.text();
   // An empty 200 is how the API says "nothing" (e.g. no supplier profile yet): that is null, not an empty object.
