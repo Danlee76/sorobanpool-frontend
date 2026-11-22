@@ -24,7 +24,7 @@ export function FailureExplainer() {
           }
         }}
         aria-expanded={expanded}
-        className="flex w-full items-center justify-between text-left"
+        className="flex min-h-12 w-full items-center justify-between text-left"
       >
         <h3 className="text-sm font-semibold text-neutral-900">
           {t('title')}
@@ -60,7 +60,7 @@ export function FailureExplainer() {
           
           <Link 
             href="/help/disputes" 
-            className="inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900"
+            className="inline-flex min-h-12 items-center text-sm font-medium text-emerald-700 hover:text-emerald-900"
           >
             {t('learnMoreDisputes')} →
           </Link>

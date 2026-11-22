@@ -153,7 +153,7 @@ export function PoolRow({ card }: { card: PoolCard }) {
             <img src={waybillPreview} alt={t('waybillPreviewAlt')} className="max-h-48 w-full rounded-lg object-contain border border-neutral-200" data-testid="waybill-preview" />
           )}
           <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="sr-only" onChange={onFileChange} aria-label={t('waybillCapture')} data-testid="waybill-input" />
-          <button type="button" onClick={() => fileInputRef.current?.click()} className="min-h-10 w-full rounded-lg border-2 border-emerald-800 text-sm font-semibold text-emerald-900">
+          <button type="button" onClick={() => fileInputRef.current?.click()} className="min-h-12 w-full rounded-lg border-2 border-emerald-800 text-sm font-semibold text-emerald-900">
             {waybillFile ? t('waybillRetake') : t('waybillCapture')}
           </button>
           <div className="flex gap-2">
@@ -174,7 +174,7 @@ export function PoolRow({ card }: { card: PoolCard }) {
               {t('dispatchSkipWaybill')}
             </button>
           </div>
-          <button type="button" onClick={() => { setShowWaybill(false); setWaybillFile(null); setWaybillPreview(null); }} className="w-full text-sm text-neutral-600 hover:text-neutral-700">
+          <button type="button" onClick={() => { setShowWaybill(false); setWaybillFile(null); setWaybillPreview(null); }} className="min-h-12 w-full text-sm text-neutral-600 hover:text-neutral-700">
             {t('cancel')}
           </button>
         </div>
@@ -196,7 +196,7 @@ function BondPanel() {
       {freeUsdc !== null && (
         <p className="text-sm text-emerald-800">{t('bondFree', { free: `${freeUsdc} USD` })}</p>
       )}
-      <Link href="/supplier/bond" className="flex min-h-10 items-center justify-center rounded-lg border border-neutral-500 text-sm font-semibold">
+      <Link href="/supplier/bond" className="flex min-h-12 items-center justify-center rounded-lg border border-neutral-500 text-sm font-semibold">
         {t('bondManage')}
       </Link>
     </section>

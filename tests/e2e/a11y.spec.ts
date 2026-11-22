@@ -369,3 +369,133 @@ test('leave guard intercepts in-app link during active naira deposit and Escape 
   await expect(guardDialog).toBeHidden();
   await expect(navLink).toBeFocused();
 });
+
+test('all visible interactive elements meet 48px tap target rules at 360px viewport (#67)', async ({ page, context }) => {
+  // Deterministic setup at 360px width
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
+  // Mock API routes so all pages render deterministically
+  await page.route('**/v1/pools?state=Open', (route) => route.fulfill({ json: [pool()] }));
+  await page.route(`**/v1/pools/${POOL_ID}`, (route) => route.fulfill({ json: pool() }));
+  await page.route(`**/v1/pools/${POOL_ID}/stream`, (route) => route.abort());
+  await page.route('**/v1/me', (route) =>
+    route.fulfill({
+      json: {
+        id: 'u-a11y',
+        phone: '+2348030000001',
+        displayName: 'Amina',
+        roles: ['TRADER'],
+        walletAddress: 'GB3D4CFAKEWALLETADDRESSFORTESTING12345678901234567890',
+      },
+    }),
+  );
+
+  // Set session and visit count in localStorage so InstallCard from #70 is displayed and measured
+  await page.addInitScript(() => {
+    localStorage.setItem('sp.refresh', 'mock-refresh-token');
+    localStorage.setItem('sp.install_visit_count', '2');
+    sessionStorage.setItem('sp.install_session_counted', '1');
+  });
+
+  const pagesToTest = ['/', '/explore', `/pools/${POOL_ID}`, '/settings'];
+  const allViolations: Array<{ page: string; selector: string; text: string; size: string }> = [];
+
+  for (const path of pagesToTest) {
+    await page.goto(path);
+    await page.waitForLoadState('domcontentloaded');
+
+    // Disable CSS animations/transitions for accurate bounding boxes
+    await page.addStyleTag({
+      content: '*, *::before, *::after { transition: none !important; animation: none !important; }',
+    });
+
+    const pageViolations = await page.evaluate((currentPath) => {
+      const candidates = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          'a, button, input, select, textarea, [role="button"], [role="link"], summary',
+        ),
+      );
+
+      // Collect only visible targets
+      const visibleTargets = candidates.filter((el) => {
+        if (el.getAttribute('aria-hidden') === 'true') return false;
+        const style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      });
+
+      const rects = visibleTargets.map((el) => ({ el, rect: el.getBoundingClientRect() }));
+
+      /**
+       * Allowed WCAG 2.5.8 and design exceptions:
+       * 1. Inline links inside paragraphs where target size is constrained by running text.
+       * 2. Spacing exception: target is at least 24px and has sufficient empty spacing around it.
+       */
+      function isAllowedException(el: HTMLElement, rect: DOMRect): boolean {
+        // 1. Inline text link inside sentence/paragraph
+        if (el.tagName === 'A') {
+          const parent = el.parentElement;
+          if (parent && (parent.tagName === 'P' || parent.tagName === 'SPAN')) {
+            const parentText = parent.textContent?.trim() || '';
+            const linkText = el.textContent?.trim() || '';
+            const isInline = window.getComputedStyle(el).display.includes('inline');
+            if (isInline && parentText.length > linkText.length) {
+              return true;
+            }
+          }
+        }
+
+        // 2. WCAG 2.5.8 spacing exception for elements >= 24px with clear margin
+        const minDim = Math.min(rect.width, rect.height);
+        if (minDim >= 24) {
+          const clearance = (48 - minDim) / 2;
+          let obstructed = false;
+          for (const other of rects) {
+            if (other.el === el) continue;
+            const o = other.rect;
+            const overlaps = !(
+              o.right < rect.left - clearance ||
+              o.left > rect.right + clearance ||
+              o.bottom < rect.top - clearance ||
+              o.top > rect.bottom + clearance
+            );
+            if (overlaps) {
+              obstructed = true;
+              break;
+            }
+          }
+          if (!obstructed) return true;
+        }
+
+        return false;
+      }
+
+      const failures: Array<{ page: string; selector: string; text: string; size: string }> = [];
+
+      for (const { el, rect } of rects) {
+        // Must meet 48x48 px (allowing 0.5px subpixel tolerance) or satisfy exception
+        if ((rect.width < 47.5 || rect.height < 47.5) && !isAllowedException(el, rect)) {
+          const selector = el.tagName.toLowerCase() + (el.id ? `#${el.id}` : el.className ? `.${el.className.split(' ')[0]}` : '');
+          failures.push({
+            page: currentPath,
+            selector,
+            text: (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 30),
+            size: `${Math.round(rect.width)}x${Math.round(rect.height)}`,
+          });
+        }
+      }
+
+      return failures;
+    }, path);
+
+    allViolations.push(...pageViolations);
+  }
+
+  expect(
+    allViolations,
+    `Found interactive targets smaller than 48x48 CSS px:\n${allViolations.map((v) => `[${v.page}] ${v.selector} ("${v.text}"): ${v.size}`).join('\n')}`,
+  ).toEqual([]);
+});
+
