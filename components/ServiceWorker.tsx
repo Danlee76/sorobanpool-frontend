@@ -1,21 +1,11 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState } from 'react';
 import { useServiceWorkerUpdate } from './useServiceWorkerUpdate';
 
-const subscribe = (cb: () => void) => {
-  window.addEventListener('online', cb);
-  window.addEventListener('offline', cb);
-  return () => {
-    window.removeEventListener('online', cb);
-    window.removeEventListener('offline', cb);
-  };
-};
-
-/** Registers the service worker (production only) and shows banners for offline state and update prompts. */
+/** Registers the service worker (production only) and shows prompts for update notifications. */
 export function ServiceWorker() {
   const t = useTranslations('common');
-  const online = useSyncExternalStore(subscribe, () => navigator.onLine, () => true);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
@@ -31,11 +21,6 @@ export function ServiceWorker() {
 
   return (
     <>
-      {!online && (
-        <p role="status" className="bg-amber-100 px-4 py-2 text-center text-sm font-medium text-amber-950">
-          {t('offline')}
-        </p>
-      )}
       {updateReady && (
         <aside
           role="status"

@@ -15,6 +15,7 @@ import { ShareButton } from '@/components/pool/ShareButton';
 import { PickupCard } from '@/components/pool/PickupCard';
 import { api, ApiError } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
+import { useOnlineStatus } from '@/lib/network';
 import { runAction, type Prepared } from '@/lib/tx';
 import type { PoolView } from '@/lib/types';
 
@@ -27,6 +28,7 @@ export default function PoolPage() {
   const { ready } = useRequireAuth();
   const qc = useQueryClient();
   const { ask, dialog } = useConfirm();
+  const online = useOnlineStatus();
   // The stream refreshes this the moment the indexer applies an event; slow polling covers a dropped stream.
   const q = useQuery({ queryKey: ['pool', id], queryFn: () => api<PoolView>(`/pools/${id}`), enabled: ready, refetchInterval: 15_000 });
   usePoolStream(id, ready);
@@ -48,6 +50,7 @@ export default function PoolPage() {
   const member = (mine?.units ?? 0) > 0;
 
   async function act(kind: 'pickup' | 'refund') {
+    if (!online) return;
     setBusy(kind);
     setError(null);
     try {
@@ -96,14 +99,42 @@ export default function PoolPage() {
           <p className="rounded-xl bg-emerald-50 p-3 font-semibold text-emerald-900">
             {pool.receivedUnits !== null && pool.receivedUnits === pool.totalUnits ? t('pickupReady', { count: mine!.units }) : t('pickupReadyShort')}
           </p>
-          <button type="button" disabled={busy !== null} onClick={() => void act('pickup')} className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60">{t('pickup')}</button>
+          <button
+            type="button"
+            disabled={busy !== null || !online}
+            aria-disabled={!online}
+            aria-describedby={!online ? 'offline-pickup-explainer' : undefined}
+            onClick={() => void act('pickup')}
+            className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60"
+          >
+            {t('pickup')}
+          </button>
+          {!online && (
+            <p id="offline-pickup-explainer" className="text-xs font-medium text-amber-800">
+              You are offline. Pickup actions are disabled until your connection is restored.
+            </p>
+          )}
         </div>
       )}
       {done === 'pickup' && <p role="status" className="rounded-lg bg-emerald-50 p-3 font-semibold text-emerald-900">{t('pickupDone')}</p>}
       {canRefund && (
         <div className="space-y-2">
           <p className="text-sm font-medium">{t('refundDue')}</p>
-          <button type="button" disabled={busy !== null} onClick={() => void act('refund')} className="min-h-12 w-full rounded-xl border-2 border-emerald-800 text-lg font-bold text-emerald-900 disabled:opacity-60">{t('refund')}</button>
+          <button
+            type="button"
+            disabled={busy !== null || !online}
+            aria-disabled={!online}
+            aria-describedby={!online ? 'offline-refund-explainer' : undefined}
+            onClick={() => void act('refund')}
+            className="min-h-12 w-full rounded-xl border-2 border-emerald-800 text-lg font-bold text-emerald-900 disabled:opacity-60"
+          >
+            {t('refund')}
+          </button>
+          {!online && (
+            <p id="offline-refund-explainer" className="text-xs font-medium text-amber-800">
+              You are offline. Refund claims are disabled until your connection is restored.
+            </p>
+          )}
         </div>
       )}
       {done === 'refund' && <p role="status" className="rounded-lg bg-emerald-50 p-3 font-semibold text-emerald-900">{t('refundDone')}</p>}

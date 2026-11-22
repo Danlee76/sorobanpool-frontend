@@ -8,33 +8,38 @@ Line numbers below refer to `public/sw.js` on `main`.
 
 | Request | Strategy | Cache | Code | Cleared when |
 |---|---|---|---|---|
-| Any non-GET request (POST, PUT, ...) | Not handled by the worker; goes straight to the network | none | line 41 | never cached |
-| Same-origin `/_next/static/*` and `/icons/*` | Cache first. On a miss, fetch and store the response if it is OK | `static-v1` | lines 43-46 | a `VERSION` bump removes it on `activate` (line 19) |
-| Page navigations | Network first. On failure: cached page, then `/offline` | `pages-v1` (`/offline` is precached at install, line 13) | lines 47-50 | a `VERSION` bump |
-| GET `/v1/pools...`, `/v1/p...`, `/v1/offers...` (regex on line 10), except paths containing `/sharecard` | Network first. On failure: last cached response | `api-v1` | lines 51-53 | sign-out posts `CLEAR_API` (lines 9 and 24-26); a `VERSION` bump |
-| Everything else: `/v1/tx`, `/v1/auth`, `/v1/me`, wallets, uploads, evidence, admin | Not handled by the worker; goes to the network | none | line 51 does not match | never cached |
+| Any non-GET request (POST, PUT, ...) | Not handled by the worker; goes straight to the network | none | lines 70-71 | never cached |
+| Same-origin `/_next/static/*` and `/icons/*` | Cache first. On a miss, fetch and store the response if it is OK | `static-${BUILD_ID}` | lines 75-78 | a `BUILD_ID` bump removes it on `activate` (lines 20-27) |
+| Pool page navigations (`/pools/*`, `/p/*`) | Network first. On success: cached in bounded cache (max 10). On failure: cached pool page, then `/offline` | `pool-pages-${BUILD_ID}` | lines 86-90 | sign-out posts `CLEAR_API`; a `BUILD_ID` bump |
+| Other page navigations (excluding admin, arbiter, etc.) | Network first. On failure: cached page, then `/offline` | `pages-${BUILD_ID}` (`/offline` precached on install) | lines 92-94 | a `BUILD_ID` bump |
+| GET `/v1/pools...`, `/v1/p...`, `/v1/offers...` (regex), except paths containing `/sharecard` | Network first. On failure: last cached response | `api-${BUILD_ID}` | lines 97-99 | sign-out posts `CLEAR_API`; a `BUILD_ID` bump |
+| Everything else: admin, arbiter, `/v1/tx`, `/v1/auth`, `/v1/me`, wallets, uploads, evidence | Not handled by the worker; goes to the network | none | excluded | never cached |
 
-Network-first responses are stored only when `res.ok` is true (`networkFirst`, lines 28-37). The fallback order on a network failure is: the cached copy of this request, then (for navigations only) `/offline`, then a network error.
+Network-first responses are stored only when `res.ok` is true and `res.status === 200`. The fallback order on a network failure is: the cached copy of this request, then (for navigations only) `/offline`, then a network error.
 
 ## Request flow
 
 ```mermaid
 flowchart TD
-    R["fetch event"] --> M{"GET request?<br/>(line 41)"}
+    R["fetch event"] --> M{"GET request?"}
     M -- no --> N1["Network only, not stored"]
-    M -- yes --> S{"Same origin and /_next/static or /icons/?<br/>(line 43)"}
-    S -- yes --> SC["static-v1: cache first,<br/>store on miss if OK"]
-    S -- no --> NV{"Navigation?<br/>(line 47)"}
-    NV -- yes --> PG["pages-v1: network first<br/>fallback: cached page, then /offline"]
-    NV -- no --> AP{"Matches CACHEABLE_API<br/>and not /sharecard?<br/>(line 51)"}
-    AP -- yes --> AC["api-v1: network first<br/>fallback: last cached response"]
-    AP -- no --> N2["Network only, not stored"]
+    M -- yes --> S{"Same origin and /_next/static or /icons/?"}
+    S -- yes --> SC["static cache: cache first,<br/>store on miss if OK"]
+    S -- no --> NV{"Navigation?"}
+    NV -- yes --> EX{"Excluded path?<br/>(/admin, /arbiter, etc.)"}
+    EX -- yes --> N2["Network only, not stored"]
+    EX -- no --> PL{"Pool page?<br/>(/pools/* or /p/*)"}
+    PL -- yes --> PP["pool-pages: network first (max 10)<br/>fallback: cached pool, then /offline"]
+    PL -- no --> PG["pages: network first<br/>fallback: cached page, then /offline"]
+    NV -- no --> AP{"Matches CACHEABLE_API<br/>and not /sharecard?"}
+    AP -- yes --> AC["api cache: network first<br/>fallback: last cached response"]
+    AP -- no --> N3["Network only, not stored"]
 ```
 
 ## Sign-out and versions
 
-- On sign-out the app must post the string `CLEAR_API` to the worker. The worker then deletes `api-v1` (lines 9 and 24-26), because cached pool views contain the signed-in user's own commitment.
-- `VERSION` (line 3) is part of every cache name. Bumping it makes the next `activate` delete the old caches, because any cache name not in `KEEP` (line 7) is removed.
+- On sign-out the app posts the string `CLEAR_API` to the worker. The worker then deletes both `api-${BUILD_ID}` and `pool-pages-${BUILD_ID}`, ensuring no cached pool views or documents carrying user commitments persist after sign-out.
+- `BUILD_ID` is part of every cache name. Bumping it makes the next `activate` delete all old caches not in `CURRENT_CACHES`.
 
 ## Testing in Chrome DevTools
 

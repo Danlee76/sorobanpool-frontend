@@ -1,11 +1,27 @@
 'use client';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { XdrExport } from '@/components/admin/XdrExport';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
 import { checkParam, draftIsValid, paramChanges, type ParamSpec } from '@/lib/params';
+
+const XdrExport = dynamic(
+  () => import('@/components/admin/XdrExport').then((m) => m.XdrExport),
+  {
+    loading: () => (
+      <div
+        role="status"
+        aria-label="Loading export component"
+        className="min-h-[5rem] rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-center text-sm text-neutral-600"
+      >
+        <span className="sr-only">Loading export component</span>
+        <p>Loading export…</p>
+      </div>
+    ),
+  },
+);
 
 interface Proposal {
   txXdr: string;

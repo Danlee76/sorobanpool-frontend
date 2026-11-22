@@ -15,10 +15,12 @@ Lighthouse (mobile preset) on the public pool page `/p/[slug]`:
 
 Current metrics:
 
-- Performance: 0.98
-- LCP: 1.7 s
+- Performance: 0.98 (gated: >= 0.90 with 0.05 tolerance on the median of 3 runs)
+- LCP: 1.7 s (gated: < 2.5 s with 0.5 s tolerance on the median of 3 runs)
 - TBT: 150 ms
 - CLS: 0
+
+Note: Previously, performance and LCP were only printed and not gated. With issue #78, performance (>= 0.90, tolerance 0.05) and LCP (< 2.5 s, tolerance 0.5 s) are now strictly gated in CI on the median of three runs to eliminate flakiness while ensuring performance regressions are blocked.
 
 The margin is thin: the Stellar SDK is lazy-loaded at signing time and must stay out of the initial bundle. Future optimizations should focus on:
 
