@@ -132,7 +132,7 @@
     "perUnit": "{price} per unit",
     "tiers": "Price breaks",
     "tierCurrent": "Price wey dey now",
-    "tierReached": "E don reach",
+    "tierReached": "Better price don unlock!",
     "tierUpcoming": "E never reach",
     "toNext": "{count} more units for {price} per unit",
     "progress": "{count} of {moq} units to start",
@@ -195,7 +195,6 @@
     "approved": "Payment don approve.",
     "perUnitLabel": "per unit",
     "nextBreakShort": "{count} more units and price go drop",
-    "tierReached": "Better price don unlock!",
     "newPrice": "New price",
     "savingsNow": "You dey save {amount} per unit",
     "failureExplainer": {
@@ -750,5 +749,13 @@
     "section5Body": "You fit request copy of your data or ask us make we delete your account. Note say transactions wey dem record for blockchain, dem no fit delete am.",
     "section6Title": "6. Changes to This Policy",
     "section6Body": "We fit update this policy from time to time. When we do am, we go notify you and ask you make you review the changes."
+  },
+  "install": {
+    "title": "Install SorobanPool",
+    "description": "Put SorobanPool for your phone screen make you fit open am sharp-sharp and use am well even when network dey slow.",
+    "iosInstructions": "Touch the Share button for Safari, then select \"Add to Home Screen\".",
+    "installButton": "Install app",
+    "dismissButton": "No be now",
+    "label": "App installation prompt"
   }
 }

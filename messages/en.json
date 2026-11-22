@@ -131,7 +131,7 @@
     "perUnit": "{price} per unit",
     "tiers": "Price breaks",
     "tierCurrent": "Current price",
-    "tierReached": "Reached",
+    "tierReached": "Better price unlocked!",
     "tierUpcoming": "Not reached yet",
     "toNext": "{count} more units for {price} per unit",
     "progress": "{count} of {moq} units to start",
@@ -194,7 +194,6 @@
     "approved": "Payment approved.",
     "perUnitLabel": "per unit",
     "nextBreakShort": "{count} more units and the price drops",
-    "tierReached": "Better price unlocked!",
     "newPrice": "New price",
     "savingsNow": "You're saving {amount} per unit",
     "failureExplainer": {
@@ -344,7 +343,31 @@
   },
   "supplier": {
     "title": "Supplier portal",
-    "reputation": "Supplier reputation",
+    "reputation": {
+      "title": "My Reputation",
+      "subtitle": "Your track record as a SorobanPool supplier",
+      "loading": "Loading reputation…",
+      "loadError": "Failed to load reputation",
+      "basedOn": "Based on {count} ratings",
+      "completedPoolsStat": "Completed Pools",
+      "onTimeStat": "On-time Delivery",
+      "onTimeSub": "of orders shipped on time",
+      "disputeWinRateStat": "Dispute Win Rate",
+      "disputeWinRateSub": "{won} of {total} disputes",
+      "disputesStat": "Disputes",
+      "noDisputes": "None",
+      "recentRatingsSection": "Recent Ratings",
+      "disputeHistorySection": "Dispute History",
+      "noHistory": "No ratings or disputes yet.",
+      "unknownItem": "Unknown item",
+      "resolutionLabel": "Resolution",
+      "resolutionREFUND": "Refund given",
+      "resolutionREPLACE": "Item replaced",
+      "resolutionREJECT": "Claim rejected",
+      "outcomeWON": "Won",
+      "outcomeLOST": "Lost",
+      "outcomeSETTLED": "Settled"
+    },
     "whatIsThis": "What does this mean?",
     "settledPools": "{count, plural, one {completed pool} other {completed pools}}",
     "disputeRate": "dispute rate",
@@ -478,31 +501,6 @@
       "stateOPEN": "Open",
       "stateRESOLVED": "Resolved",
       "stateTIMED_OUT": "Timed out"
-    },
-    "reputation": {
-      "title": "My Reputation",
-      "subtitle": "Your track record as a SorobanPool supplier",
-      "loading": "Loading reputation…",
-      "loadError": "Failed to load reputation",
-      "basedOn": "Based on {count} ratings",
-      "completedPoolsStat": "Completed Pools",
-      "onTimeStat": "On-time Delivery",
-      "onTimeSub": "of orders shipped on time",
-      "disputeWinRateStat": "Dispute Win Rate",
-      "disputeWinRateSub": "{won} of {total} disputes",
-      "disputesStat": "Disputes",
-      "noDisputes": "None",
-      "recentRatingsSection": "Recent Ratings",
-      "disputeHistorySection": "Dispute History",
-      "noHistory": "No ratings or disputes yet.",
-      "unknownItem": "Unknown item",
-      "resolutionLabel": "Resolution",
-      "resolutionREFUND": "Refund given",
-      "resolutionREPLACE": "Item replaced",
-      "resolutionREJECT": "Claim rejected",
-      "outcomeWON": "Won",
-      "outcomeLOST": "Lost",
-      "outcomeSETTLED": "Settled"
     }
   },
   "dispute": {
@@ -851,5 +849,13 @@
     "section5Body": "You may request a copy of your data or ask us to delete your account. Note that transactions recorded on the blockchain cannot be deleted.",
     "section6Title": "6. Changes to This Policy",
     "section6Body": "We may update this policy from time to time. When we do, we will notify you and ask you to review the changes."
+  },
+  "install": {
+    "title": "Install SorobanPool",
+    "description": "Install SorobanPool on your phone for quick access and a smoother experience, even with poor network.",
+    "iosInstructions": "Tap the Share button in Safari, then select \"Add to Home Screen\".",
+    "installButton": "Install app",
+    "dismissButton": "Not now",
+    "label": "App installation prompt"
   }
 }

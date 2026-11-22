@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { Logo } from '@/components/brand/Logo';
 import { ServiceWorker } from '@/components/ServiceWorker';
+import { InstallCard } from '@/components/InstallCard';
 import { useOnlineStatus } from '@/lib/network';
 import { useSession } from '@/lib/store';
 
@@ -55,29 +56,32 @@ export function Shell({ children }: { children: ReactNode }) {
       )}
       <a href="#main" className="sr-only focus:not-sr-only focus:z-30 absolute top-0 left-0 bg-emerald-900 text-white px-4 py-2 font-semibold rounded-b-lg">{t('skipToContent')}</a>
       <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-neutral-200/80 bg-white/90 px-5 backdrop-blur-xl md:px-10">
-        <Link href="/"><Logo /></Link>
+        <Link href="/" className="flex min-h-12 min-w-12 items-center"><Logo /></Link>
         <div className="hidden items-center gap-1 md:flex">
           <nav aria-label={t('main')} className="flex items-center">
             {tabs.map(({ href, key }) => (
-              <Link key={href} href={href} aria-current={isActive(href, path) ? 'page' : undefined} className={`rounded-full px-3 py-2 text-sm font-semibold ${isActive(href, path) ? 'bg-emerald-900 text-white' : 'text-neutral-700 hover:bg-emerald-950/5 hover:text-emerald-950'}`}>
+              <Link key={href} href={href} aria-current={isActive(href, path) ? 'page' : undefined} className={`inline-flex min-h-12 items-center rounded-full px-3 py-2 text-sm font-semibold ${isActive(href, path) ? 'bg-emerald-900 text-white' : 'text-neutral-700 hover:bg-emerald-950/5 hover:text-emerald-950'}`}>
                 {t(key)}
               </Link>
             ))}
           </nav>
         </div>
         {status === 'anon' && !path.startsWith('/onboarding') && (
-          <Link href="/onboarding" className="flex min-h-11 items-center rounded-full bg-emerald-900 px-5 text-sm font-semibold text-white shadow-md shadow-emerald-950/15 hover:bg-emerald-800 md:ml-2">
+          <Link href="/onboarding" className="flex min-h-12 min-w-12 items-center justify-center rounded-full bg-emerald-900 px-5 text-sm font-semibold text-white shadow-md shadow-emerald-950/15 hover:bg-emerald-800 md:ml-2">
             {t('signIn')}
           </Link>
         )}
       </header>
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pb-10 pt-7 md:px-10 md:pb-14 md:pt-10">{children}</main>
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pb-10 pt-7 md:px-10 md:pb-14 md:pt-10">
+        <InstallCard />
+        {children}
+      </main>
       <footer className="mx-auto w-full max-w-6xl px-4 pb-28 pt-2 text-sm text-neutral-700 md:px-10 md:pb-10">
         <div className="flex flex-col gap-2 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p><span className="font-semibold text-emerald-950">{f('tagline')}</span> <span aria-hidden="true">·</span> {f('built')}</p>
-          <p className="flex flex-wrap gap-x-4 gap-y-1">
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
             {TESTNET && <span>{f('testnet')}</span>}
-            <a href="https://github.com/SorobanPool" className="underline underline-offset-4 hover:text-emerald-900">{f('source')}</a>
+            <a href="https://github.com/SorobanPool" className="inline-flex min-h-12 items-center underline underline-offset-4 hover:text-emerald-900">{f('source')}</a>
           </p>
         </div>
       </footer>
