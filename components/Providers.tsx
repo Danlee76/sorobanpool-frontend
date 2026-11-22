@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useSession } from '@/lib/store';
 import { initVitals } from '@/lib/vitals';
 import { VITALS_SAMPLE_RATE } from '@/lib/config';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 5_000, retry: 1, refetchOnWindowFocus: true } } }));
@@ -15,5 +16,9 @@ export function Providers({ children }: { children: ReactNode }) {
       sampleRate: VITALS_SAMPLE_RATE,
     });
   }, [bootstrap]);
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <ToastProvider>{children}</ToastProvider>
+    </QueryClientProvider>
+  );
 }
