@@ -13,6 +13,7 @@ import { ReportProblem } from '@/components/dispute/ReportProblem';
 import { PoolTimeline } from '@/components/pool/PoolTimeline';
 import { ShareButton } from '@/components/pool/ShareButton';
 import { PickupCard } from '@/components/pool/PickupCard';
+import { RefundBreakdown } from '@/components/pool/RefundBreakdown';
 import { api, ApiError } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import { useOnlineStatus } from '@/lib/network';
@@ -138,6 +139,13 @@ export default function PoolPage() {
         </div>
       )}
       {done === 'refund' && <p role="status" className="rounded-lg bg-emerald-50 p-3 font-semibold text-emerald-900">{t('refundDone')}</p>}
+      {member && pool.state === 'Settled' && (
+        <RefundBreakdown
+          tierDifferenceRefund={pool.tierDifferenceRefund}
+          shortfallRefund={pool.shortfallRefund}
+          disputeRefund={pool.disputeRefund}
+        />
+      )}
       {member && pool.state === 'Delivered' && <ReportProblem poolId={id} maxUnits={mine!.units} />}
       {error !== null && <ErrorExplainer error={error} />}
       {pool.state === 'Open' && <ShareButton slug={pool.shareSlug} product={pool.offer?.title ?? ''} price={pool.currentUnitPriceNaira ? `₦${pool.currentUnitPriceNaira}` : ''} />}

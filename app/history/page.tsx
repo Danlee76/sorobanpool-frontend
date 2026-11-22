@@ -47,10 +47,20 @@ export default function History() {
       <ul className="space-y-3">
         {done.map((p) => (
           <li key={p.id}>
-            <Link href={`/pools/${p.id}`} className="pool-card block min-h-12 rounded-2xl border border-neutral-200 bg-white p-5">
-              <UserText as="p" className="font-semibold" value={p.title} />
-              <p className="text-sm text-neutral-700">{states(p.state)} · {new Date(p.fillDeadline).toLocaleDateString()}</p>
-            </Link>
+            <div className="space-y-2">
+              <Link href={`/pools/${p.id}`} className="pool-card block min-h-12 rounded-2xl border border-neutral-200 bg-white p-5">
+                <UserText as="p" className="font-semibold" value={p.title} />
+                <p className="text-sm text-neutral-700">{states(p.state)} · {new Date(p.fillDeadline).toLocaleDateString()}</p>
+              </Link>
+              {p.state === 'Settled' && (
+                <Link
+                  href={`/history/${p.id}/receipt`}
+                  className="block rounded-xl border border-emerald-700 bg-white px-4 py-2 text-center text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+                >
+                  {t('viewReceipt')}
+                </Link>
+              )}
+            </div>
           </li>
         ))}
       </ul>
