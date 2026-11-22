@@ -1,10 +1,13 @@
 'use client';
+import { RelativeTime } from '@/components/ui/RelativeTime';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { UserText } from '@/components/ui/UserText';
 import { PoolListItemSkeleton } from '@/components/ui/Skeleton';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
+import { ClockIcon } from '@/components/brand/icons';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import { FINAL_STATES } from '@/lib/timeline';
@@ -43,14 +46,18 @@ export default function History() {
         <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="mt-1 text-sm text-neutral-700">{t('lead')}</p>
       </div>
-      {done.length === 0 && <p className="text-neutral-700">{t('empty')}</p>}
+      {done.length === 0 && (
+        <EmptyState icon={<ClockIcon className="size-10" />} action={{ label: t('emptyAction'), href: '/explore' }}>
+          {t('empty')}
+        </EmptyState>
+      )}
       <ul className="space-y-3">
         {done.map((p) => (
           <li key={p.id}>
             <div className="space-y-2">
               <Link href={`/pools/${p.id}`} className="pool-card block min-h-12 rounded-2xl border border-neutral-200 bg-white p-5">
                 <UserText as="p" className="font-semibold" value={p.title} />
-                <p className="text-sm text-neutral-700">{states(p.state)} · {new Date(p.fillDeadline).toLocaleDateString()}</p>
+                <p className="text-sm text-neutral-700">{states(p.state)} · <RelativeTime value={p.fillDeadline} /></p>
               </Link>
               {p.state === 'Settled' && (
                 <Link

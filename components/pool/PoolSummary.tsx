@@ -6,6 +6,7 @@ import { TierLadder } from './TierLadder';
 import { TierCelebration } from './TierCelebration';
 import { MembersRow } from './MembersRow';
 import { SupplierBadge } from './SupplierBadge';
+import { DollarInfo } from '@/components/money/DollarInfo';
 import type { PoolView } from '@/lib/types';
 
 /** The same summary on the public WhatsApp page and inside the app: product, price, progress, deadline, pickup, trust message. */
@@ -29,7 +30,14 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
       </header>
       <section aria-label={t('price')} className="rounded-xl border border-emerald-700 bg-emerald-50 p-4">
         <p className="text-sm font-medium text-emerald-900">{t('price')}</p>
-        <p className="text-4xl font-extrabold text-emerald-900" data-testid="price-now">{pool.currentUnitPriceNaira ? `₦${pool.currentUnitPriceNaira}` : '—'}</p>
+        <p className="text-4xl font-extrabold text-emerald-900" data-testid="price-now">
+          {pool.currentUnitPriceNaira ? `₦${pool.currentUnitPriceNaira}` : '—'}
+          {pool.ngnPerUsd && (
+            <span className="ml-2 inline-block align-middle">
+              <DollarInfo ngnPerUsd={pool.ngnPerUsd} />
+            </span>
+          )}
+        </p>
         <p className="text-sm text-emerald-900">{t('perUnitLabel')}</p>
         {pool.nextBreak && pool.state === 'Open' && <p className="mt-2 text-sm font-medium" data-testid="next-break">{t('nextBreakShort', { count: pool.nextBreak.unitsToGo })}</p>}
       </section>
@@ -37,7 +45,7 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
       {pool.membersList && pool.members > 0 && (
         <MembersRow members={pool.membersList} totalCount={pool.members} />
       )}
-      {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} /></p>}
+      {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} unitsToNextBreak={pool.nextBreak?.unitsToGo} /></p>}
       <TierLadder tiers={pool.tiersUsdc} totalUnits={pool.totalUnits} ngnPerUsd={pool.ngnPerUsd} />
       {(pool.supplierTier || pool.supplierSettledPools !== null || pool.supplierDisputeRate !== null) && (
         <SupplierBadge

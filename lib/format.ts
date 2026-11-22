@@ -49,5 +49,18 @@ export function countdown(deadline: Date | string | number, now: number = Date.n
 /** 0.0321 -> "3.2%". */
 export const percent = (ratio: number, digits = 1): string => `${(ratio * 100).toFixed(digits)}%`;
 
+/** Buckets a signed second offset into the unit Intl.RelativeTimeFormat should use: seconds under a minute, then minutes, hours, days. */
+export function relativeTimeParts(diffSeconds: number): { value: number; unit: Intl.RelativeTimeFormatUnit } {
+  const abs = Math.abs(diffSeconds);
+  if (abs < 60) return { value: Math.round(diffSeconds), unit: 'second' };
+  if (abs < 3600) return { value: Math.round(diffSeconds / 60), unit: 'minute' };
+  if (abs < 86400) return { value: Math.round(diffSeconds / 3600), unit: 'hour' };
+  return { value: Math.round(diffSeconds / 86400), unit: 'day' };
+}
+
+/** Hours remaining below which the fill deadline should read as "closing soon" or "closing now". Shared with notification timing so a reminder fires at the same point the UI turns urgent. */
+export const DEADLINE_WARN_HOURS = 24;
+export const DEADLINE_CRITICAL_HOURS = 2;
+
 /** Long addresses are unreadable on a phone: GABCD…WXYZ. */
 export const shortAddress = (a: string): string => (a.length > 14 ? `${a.slice(0, 5)}…${a.slice(-4)}` : a);

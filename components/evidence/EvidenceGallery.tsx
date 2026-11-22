@@ -1,6 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
+import { RelativeTime } from '@/components/ui/RelativeTime';
 import { api } from '@/lib/api';
 import { evidenceTimeline, type EvidenceItem } from '@/lib/disputes';
 
@@ -71,7 +72,7 @@ export function EvidenceGallery({ items }: { items: EvidenceItem[] }) {
       {ordered.map((e) => (
         <li key={e.id} className="rounded-xl border border-neutral-200 bg-white p-3">
           <p className="text-sm text-neutral-700">
-            <time dateTime={e.createdAt}>{new Date(e.createdAt).toLocaleString()}</time>
+            <RelativeTime value={e.createdAt} />
             {e.party && <> · {t(`parties.${e.party}`)}</>} · {e.kind}
           </p>
           <EvidenceThumb item={e} />

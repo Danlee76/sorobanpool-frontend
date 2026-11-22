@@ -1,4 +1,5 @@
 'use client';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { UserText } from '@/components/ui/UserText';
 import { PoolCardSkeleton } from '@/components/ui/Skeleton';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useCallback, useMemo } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
+import { SearchIcon } from '@/components/brand/icons';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import type { PoolCard } from '@/lib/types';
@@ -199,11 +201,10 @@ export default function Explore() {
       </div>
 
       {filteredPools.length === 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center">
-          <p className="text-neutral-700">{hasActiveFilters ? t('noResults') : t('empty')}</p>
-        </div>
+        <EmptyState icon={<SearchIcon className="size-10" />} action={{ label: t('emptyAction'), href: '/history' }}>
+          {hasActiveFilters ? t('noResults') : t('empty')}
+        </EmptyState>
       )}
-
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-in">
         {filteredPools.map((p) => (
           <li key={p.id}>

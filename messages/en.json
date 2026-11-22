@@ -115,6 +115,7 @@
   "explore": {
     "title": "Open group buys",
     "empty": "No open group buys right now. Check back soon.",
+    "emptyAction": "See your history",
     "from": "From {price} per unit",
     "minimum": "Minimum {count} units",
     "offers": "Offers",
@@ -234,12 +235,18 @@
     "leaveGuardTitle": "Leave this payment?",
     "leaveGuardBody": "Your payment is still in progress. Leaving now may lose your choices.",
     "leaveGuardStay": "Stay on payment",
-    "leaveGuardLeave": "Leave anyway"
+    "leaveGuardLeave": "Leave anyway",
+    "urgentWarning": "Closing soon",
+    "urgentCritical": "Closing very soon",
+    "urgentNearBreak": "{count, plural, one {Just # more unit for a lower price} other {Just # more units for a lower price}}",
+    "acceptWindowExplainer": "If you miss this window, buyers are refunded and it counts against you."
   },
   "organize": {
     "title": "Organize a group buy",
     "intro": "Pick an offer, set a deadline and a pickup place. Share the link with traders in your market.",
     "notOrganizer": "You are not an organizer yet. Ask support to approve you.",
+    "empty": "You have not organized a group buy yet.",
+    "emptyAction": "Create your first group buy",
     "step1": "Choose an offer",
     "step2": "Deadline",
     "step3": "Pickup place and time",
@@ -795,6 +802,15 @@
     "confirmDisabledExpired": "This quote has expired. Refresh the quote before getting bank details.",
     "confirmDisabledRefreshing": "Waiting for a fresh quote…"
   },
+  "money": {
+    "dollarInfoLabel": "About dollar pricing",
+    "dollarInfoTitle": "Prices are fixed in dollars",
+    "dollarInfoExplain": "All prices on SorobanPool are set in US dollars (USDC) to stay stable. The naira amounts you see are estimates based on the current exchange rate.",
+    "dollarInfoRate": "You will pay the exact naira amount needed to cover the dollar price at the moment your bank transfer arrives.",
+    "dollarInfoQuotedAt": "Rate quoted at {time}",
+    "dollarInfoFinal": "The exchange rate when your payment is processed is final. Naira amounts shown here help you plan, but the dollar price is what locks in your order.",
+    "dollarInfoClose": "Got it"
+  },
   "states": {
     "Open": "Joining",
     "Filled": "Filled",
@@ -810,6 +826,7 @@
     "title": "History",
     "lead": "Group buys that have finished. Open one to see your goods, refund or report.",
     "empty": "No finished group buys yet.",
+    "emptyAction": "Browse open group buys",
     "link": "See past group buys",
     "viewReceipt": "View Receipt"
   },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countdown, formatNaira, formatUsdc, groupDigits, stroopsToNairaCeil, toStroops } from './format';
+import { countdown, formatNaira, formatUsdc, groupDigits, relativeTimeParts, stroopsToNairaCeil, toStroops } from './format';
 import { payPreview, type Tier } from './pricing';
 import { errorKeys, knownErrorCodes } from './errors/map';
 import en from '../messages/errors.en.json';
@@ -23,6 +23,25 @@ describe('money formatting', () => {
     const now = Date.UTC(2026, 9, 5, 10, 0, 0);
     expect(countdown(now + 90_061_000, now)).toEqual({ done: false, days: 1, hours: 1, minutes: 1, seconds: 1 });
     expect(countdown(now - 5, now).done).toBe(true);
+  });
+});
+
+describe('relativeTimeParts: picks the coarsest unit Intl.RelativeTimeFormat should use', () => {
+  it('stays in seconds under a minute', () => {
+    expect(relativeTimeParts(45)).toEqual({ value: 45, unit: 'second' });
+    expect(relativeTimeParts(-45)).toEqual({ value: -45, unit: 'second' });
+  });
+  it('switches to minutes under an hour', () => {
+    expect(relativeTimeParts(90)).toEqual({ value: 2, unit: 'minute' });
+    expect(relativeTimeParts(-180)).toEqual({ value: -3, unit: 'minute' });
+  });
+  it('switches to hours under a day', () => {
+    expect(relativeTimeParts(7_200)).toEqual({ value: 2, unit: 'hour' });
+    expect(relativeTimeParts(-7_200)).toEqual({ value: -2, unit: 'hour' });
+  });
+  it('switches to days from a day up', () => {
+    expect(relativeTimeParts(172_800)).toEqual({ value: 2, unit: 'day' });
+    expect(relativeTimeParts(-86_400)).toEqual({ value: -1, unit: 'day' });
   });
 });
 
