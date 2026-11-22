@@ -40,7 +40,8 @@ export interface PoolView {
   moq: number | null;
   maxUnits: number | null;
   members: number;
-  membersList?: Array<{ displayName?: string | null; optedIn?: boolean }> | null;
+  membersList?: Array<Partial<PickupMember> & { displayName?: string | null; optedIn?: boolean }> | null;
+  pickupMembers?: PickupMember[] | null;
   ngnPerUsd: number | null;
   filledAt: string | null;
   progressPct: number;
@@ -147,4 +148,29 @@ export interface SupplierReputation {
   disputesWon: number;
   recentRatings: RatingEntry[];
   disputeHistory: DisputeHistoryEntry[];
+}
+
+export type PickupStatus = 'pending' | 'collected';
+
+export interface PickupMember {
+  id: string;
+  address?: string;
+  displayName?: string | null;
+  optedIn?: boolean;
+  units: number;
+  allocatedUnits: number;
+  status: PickupStatus;
+  pickedUp?: boolean;
+  seq?: number;
+  collectedAt?: string | null;
+}
+
+export interface PickupMemberEvent {
+  type?: 'pickup' | 'member_collected';
+  memberId: string;
+  status: PickupStatus;
+  units?: number;
+  allocatedUnits?: number;
+  seq?: number;
+  timestamp?: number;
 }

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
+import { PickupChecklist } from '@/components/pool/PickupChecklist';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import { runAction, type Prepared } from '@/lib/tx';
@@ -63,6 +64,14 @@ export default function Delivery() {
     }
   }
   const uploaded = evidence.filter(Boolean);
+  const initialMembers = pool.pickupMembers ?? (pool.membersList ? pool.membersList.map((m, i) => ({
+    id: m.id || String(i + 1),
+    displayName: m.displayName,
+    units: m.units ?? 1,
+    allocatedUnits: m.allocatedUnits ?? m.units ?? 1,
+    status: (m.status ?? (m.pickedUp ? 'collected' : 'pending')) as 'pending' | 'collected',
+    pickedUp: m.pickedUp,
+  })) : undefined);
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
@@ -82,6 +91,7 @@ export default function Delivery() {
         </label>
       </div>
       <button type="button" disabled={busy || !validCount || uploaded.length === 0 || done} onClick={() => void submit()} className="min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60">{t('submit')}</button>
+      <PickupChecklist poolId={id} initialMembers={initialMembers} totalExpectedUnits={pool.totalUnits} onRefreshNeeded={() => void q.refetch()} />
       {done && <p role="status" className="rounded-xl bg-emerald-50 p-4 font-bold text-emerald-900">{t('success')}</p>}
       {error !== null && <ErrorExplainer error={error} />}
       {dialog}
