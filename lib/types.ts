@@ -40,7 +40,8 @@ export interface PoolView {
   moq: number | null;
   maxUnits: number | null;
   members: number;
-  membersList?: Array<{ displayName?: string | null; optedIn?: boolean }> | null;
+  membersList?: Array<Partial<PickupMember> & { displayName?: string | null; optedIn?: boolean }> | null;
+  pickupMembers?: PickupMember[] | null;
   ngnPerUsd: number | null;
   filledAt: string | null;
   progressPct: number;
@@ -152,3 +153,64 @@ export interface SupplierReputation {
   recentRatings: RatingEntry[];
   disputeHistory: DisputeHistoryEntry[];
 }
+
+export type PickupStatus = 'pending' | 'collected';
+
+export interface PickupMember {
+  id: string;
+  address?: string;
+  displayName?: string | null;
+  optedIn?: boolean;
+  units: number;
+  allocatedUnits: number;
+  status: PickupStatus;
+  pickedUp?: boolean;
+  seq?: number;
+  collectedAt?: string | null;
+}
+
+export interface PickupMemberEvent {
+  type?: 'pickup' | 'member_collected';
+  memberId: string;
+  status: PickupStatus;
+  units?: number;
+  allocatedUnits?: number;
+  seq?: number;
+  timestamp?: number;
+}
+
+export type WalletActivityKind = 'pool_payment' | 'refund' | 'deposit';
+
+export interface BaseWalletActivity {
+  id: string;
+  timestamp: string; // ISO date string
+  amountUsdc: string; // stroops or USDC decimal string
+  amountNaira?: string;
+  poolId?: string;
+  poolTitle?: string;
+}
+
+export interface PoolPaymentActivity extends BaseWalletActivity {
+  kind: 'pool_payment';
+  poolId: string;
+}
+
+export interface RefundActivity extends BaseWalletActivity {
+  kind: 'refund';
+  reason?: string;
+}
+
+export interface DepositActivity extends BaseWalletActivity {
+  kind: 'deposit';
+}
+
+export interface UnknownActivity extends BaseWalletActivity {
+  kind: 'unknown';
+  rawKind?: string;
+}
+
+export type WalletActivity =
+  | PoolPaymentActivity
+  | RefundActivity
+  | DepositActivity
+  | UnknownActivity;

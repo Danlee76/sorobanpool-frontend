@@ -276,7 +276,18 @@
       "addPhoto": "Take or choose photo",
       "short": "{count} units no reach. Dem go refund members for the missing goods.",
       "submit": "Confirm delivery",
-      "success": "Delivery don confirm."
+      "success": "Delivery don confirm.",
+      "checklistTitle": "Pickup checklist",
+      "checklistSummary": "{collectedCount} of {totalCount} don collect ({collectedUnits} of {totalUnits} units)",
+      "memberHeader": "Member",
+      "unitsHeader": "Allocated",
+      "statusHeader": "Status",
+      "statusCollected": "Dem don collect",
+      "statusPending": "Dey wait pickup",
+      "emptyList": "No member dey this group buy.",
+      "livePaused": "Live update don pause. Dey reconnect…",
+      "liveActive": "Live update dey work",
+      "statusChangedAnnounce": "{name} don collect {count} units"
     },
     "activate": "Activate my organizer account",
     "activating": "We dey activate…",
@@ -728,7 +739,11 @@
     "empty": "No group buy don finish yet.",
     "emptyAction": "Check group buys wey dey open",
     "link": "See group buys wey don pass",
-    "viewReceipt": "See Receipt"
+    "viewReceipt": "See Receipt",
+    "tabGroupBuys": "Group buys",
+    "tabActivity": "Wallet activity",
+    "activityTitle": "Wallet Activity",
+    "emptyActivity": "No wallet activity dey yet."
   },
   "footer": {
     "tagline": "Buy together. Pay when goods reach.",
