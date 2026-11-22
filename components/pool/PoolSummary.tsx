@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { Countdown } from './Countdown';
 import { ProgressToMoq } from './ProgressToMoq';
 import { TierLadder } from './TierLadder';
+import { DollarInfo } from '@/components/money/DollarInfo';
 import type { PoolView } from '@/lib/types';
 
 /** The same summary on the public WhatsApp page and inside the app: product, price, progress, deadline, pickup, trust message. */
@@ -18,12 +19,19 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
       </header>
       <section aria-label={t('price')} className="rounded-xl border border-emerald-700 bg-emerald-50 p-4">
         <p className="text-sm font-medium text-emerald-900">{t('price')}</p>
-        <p className="text-4xl font-extrabold text-emerald-900" data-testid="price-now">{pool.currentUnitPriceNaira ? `₦${pool.currentUnitPriceNaira}` : '—'}</p>
+        <p className="text-4xl font-extrabold text-emerald-900" data-testid="price-now">
+          {pool.currentUnitPriceNaira ? `₦${pool.currentUnitPriceNaira}` : '—'}
+          {pool.ngnPerUsd && (
+            <span className="ml-2 inline-block align-middle">
+              <DollarInfo ngnPerUsd={pool.ngnPerUsd} />
+            </span>
+          )}
+        </p>
         <p className="text-sm text-emerald-900">{t('perUnitLabel')}</p>
         {pool.nextBreak && pool.state === 'Open' && <p className="mt-2 text-sm font-medium" data-testid="next-break">{t('nextBreakShort', { count: pool.nextBreak.unitsToGo })}</p>}
       </section>
       {pool.moq !== null && <ProgressToMoq totalUnits={pool.totalUnits} moq={pool.moq} />}
-      {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} /></p>}
+      {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} unitsToNextBreak={pool.nextBreak?.unitsToGo} /></p>}
       <TierLadder tiers={pool.tiersUsdc} totalUnits={pool.totalUnits} ngnPerUsd={pool.ngnPerUsd} />
       <section className="rounded-xl border border-neutral-200 bg-white p-4 text-sm">
         <h2 className="mb-1 font-semibold">{t('hub')}</h2>

@@ -1,4 +1,5 @@
 'use client';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { UserText } from '@/components/ui/UserText';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
+import { PlusIcon } from '@/components/brand/icons';
 import { ApiError } from '@/lib/api';
 import { runAction, type Prepared } from '@/lib/tx';
 import { api } from '@/lib/api';
@@ -64,6 +66,11 @@ export default function Organize() {
       <Link href="/organize/new" className="flex min-h-12 items-center justify-center rounded-xl bg-emerald-800 px-4 font-bold text-white">{t('create')}</Link>
       <h2 className="font-semibold">{t('myPools')}</h2>
       {q.error && <ErrorExplainer error={q.error} onRetry={() => void q.refetch()} />}
+      {mine.length === 0 && (
+        <EmptyState icon={<PlusIcon className="size-10" />} action={{ label: t('emptyAction'), href: '/organize/new' }}>
+          {t('empty')}
+        </EmptyState>
+      )}
       <ul className="space-y-3">
         {mine.map((p) => (
           <li key={p.id} className="rounded-xl border border-neutral-200 bg-white p-4">

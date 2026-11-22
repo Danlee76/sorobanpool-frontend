@@ -105,6 +105,7 @@
   "explore": {
     "title": "Group buys wey dey open",
     "empty": "No group buy dey open now. Come back soon.",
+    "emptyAction": "See your history",
     "from": "From {price} per unit",
     "minimum": "Minimum {count} units",
     "offers": "Offers",
@@ -174,12 +175,18 @@
     "pickupReadyShort": "Your goods don ready. Organizer go tell you how many units you go collect.",
     "approved": "Payment don approve.",
     "perUnitLabel": "per unit",
-    "nextBreakShort": "{count} more units and price go drop"
+    "nextBreakShort": "{count} more units and price go drop",
+    "urgentWarning": "E go close soon",
+    "urgentCritical": "E go close sharp sharp",
+    "urgentNearBreak": "{count, plural, one {Just # more unit make price drop} other {Just # more units make price drop}}",
+    "acceptWindowExplainer": "If you miss this window, dem go refund buyers and e go affect your name."
   },
   "organize": {
     "title": "Organize group buy",
     "intro": "Pick offer, set deadline and pickup place. Share the link with traders for your market.",
     "notOrganizer": "You never be organizer yet. Ask support make dem approve you.",
+    "empty": "You never organize group buy yet.",
+    "emptyAction": "Create your first group buy",
     "step1": "Choose offer",
     "step2": "Deadline",
     "step3": "Pickup place and time",
@@ -508,6 +515,15 @@
     "simulate": "Test only: act like say bank transfer reach",
     "estimate": "You go get about {usd} USD for today rate. The rate when your transfer reach na the final one."
   },
+  "money": {
+    "dollarInfoLabel": "About dollar price",
+    "dollarInfoTitle": "Price dey fixed for dollar",
+    "dollarInfoExplain": "All price for SorobanPool na US dollar (USDC) make e steady. The naira amount wey you dey see na estimate based on current exchange rate.",
+    "dollarInfoRate": "You go pay the exact naira amount wey go cover the dollar price when your bank transfer reach.",
+    "dollarInfoQuotedAt": "Rate quoted for {time}",
+    "dollarInfoFinal": "The exchange rate when dem process your payment na the final one. Naira amount wey we show here go help you plan, but na the dollar price go lock your order.",
+    "dollarInfoClose": "I don understand"
+  },
   "states": {
     "Open": "People dey join",
     "Filled": "E don full",
@@ -523,6 +539,7 @@
     "title": "History",
     "lead": "Group buys wey don finish. Open one to see your goods, refund or report.",
     "empty": "No group buy don finish yet.",
+    "emptyAction": "Check group buys wey dey open",
     "link": "See group buys wey don pass"
   },
   "footer": {

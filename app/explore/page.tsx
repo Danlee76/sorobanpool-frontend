@@ -1,9 +1,11 @@
 'use client';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { UserText } from '@/components/ui/UserText';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
+import { SearchIcon } from '@/components/brand/icons';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import type { PoolCard } from '@/lib/types';
@@ -18,7 +20,11 @@ export default function Explore() {
   return (
     <div className="page-enter space-y-7">
       <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-emerald-800">{t('eyebrow')}</p><h1 className="mt-2 text-3xl font-semibold tracking-[-.035em] md:text-4xl">{t('title')}</h1><p className="mt-2 max-w-lg text-sm leading-6 text-neutral-700">{t('lead')}</p></div><span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-900">{t('openCount', { count: q.data?.length ?? 0 })}</span></div>
-      {q.data?.length === 0 && <p className="text-neutral-700">{t('empty')}</p>}
+      {q.data?.length === 0 && (
+        <EmptyState icon={<SearchIcon className="size-10" />} action={{ label: t('emptyAction'), href: '/history' }}>
+          {t('empty')}
+        </EmptyState>
+      )}
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-in">
         {q.data?.map((p) => (
           <li key={p.id}>
