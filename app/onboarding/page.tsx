@@ -40,6 +40,7 @@ function Onboarding() {
   const [cluster, setCluster] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const passkeySupport = usePasskeySupport();
   const [error, setError] = useState<unknown>(null);
 
@@ -207,66 +208,22 @@ function Onboarding() {
               ))}
             </div>
           </div>
-        </div>
-      )}
-      <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{t('title')}</h1>
-      {step === 'phone' && (
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); void sendCode(); }}>
-          <label htmlFor="phone" className="block font-medium">{t('phoneLabel')}</label>
-          <input id="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="0803 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} className={input} />
-          <p className="text-sm text-neutral-700">{t('phoneHelp')}</p>
-          <button disabled={busy || phone.length < 10} className={primary}>{t('sendCode')}</button>
-          {passkeySupport && <button type="button" onClick={() => void passkeyLogin()} disabled={busy} className="min-h-12 w-full rounded-xl border border-neutral-500 font-semibold">{t('passkeySignIn')}</button>}
-        </form>
-      )}
-      {step === 'code' && (
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); void verify(); }}>
-          <label htmlFor="code" className="block font-medium">{t('codeLabel')}</label>
-          <input id="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} className={`${input} tracking-widest`} />
-          <button disabled={busy || code.length !== 6} className={primary}>{t('verify')}</button>
-        </form>
-      )}
-      {step === 'terms' && (
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void acceptTerms(); }}>
-          <h2 className="text-lg font-semibold">{t('termsTitle')}</h2>
-          <p className="text-neutral-700">{t('termsBody')}</p>
-          <label className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="mt-1 size-5 rounded border-neutral-400 text-emerald-700 focus:ring-2 focus:ring-emerald-600"
-            />
-            <span className="text-sm text-neutral-800">
-              {t.rich('termsCheckbox', {
-                terms: (chunks) => (
-                  <Link href="/terms" target="_blank" className="font-semibold text-emerald-700 hover:underline">
-                    {chunks}
-                  </Link>
-                ),
-                privacy: (chunks) => (
-                  <Link href="/privacy" target="_blank" className="font-semibold text-emerald-700 hover:underline">
-                    {chunks}
-                  </Link>
-                ),
-              })}
-            </span>
-          </label>
-          <button disabled={busy || !termsAccepted} className={primary}>
-            {t('acceptTerms')}
-          </button>
-        </form>
-      )}
-      {step === 'profile' && (
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); void saveProfile(); }}>
-          <p className="text-neutral-700">{t('profile')}</p>
-          <label htmlFor="name" className="block font-medium">{t('nameLabel')}</label>
-          <input id="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={input} />
-          <label htmlFor="market" className="block font-medium">{t('marketLabel')}</label>
-          <input id="market" value={market} onChange={(e) => setMarket(e.target.value)} className={input} />
-          <div className="flex gap-3">
-            <div className="flex-1"><label htmlFor="state" className="block text-sm font-medium">State</label><input id="state" value={state} onChange={(e) => setState(e.target.value)} className={input} /></div>
-            <div className="flex-1"><label htmlFor="lga" className="block text-sm font-medium">LGA</label><input id="lga" value={lga} onChange={(e) => setLga(e.target.value)} className={input} /></div>
+        )}
+        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{t('title')}</h1>
+
+        {/* Form error summary */}
+        {Object.keys(errors).length > 0 && (
+          <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-red-900" aria-live="assertive">
+            <p className="font-semibold">{t('formErrors') || 'Please fix the following errors:'}</p>
+            <ul className="mt-2 list-inside list-disc space-y-1 text-sm">
+              {Object.entries(errors).map(([field, message]) => (
+                <li key={field}>
+                  <a href={`#${field}`} className="underline hover:text-red-700">
+                    {message}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -321,6 +278,37 @@ function Onboarding() {
               )}
             </div>
             <button disabled={busy || code.length !== 6} className={primary}>{t('verify')}</button>
+          </form>
+        )}
+        {step === 'terms' && (
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void acceptTerms(); }}>
+            <h2 className="text-lg font-semibold">{t('termsTitle')}</h2>
+            <p className="text-neutral-700">{t('termsBody')}</p>
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 size-5 rounded border-neutral-400 text-emerald-700 focus:ring-2 focus:ring-emerald-600"
+              />
+              <span className="text-sm text-neutral-800">
+                {t.rich('termsCheckbox', {
+                  terms: (chunks) => (
+                    <Link href="/terms" target="_blank" className="font-semibold text-emerald-700 hover:underline">
+                      {chunks}
+                    </Link>
+                  ),
+                  privacy: (chunks) => (
+                    <Link href="/privacy" target="_blank" className="font-semibold text-emerald-700 hover:underline">
+                      {chunks}
+                    </Link>
+                  ),
+                })}
+              </span>
+            </label>
+            <button disabled={busy || !termsAccepted} className={primary}>
+              {t('acceptTerms')}
+            </button>
           </form>
         )}
         {step === 'profile' && (
