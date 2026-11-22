@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { errorAction, errorKeys, isAllowedErrorRoute, type ErrorAction } from '@/lib/errors/map';
 import { UserDeclined } from '@/lib/tx';
