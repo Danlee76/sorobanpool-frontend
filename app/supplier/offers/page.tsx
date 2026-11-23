@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import type { OfferView } from '@/lib/types';
 
 export default function SupplierOffers() {
-  const t = useTranslations('supplier');
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
   const offers = useQuery({ queryKey: ['supplier-offers'], queryFn: () => api<OfferView[]>('/offers?mine=true'), enabled: ready });
