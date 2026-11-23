@@ -1,9 +1,10 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { useRequireAuth } from '@/lib/auth';
 import { getSupplierReputation } from '@/lib/api';
+import { formatDate } from '@/lib/format';
 import { SupplierReputation } from '@/lib/types';
 
 function StarRating({ score }: { score: number }) {
@@ -37,6 +38,7 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
 }
 
 export default function SupplierReputationPage() {
+  const locale = useLocale();
   const t = useTranslations('supplier.reputation');
   const auth = useRequireAuth();
 
@@ -123,7 +125,7 @@ export default function SupplierReputationPage() {
                 <div className="flex items-center justify-between">
                   <StarRating score={r.score} />
                   <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {new Date(r.ratedAt).toLocaleDateString()}
+                    {formatDate(r.ratedAt, locale)}
                   </span>
                 </div>
                 {r.comment && (
@@ -155,7 +157,7 @@ export default function SupplierReputationPage() {
                       {d.itemName ?? t('unknownItem')}
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {new Date(d.resolvedAt ?? d.openedAt).toLocaleDateString()}
+                      {formatDate(d.resolvedAt ?? d.openedAt, locale)}
                     </p>
                   </div>
                   <span

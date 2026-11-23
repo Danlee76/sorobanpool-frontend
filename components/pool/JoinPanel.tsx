@@ -1,7 +1,7 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
@@ -22,6 +22,7 @@ import type { PoolView } from '@/lib/types';
 /** Units -> "most you pay now" and "refund if more people join" -> approve on the device. */
 export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFactory?: StreamFactory }) {
   const t = useTranslations('pool');
+  const locale = useLocale();
   const common = useTranslations('common');
   const qc = useQueryClient();
   const { ask, dialog } = useConfirm();
@@ -74,7 +75,7 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
   const effectiveUnits = Math.max(1, units);
   const clamped = Math.max(1, Math.min(units, Math.max(room, 1)));
   const p = tiers.length ? payPreview(tiers, liveTotalUnits, effectiveUnits) : null;
-  const naira = (s: bigint) => (pool.ngnPerUsd ? formatNaira(stroopsToNairaCeil(s, pool.ngnPerUsd)) : '—');
+  const naira = (s: bigint) => (pool.ngnPerUsd ? formatNaira(stroopsToNairaCeil(s, pool.ngnPerUsd), locale) : '—');
 
   const progressTarget = pool.maxUnits ?? pool.moq ?? (tiers[tiers.length - 1]?.minUnits || 1);
   const progressPct = Math.min(100, Math.max(0, Math.round((liveTotalUnits / Math.max(1, progressTarget)) * 100)));

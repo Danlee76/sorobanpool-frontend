@@ -1,22 +1,23 @@
 'use client';
 import { UserText } from '@/components/ui/UserText';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { ShareButton } from '@/components/pool/ShareButton';
 import { api } from '@/lib/api';
+import { formatDateTime, fromWatDateTimeInput, toWatDateTimeInput } from '@/lib/format';
 import { useRequireAuth } from '@/lib/auth';
 import { runAction, type Prepared } from '@/lib/tx';
 import type { OfferView } from '@/lib/types';
 
 const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 const primary = 'min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60';
-const toLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
 export default function NewPool() {
   const t = useTranslations('organize');
+  const locale = useLocale();
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
   const { ask, dialog } = useConfirm();
@@ -24,8 +25,8 @@ export default function NewPool() {
   const [step, setStep] = useState(1);
   const [offerId, setOfferId] = useState('');
   // Clock reads happen once, in lazy initialisers: reading Date.now() during render is impure.
-  const [limits] = useState(() => ({ min: toLocal(new Date()), max: toLocal(new Date(Date.now() + 7 * 86400_000)) }));
-  const [deadline, setDeadline] = useState(() => toLocal(new Date(Date.now() + 3 * 86400_000)));
+  const [limits] = useState(() => ({ min: toWatDateTimeInput(new Date()), max: toWatDateTimeInput(new Date(Date.now() + 7 * 86400_000)) }));
+  const [deadline, setDeadline] = useState(() => toWatDateTimeInput(new Date(Date.now() + 3 * 86400_000)));
   const [address, setAddress] = useState('');
   const [contact, setContact] = useState('');
   const [from, setFrom] = useState('');
@@ -47,7 +48,7 @@ export default function NewPool() {
       let slug = '';
       await runAction(async () => {
         const p = await api<Prepared & { shareSlug: string }>('/pools/prepare', { body: {
-          offerId, fillDeadline: new Date(deadline).toISOString(), hub: { address, contact }, pickupWindow: { from, to },
+          offerId, fillDeadline: fromWatDateTimeInput(deadline).toISOString(), hub: { address, contact }, pickupWindow: { from: fromWatDateTimeInput(from).toISOString(), to: fromWatDateTimeInput(to).toISOString() },
           organizerFeeBp: Math.round(Number(feePct) * 100), clusterOnly,
         } });
         slug = p.shareSlug;
@@ -77,9 +78,9 @@ export default function NewPool() {
   }
 
   const validPhone = /^(?:\+234|0)[789][01]\d{8}$/.test(contact.replace(/[\s-]/g, ''));
-  const expectedDelivery = offer ? new Date(new Date(deadline).getTime() + offer.leadTimeHours * 3600_000).getTime() : NaN;
-  const fromTime = new Date(from).getTime();
-  const toTime = new Date(to).getTime();
+  const expectedDelivery = offer ? fromWatDateTimeInput(deadline).getTime() + offer.leadTimeHours * 3600_000 : NaN;
+  const fromTime = from ? fromWatDateTimeInput(from).getTime() : NaN;
+  const toTime = to ? fromWatDateTimeInput(to).getTime() : NaN;
   const validWindow = Number.isFinite(expectedDelivery) && Number.isFinite(fromTime) && Number.isFinite(toTime) && fromTime > expectedDelivery && toTime > fromTime && toTime - fromTime <= 7 * 86400_000;
   const validHub = address.trim().length >= 5 && validPhone && validWindow;
   const validFee = feePct.trim() !== '' && Number.isFinite(Number(feePct)) && Number(feePct) >= 0 && Number(feePct) <= 1;
@@ -103,7 +104,7 @@ export default function NewPool() {
           <label htmlFor="addr" className="block font-medium">{t('hubAddress')}</label><input id="addr" required minLength={5} value={address} onChange={(e) => setAddress(e.target.value)} className={input} />
           <label htmlFor="contact" className="block font-medium">{t('hubContact')}</label><input id="contact" type="tel" required aria-invalid={contact.length > 0 && !validPhone} value={contact} onChange={(e) => setContact(e.target.value)} className={input} />
           {contact.length > 0 && !validPhone && <p role="alert" className="text-red-700">Enter a valid Nigerian phone number.</p>}
-          <label htmlFor="from" className="block font-medium">{t('windowFrom')}</label><input id="from" type="datetime-local" min={Number.isFinite(expectedDelivery) ? toLocal(new Date(expectedDelivery + 60_000)) : undefined} value={from} onChange={(e) => setFrom(e.target.value)} className={input} placeholder="Mon 9am" />
+          <label htmlFor="from" className="block font-medium">{t('windowFrom')}</label><input id="from" type="datetime-local" min={Number.isFinite(expectedDelivery) ? toWatDateTimeInput(new Date(expectedDelivery + 60_000)) : undefined} value={from} onChange={(e) => setFrom(e.target.value)} className={input} placeholder="Mon 9am" />
           <label htmlFor="to" className="block font-medium">{t('windowTo')}</label><input id="to" type="datetime-local" min={from || undefined} value={to} onChange={(e) => setTo(e.target.value)} className={input} placeholder="Mon 5pm" />
           {(from || to) && !validWindow && <p role="alert" className="text-red-700">Pickup must start after expected delivery and end within seven days of pickup start.</p>}
         </div>
@@ -118,8 +119,8 @@ export default function NewPool() {
       {step === 5 && (
         <dl className="space-y-2 rounded-xl border border-neutral-200 bg-white p-4 text-sm">
           <div><dt className="font-semibold">{t('step1')}</dt><UserText as="dd" value={offer?.title} /><dd>{offer?.unitLabel} · minimum {offer?.moq} units</dd><dd>Price tiers: {offer?.tiersUsdc.map(tier => `${tier.minUnits}+ units at ${tier.unitPrice} stroops`).join('; ')}</dd><button type="button" onClick={() => setStep(1)} className="underline">Edit offer</button></div>
-          <div><dt className="font-semibold">{t('deadlineLabel')}</dt><dd>{new Date(deadline).toLocaleString()}</dd><button type="button" onClick={() => setStep(2)} className="underline">Edit deadline</button></div>
-          <div><dt className="font-semibold">{t('hubAddress')}</dt><dd>{address} · {contact}</dd><dd>Pickup: {new Date(from).toLocaleString()} – {new Date(to).toLocaleString()}</dd><button type="button" onClick={() => setStep(3)} className="underline">Edit pickup details</button></div>
+          <div><dt className="font-semibold">{t('deadlineLabel')}</dt><dd>{formatDateTime(fromWatDateTimeInput(deadline), locale)}</dd><button type="button" onClick={() => setStep(2)} className="underline">Edit deadline</button></div>
+          <div><dt className="font-semibold">{t('hubAddress')}</dt><dd>{address} · {contact}</dd><dd>Pickup: {formatDateTime(fromWatDateTimeInput(from), locale)} – {formatDateTime(fromWatDateTimeInput(to), locale)}</dd><button type="button" onClick={() => setStep(3)} className="underline">Edit pickup details</button></div>
           <div><dt className="font-semibold">{t('feeLabel')}</dt><dd>{feePct}%{clusterOnly ? ` · ${t('restrict')}` : ''}</dd><button type="button" onClick={() => setStep(4)} className="underline">Edit fee</button></div><div><dt className="font-semibold">What members see</dt><dd>Offer, price tiers, closing deadline, pickup address and window, and organizer fee.</dd></div>
         </dl>
       )}

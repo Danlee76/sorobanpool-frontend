@@ -9,6 +9,7 @@ import { useSession } from '@/lib/store';
 import { listPasskeys, passkeyCancelled, removePasskey, usePasskeySupport, registerPasskey } from '@/lib/passkey';
 import { backupSecret, confirmWithDevice, loadWallet } from '@/lib/wallet';
 import { api } from '@/lib/api';
+import { formatDate } from '@/lib/format';
 
 interface NotificationPreferences {
   sms: {
@@ -230,7 +231,7 @@ export default function Settings() {
               <ul className="space-y-2">
                 {passkeyList.data.map((p) => (
                   <li key={p.id} className="flex items-center justify-between rounded-xl border border-neutral-300 p-3">
-                    <span className="text-sm">{t('passkeyAddedOn', { date: new Date(p.createdAt).toLocaleDateString() })}</span>
+                    <span className="text-sm">{t('passkeyAddedOn', { date: formatDate(p.createdAt, locale) })}</span>
                     <button onClick={() => void removeOne(p.id)} className="flex min-h-12 min-w-12 items-center justify-center rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-800">{t('passkeyRemove')}</button>
                   </li>
                 ))}

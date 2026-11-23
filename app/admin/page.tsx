@@ -1,10 +1,10 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
-import { formatUsdc, percent, shortAddress } from '@/lib/format';
+import { formatTime, formatUsdc, percent, shortAddress } from '@/lib/format';
 import type { RiskOverview } from '@/lib/types';
 
 const WINDOWS = [7, 30, 90] as const;
@@ -19,6 +19,7 @@ function Stat({ label, value, alert }: { label: string; value: string; alert?: b
 }
 
 export default function Risk() {
+  const locale = useLocale();
   const t = useTranslations('admin');
   const r = useTranslations('admin.risk');
   const [days, setDays] = useState<(typeof WINDOWS)[number]>(7);
@@ -61,7 +62,7 @@ export default function Risk() {
       <section aria-labelledby="pair-h"><h2 id="pair-h" className="mb-2 font-semibold">{r('pairs')}</h2>
         <ul className="space-y-1">{o.pairs.slice(0, 10).map((p) => <li key={`${p.organizer}${p.supplier}`} className="flex justify-between rounded-lg bg-white p-3 text-sm"><span>{shortAddress(p.organizer)} → {shortAddress(p.supplier)}</span><span>{r('pools', { count: p.pools })} · {percent(p.shareOfOrganizer, 0)}</span></li>)}</ul>
       </section>
-      <p className="text-xs text-neutral-700">{t('title')} · {new Date(o.generatedAt).toLocaleTimeString()}</p>
+      <p className="text-xs text-neutral-700">{t('title')} · {formatTime(o.generatedAt, locale)}</p>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countdown, formatNaira, formatUsdc, groupDigits, relativeTimeParts, stroopsToNairaCeil, toStroops } from './format';
+import { countdown, formatDate, formatDateTime, formatNaira, formatRelativeTime, formatTime, formatUsdc, fromWatDateTimeInput, groupDigits, relativeTimeParts, stroopsToNairaCeil, toStroops, toWatDateTimeInput, watDateKey } from './format';
 import { payPreview, type Tier } from './pricing';
 import { errorKeys, knownErrorCodes } from './errors/map';
 import en from '../messages/errors.en.json';
@@ -80,5 +80,52 @@ describe('admin display helpers', () => {
     expect(percent(0)).toBe('0.0%');
     expect(shortAddress('GABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe('GABCD…WXYZ');
     expect(shortAddress('short')).toBe('short');
+  });
+});
+
+describe('Intl money and WAT date formatting (issue #48)', () => {
+  it.each(['en', 'pcm'])('groups exact BigInt naira values for %s', (locale) => {
+    const huge = 123456789012345678901234567890123456789n;
+    expect(groupDigits(huge, locale)).toBe('123,456,789,012,345,678,901,234,567,890,123,456,789');
+    expect(formatNaira(huge, locale)).toBe('₦123,456,789,012,345,678,901,234,567,890,123,456,789');
+    expect(formatNaira(-1500n, locale)).toBe('-₦1,500');
+    expect(formatNaira(0n, locale)).toBe('₦0');
+  });
+
+  it('rejects unsafe numeric inputs rather than silently losing money', () => {
+    expect(() => formatNaira(Number.MAX_SAFE_INTEGER + 2)).toThrow(RangeError);
+    expect(formatNaira('9007199254740993')).toBe('₦9,007,199,254,740,993');
+  });
+
+  it.each(['en', 'pcm'])('uses Lagos time across midnight for %s', (locale) => {
+    const justBefore = '2026-10-01T22:59:00.000Z';
+    const afterMidnight = '2026-10-01T23:30:00.000Z';
+    expect(watDateKey(justBefore)).toBe('2026-10-01');
+    expect(watDateKey(afterMidnight)).toBe('2026-10-02');
+    expect(formatDate(afterMidnight, locale, { day: 'numeric', month: 'numeric', year: 'numeric' }))
+      .toBe(new Intl.DateTimeFormat(locale === 'pcm' ? 'pcm-NG' : 'en-NG', {
+        timeZone: 'Africa/Lagos', day: 'numeric', month: 'numeric', year: 'numeric',
+      }).format(new Date(afterMidnight)));
+    expect(formatTime(afterMidnight, locale)).toContain('00:30');
+    expect(formatDateTime(afterMidnight, locale)).toBeTruthy();
+  });
+
+  it('round trips WAT date-time input independently of browser timezone', () => {
+    const utc = '2026-12-31T23:30:00.000Z';
+    expect(toWatDateTimeInput(utc)).toBe('2027-01-01T00:30');
+    expect(fromWatDateTimeInput('2027-01-01T00:30').toISOString()).toBe(utc);
+    expect(() => fromWatDateTimeInput('2027-02-30T12:00')).toThrow();
+  });
+
+  it('localizes relative dates in one helper', () => {
+    expect(formatRelativeTime(7_200, 'en')).toContain('2');
+    expect(formatRelativeTime(-60, 'pcm')).toBeTruthy();
+  });
+});
+
+describe('exact localized USDC formatting', () => {
+  it.each(['en', 'pcm'])('keeps all seven stroop decimal places for %s', (locale) => {
+    expect(formatUsdc('900719925474099312345678901', locale)).toBe('90071992547409931234.5678901');
+    expect(formatUsdc(-1n, locale)).toBe('-0.0000001');
   });
 });

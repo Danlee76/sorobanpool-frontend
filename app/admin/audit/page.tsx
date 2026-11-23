@@ -1,11 +1,11 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
 import { MASK, readableDetails } from '@/lib/adminView';
-import { shortAddress } from '@/lib/format';
+import { formatDateTime, shortAddress } from '@/lib/format';
 import { SortableTh, useAdminSort } from '@/components/admin/SortableTh';
 
 interface Entry {
@@ -20,6 +20,7 @@ interface Entry {
 const PAGE_SIZE = 20;
 
 export default function Audit() {
+  const locale = useLocale();
   const t = useTranslations('admin');
   const q = useQuery({ queryKey: ['admin', 'audit'], queryFn: () => api<Entry[]>('/admin/audit?limit=100') });
 
@@ -166,7 +167,7 @@ export default function Audit() {
                   </th>
                   <td className="py-3 px-3 text-neutral-700 align-top">{e.target}</td>
                   <td className="py-3 px-3 text-neutral-700 align-top">{shortAddress(e.actorId)}</td>
-                  <td className="py-3 px-3 text-neutral-700 align-top">{new Date(e.at).toLocaleString()}</td>
+                  <td className="py-3 px-3 text-neutral-700 align-top">{formatDateTime(e.at, locale)}</td>
                   <td className="py-3 px-3 align-top">
                     <button
                       type="button"

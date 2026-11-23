@@ -1,8 +1,8 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { InfoIcon } from '@/components/brand/icons';
-import { formatNaira } from '@/lib/format';
+import { formatDateTime, formatNairaRate } from '@/lib/format';
 
 interface DollarInfoProps {
   /** The current naira-per-dollar rate quoted for this pool. */
@@ -19,6 +19,7 @@ interface DollarInfoProps {
 export function DollarInfo({ ngnPerUsd, quotedAt }: DollarInfoProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations('money');
+  const locale = useLocale();
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') setOpen(false);
@@ -54,15 +55,12 @@ export function DollarInfo({ ngnPerUsd, quotedAt }: DollarInfoProps) {
               {ngnPerUsd && (
                 <p className="rounded-lg bg-neutral-100 p-3">
                   <span className="font-semibold text-neutral-900">
-                    ₦{formatNaira(BigInt(Math.round(ngnPerUsd * 100)))} per $1
+                    {formatNairaRate(ngnPerUsd, locale)} per $1
                   </span>
                   {quotedAt && (
                     <span className="mt-1 block text-xs text-neutral-600">
                       {t('dollarInfoQuotedAt', {
-                        time: new Intl.DateTimeFormat(undefined, {
-                          dateStyle: 'medium',
-                          timeStyle: 'short',
-                        }).format(new Date(quotedAt)),
+                        time: formatDateTime(quotedAt, locale),
                       })}
                     </span>
                   )}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { formatNaira } from '@/lib/format';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { createOffer } from '@/lib/api';
@@ -42,6 +43,7 @@ function OfferPreviewCard({
   validDays: number;
 }) {
   const t = useTranslations('supplier.offer');
+  const locale = useLocale();
 
   const lowestTier = tiers.length > 0 ? Math.min(...tiers.map((t) => t.priceNaira)) : 0;
   const highestTier = tiers.length > 0 ? Math.max(...tiers.map((t) => t.priceNaira)) : 0;
@@ -78,7 +80,7 @@ function OfferPreviewCard({
           {lowestTier > 0 && (
             <div className="text-right">
               <p className="text-xs text-indigo-100">{t('preview.priceFrom')}</p>
-              <p className="text-2xl font-bold text-white">₦{lowestTier.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-white">{formatNaira(lowestTier, locale)}</p>
               <p className="text-xs text-indigo-100">/{unitLabel || t('preview.unit')}</p>
             </div>
           )}
@@ -114,7 +116,7 @@ function OfferPreviewCard({
                         {tier.minUnits}+
                       </td>
                       <td className="px-4 py-2 text-right font-semibold text-gray-900 dark:text-gray-100">
-                        ₦{tier.priceNaira.toLocaleString()}
+                        {formatNaira(tier.priceNaira, locale)}
                       </td>
                     </tr>
                   ))}

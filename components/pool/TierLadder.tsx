@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { formatNaira, stroopsToNairaCeil } from '@/lib/format';
 import { tierIndex } from '@/lib/pricing';
 import type { Tier } from '@/lib/types';
@@ -6,8 +6,9 @@ import type { Tier } from '@/lib/types';
 /** Every price break, where the pool is now, and how far to the next one. Motivates sharing. */
 export function TierLadder({ tiers, totalUnits, ngnPerUsd }: { tiers: Tier[]; totalUnits: number; ngnPerUsd: number | null }) {
   const t = useTranslations('pool');
+  const locale = useLocale();
   const current = tierIndex(tiers.map((x) => ({ minUnits: x.minUnits, unitPrice: BigInt(x.unitPrice) })), totalUnits);
-  const price = (s: string) => (ngnPerUsd ? formatNaira(stroopsToNairaCeil(BigInt(s), ngnPerUsd)) : '—');
+  const price = (s: string) => (ngnPerUsd ? formatNaira(stroopsToNairaCeil(BigInt(s), ngnPerUsd), locale) : '—');
   return (
     <section aria-labelledby="tiers-h" className="rounded-xl border border-neutral-200 bg-white p-4">
       <h2 id="tiers-h" className="mb-3 text-base font-semibold">{t('tiers')}</h2>

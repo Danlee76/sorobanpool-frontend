@@ -1,12 +1,13 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
 import { hoursLeft, evidenceTimeline } from '@/lib/disputes';
+import { formatDate } from '@/lib/format';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import type { DisputeView } from '@/lib/types';
 
@@ -26,6 +27,7 @@ interface DisputeDetail extends DisputeView {
 }
 
 export default function DisputeDetailPage() {
+  const locale = useLocale();
   const { id } = useParams<{ id: string }>();
   const t = useTranslations('disputes');
   const common = useTranslations('common');
@@ -149,7 +151,7 @@ export default function DisputeDetailPage() {
                       {item.party ? t(`party${item.party}`) : t('unknown')}
                     </span>
                     <span className="text-xs text-neutral-500">
-                      {new Date(item.createdAt).toLocaleDateString()}
+                      {formatDate(item.createdAt, locale)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-neutral-700">{item.kind}</p>

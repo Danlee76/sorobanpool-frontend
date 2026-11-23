@@ -1,4 +1,5 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatNaira } from '@/lib/format';
 
 /** Illustrative pool (labelled "Example"): how the unit price falls as the group grows. Server-rendered, no JS. */
 const TIERS = [
@@ -9,10 +10,10 @@ const TIERS = [
 const JOINED = 128;
 const MAX = 150;
 
-const naira = (n: number) => `₦${n.toLocaleString('en-NG')}`;
-
 export async function HeroPriceCard() {
   const t = await getTranslations('home');
+  const locale = await getLocale();
+  const naira = (n: number) => formatNaira(n, locale);
   const current = [...TIERS].reverse().find((x) => JOINED >= x.from)!;
   const next = TIERS.find((x) => x.from > JOINED);
   return (
