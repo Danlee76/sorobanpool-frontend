@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { Logo } from '@/components/brand/Logo';
 import { ServiceWorker } from '@/components/ServiceWorker';
 import { InstallCard } from '@/components/InstallCard';
+import { LanguagePicker } from '@/components/LanguagePicker';
 import { useOnlineStatus } from '@/lib/network';
 import { useSession } from '@/lib/store';
 
@@ -80,6 +81,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="flex flex-col gap-2 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p><span className="font-semibold text-emerald-950">{f('tagline')}</span> <span aria-hidden="true">·</span> {f('built')}</p>
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <LanguagePicker compact />
             {TESTNET && <span>{f('testnet')}</span>}
             <a href="https://github.com/SorobanPool" className="inline-flex min-h-12 items-center underline underline-offset-4 hover:text-emerald-900">{f('source')}</a>
           </p>

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatNaira } from '@/lib/format';
 import { payPreview, type Tier } from '@/lib/pricing';
 
@@ -21,6 +22,7 @@ export interface RefundEstimateProps {
  * for the current tier ladder. Uses pricing.ts only, no new maths.
  */
 export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }: RefundEstimateProps) {
+  const t = useTranslations('pool');
   const [isOpen, setIsOpen] = useState(false);
 
   if (tiers.length === 0) return null;
@@ -95,7 +97,7 @@ export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }:
 
             <div className="space-y-4">
               <div className="rounded-lg bg-amber-50 p-4">
-                <h3 className="mb-2 font-semibold">Right now ({units} unit{units !== 1 ? 's' : ''})</h3>
+                <h3 className="mb-2 font-semibold">{t('refundRightNow', { count: units })}</h3>
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-neutral-700">Maximum you pay:</dt>
@@ -121,7 +123,7 @@ export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }:
                         <div key={idx} className="rounded-lg border border-neutral-200 bg-white p-3">
                           <p className="mb-1 text-sm font-medium">{bp.tierName}</p>
                           <p className="mb-2 text-xs text-neutral-600">
-                            {bp.unitsToGo} more unit{bp.unitsToGo !== 1 ? 's' : ''} needed
+                            {t('refundUnitsNeeded', { count: bp.unitsToGo })}
                           </p>
                           <dl className="space-y-1 text-sm">
                             <div className="flex justify-between">

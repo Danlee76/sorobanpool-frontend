@@ -9,14 +9,17 @@ Work through the steps in order. The checklist at the end is for reviewers.
 
 ## 1. Register the locale
 
-Add the code to `locales` in [`i18n/request.ts`](../i18n/request.ts):
+Add the code to `locales` in [`i18n/locales.ts`](../i18n/locales.ts):
 
 ```ts
 export const locales = ['en', 'pcm', 'ha'] as const;
 ```
 
 The type `Locale` follows from this array. The request config reads the
-`locale` cookie and falls back to `en` for anything unknown.
+`locale` cookie. With no cookie, it picks the best match from the browser's
+`Accept-Language` header among `locales`, so a Hausa browser gets `ha` as
+soon as it is listed here. Anything unknown falls back to `en`. The cookie
+is written only when someone picks a language.
 
 ## 2. Create the message files
 
@@ -41,20 +44,15 @@ as `{count}`. ICU plural blocks keep their structure:
 "members": "{count, plural, one {# dey} other {# dey}}"
 ```
 
-## 3. Add the option to Settings
+## 3. Add the option to the language picker
 
-`app/settings/page.tsx` has a language picker that writes the cookie. Its
-`setLocale` function is typed `'en' | 'pcm'`, so widen it to `Locale` (imported
-from `i18n/request.ts`) and add a button for the new language:
+[`components/LanguagePicker.tsx`](../components/LanguagePicker.tsx) is the
+control on Settings and in the footer. It shows one button per entry in
+`locales`, writes the cookie, and saves the choice to the profile. Add the
+label key for the new language to its `LABEL_KEY` map:
 
 ```tsx
-<button
-  aria-pressed={locale === 'ha'}
-  onClick={() => setLocale('ha')}
-  className={`${btn} ${locale === 'ha' ? 'border-emerald-800 bg-emerald-50' : ''}`}
->
-  {t('hausa')}
-</button>
+const LABEL_KEY: Record<Locale, 'english' | 'pidgin' | 'hausa'> = { en: 'english', pcm: 'pidgin', ha: 'hausa' };
 ```
 
 Add the label key (`hausa` here) to every message file, including the English
@@ -113,9 +111,9 @@ into missing keys and merging that.
 Safe path:
 
 1. Keep the work on a branch and open the PR as a **draft**.
-2. Leave the `locales` entry and the Settings option out of `main` until every
+2. Leave the `locales` entry and the picker label out of `main` until every
    key is translated and reviewed.
-3. Merge the complete file, the locale entry and the Settings option in one PR.
+3. Merge the complete file, the locale entry and the picker label in one PR.
 
 Users then never see a screen that is half in one language and half in another.
 
@@ -124,10 +122,10 @@ Users then never see a screen that is half in one language and half in another.
 A dummy `ha` locale on a scratch branch takes about an hour if the English
 files are complete:
 
-1. Add `ha` to `locales` in `i18n/request.ts`.
+1. Add `ha` to `locales` in `i18n/locales.ts`.
 2. Copy the two English files to `messages/ha.json` and
    `messages/errors.ha.json`, and translate the values.
-3. Add the Settings button and widen `setLocale`.
+3. Add the `ha` label to `LABEL_KEY` in `components/LanguagePicker.tsx`.
 4. Add `ha` to the test lists in `lib/messages.test.ts` and
    `tests/e2e/a11y.spec.ts`.
 5. Run `pnpm test` and `pnpm typecheck`.
@@ -138,7 +136,7 @@ friction this guide is meant to remove.
 
 ## Reviewer checklist
 
-- [ ] `ha` is in `locales` in `i18n/request.ts`, and the Settings option works.
+- [ ] `ha` is in `locales` in `i18n/locales.ts`, and the language picker option works.
 - [ ] `messages/ha.json` and `messages/errors.ha.json` have every key that
       `en` has, with no extras and no empty values.
 - [ ] Placeholders and ICU plural blocks match English.

@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useConfirm } from '@/components/ConfirmDialog';
@@ -9,6 +9,7 @@ import { useSession } from '@/lib/store';
 import { listPasskeys, passkeyCancelled, removePasskey, usePasskeySupport, registerPasskey } from '@/lib/passkey';
 import { backupSecret, confirmWithDevice, loadWallet } from '@/lib/wallet';
 import { api } from '@/lib/api';
+import { LanguagePicker } from '@/components/LanguagePicker';
 
 interface NotificationPreferences {
   sms: {
@@ -37,7 +38,6 @@ const defaultPreferences: NotificationPreferences = {
 export default function Settings() {
   const t = useTranslations('settings');
   const common = useTranslations('common');
-  const locale = useLocale();
   const router = useRouter();
   const { ready } = useRequireAuth();
   const signOut = useSession((s) => s.signOut);
@@ -67,11 +67,6 @@ export default function Settings() {
       qc.invalidateQueries({ queryKey: ['notifications', 'preferences'] });
     },
   });
-
-  function setLocale(l: 'en' | 'pcm') {
-    document.cookie = `locale=${l}; path=/; max-age=31536000; samesite=lax`;
-    router.refresh();
-  }
 
   async function showBackup() {
     if ((await confirmWithDevice()) === 'denied') return;
@@ -116,10 +111,7 @@ export default function Settings() {
       
       <section aria-labelledby="lang-h" className="space-y-2">
         <h2 id="lang-h" className="font-semibold">{t('language')}</h2>
-        <div className="flex gap-3">
-          <button aria-pressed={locale === 'en'} onClick={() => setLocale('en')} className={`${btn} ${locale === 'en' ? 'border-emerald-800 bg-emerald-50' : ''}`}>{t('english')}</button>
-          <button aria-pressed={locale === 'pcm'} onClick={() => setLocale('pcm')} className={`${btn} ${locale === 'pcm' ? 'border-emerald-800 bg-emerald-50' : ''}`}>{t('pidgin')}</button>
-        </div>
+        <LanguagePicker />
       </section>
 
       <section aria-labelledby="notifications-h" className="space-y-4">

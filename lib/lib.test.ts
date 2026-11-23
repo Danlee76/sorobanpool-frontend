@@ -4,6 +4,7 @@ import { payPreview, type Tier } from './pricing';
 import { errorKeys, knownErrorCodes } from './errors/map';
 import en from '../messages/errors.en.json';
 import pcm from '../messages/errors.pcm.json';
+import { matchAcceptLanguage } from '../i18n/locales';
 
 const tiers: Tier[] = [{ minUnits: 100, unitPrice: toStroops('1') }, { minUnits: 200, unitPrice: toStroops('0.9') }, { minUnits: 400, unitPrice: toStroops('0.8') }];
 
@@ -80,5 +81,28 @@ describe('admin display helpers', () => {
     expect(percent(0)).toBe('0.0%');
     expect(shortAddress('GABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe('GABCD…WXYZ');
     expect(shortAddress('short')).toBe('short');
+  });
+});
+
+describe('matchAcceptLanguage: first-visit locale from the Accept-Language header (#52)', () => {
+  it('picks English for a typical Nigerian English browser', () => {
+    expect(matchAcceptLanguage('en-NG,en;q=0.9')).toBe('en');
+  });
+  it('picks Pidgin when the browser asks for it, by q-value order', () => {
+    expect(matchAcceptLanguage('pcm')).toBe('pcm');
+    expect(matchAcceptLanguage('en;q=0.5, pcm-NG;q=0.8')).toBe('pcm');
+    expect(matchAcceptLanguage('pcm;q=0, en')).toBe('en');
+  });
+  it('falls back to English for Hausa until a Hausa catalog ships, then picks it', () => {
+    expect(matchAcceptLanguage('ha')).toBe('en');
+    expect(matchAcceptLanguage('ha', ['en', 'pcm', 'ha'])).toBe('ha');
+    expect(matchAcceptLanguage('fr-FR, yo;q=0.7, ig;q=0.9', ['en', 'pcm', 'ha', 'yo', 'ig'])).toBe('ig');
+  });
+  it('falls back to English for unknown, empty or malformed headers', () => {
+    expect(matchAcceptLanguage('fr-FR,de;q=0.8')).toBe('en');
+    expect(matchAcceptLanguage('*')).toBe('en');
+    expect(matchAcceptLanguage('')).toBe('en');
+    expect(matchAcceptLanguage(null)).toBe('en');
+    expect(matchAcceptLanguage(';;,q=abc')).toBe('en');
   });
 });

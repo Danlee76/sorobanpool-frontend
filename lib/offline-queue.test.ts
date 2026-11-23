@@ -80,7 +80,7 @@ describe('Offline Queue (#73)', () => {
 
   describe('Whitelist enforcement and Deny-list guard', () => {
     it('accepts valid whitelisted actions', async () => {
-      const res = await enqueueAction('save-language', { locale: 'pcm' });
+      const res = await enqueueAction('save-language', { language: 'pcm' });
       expect(res.queued).toBe(true);
       expect(res.actionType).toBe('save-language');
       expect(mockDb.items.size).toBe(1);
@@ -131,24 +131,24 @@ describe('Offline Queue (#73)', () => {
       expect(mockDb.items.size).toBe(0);
 
       // Verify stored item never has auth headers
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
       const stored = Array.from(mockDb.items.values())[0];
-      expect(stored.payload).toEqual({ locale: 'en' });
+      expect(stored.payload).toEqual({ language: 'en' });
       expect(JSON.stringify(stored)).not.toContain('Bearer');
     });
   });
 
   describe('Deduplication and Bounds', () => {
     it('deduplicates last-write-wins actions by updating the existing item', async () => {
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
       expect(mockDb.items.size).toBe(1);
       const firstId = Array.from(mockDb.items.values())[0].id;
 
-      await enqueueAction('save-language', { locale: 'pcm' });
+      await enqueueAction('save-language', { language: 'pcm' });
       expect(mockDb.items.size).toBe(1);
       const updated = Array.from(mockDb.items.values())[0];
       expect(updated.id).toBe(firstId);
-      expect(updated.payload).toEqual({ locale: 'pcm' });
+      expect(updated.payload).toEqual({ language: 'pcm' });
     });
   });
 
@@ -175,7 +175,7 @@ describe('Offline Queue (#73)', () => {
 
     it('drops item on 4xx error without retrying (except 429)', async () => {
       vi.stubGlobal('fetch', vi.fn(async () => new Response('{"error":"BadRequest"}', { status: 400 })));
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
 
       const res = await replayOfflineQueue();
       expect(res.dropped).toBe(1);
@@ -208,7 +208,7 @@ describe('Offline Queue (#73)', () => {
 
     it('drops item once maximum attempts (MAX_ATTEMPTS) are exhausted', async () => {
       vi.stubGlobal('fetch', vi.fn(async () => new Response('{"error":"Gateway Timeout"}', { status: 504 })));
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
 
       const item = Array.from(mockDb.items.values())[0];
       item.attempts = MAX_ATTEMPTS - 1;
@@ -221,7 +221,7 @@ describe('Offline Queue (#73)', () => {
 
     it('drops item when user session is logged out', async () => {
       session.clear();
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
       const res = await replayOfflineQueue();
       expect(res.dropped).toBe(1);
       expect(mockDb.items.size).toBe(0);
@@ -233,7 +233,7 @@ describe('Offline Queue (#73)', () => {
       delete (globalThis as any).indexedDB;
       _resetDbForTesting();
 
-      const res = await enqueueAction('save-language', { locale: 'en' });
+      const res = await enqueueAction('save-language', { language: 'en' });
       expect(res.queued).toBe(true);
     });
 
@@ -249,7 +249,7 @@ describe('Offline Queue (#73)', () => {
       };
 
       vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })));
-      await enqueueAction('save-language', { locale: 'en' });
+      await enqueueAction('save-language', { language: 'en' });
 
       // First run succeeds
       const r1 = await replayOfflineQueue();
@@ -266,9 +266,9 @@ describe('Offline Queue (#73)', () => {
   describe('Integration with api()', () => {
     it('enqueues and returns { queued: true } when offline', async () => {
       Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
-      const result: any = await api('/me/profile', {
+      const result: any = await api('/me', {
         method: 'PATCH',
-        body: { locale: 'pcm' },
+        body: { language: 'pcm' },
         actionType: 'save-language',
       });
       expect(result.queued).toBe(true);
@@ -281,9 +281,9 @@ describe('Offline Queue (#73)', () => {
         throw new TypeError('Failed to fetch');
       }));
 
-      const result: any = await api('/me/profile', {
+      const result: any = await api('/me', {
         method: 'PATCH',
-        body: { locale: 'en' },
+        body: { language: 'en' },
         actionType: 'save-language',
       });
       expect(result.queued).toBe(true);
