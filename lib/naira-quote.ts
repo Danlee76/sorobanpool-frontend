@@ -1,4 +1,4 @@
-import { stroopsToNairaCeil } from './format';
+import { displayLocale, stroopsToNairaCeil } from './format';
 
 /** Share added to the naira amount: the rate that counts is the one when the bank transfer arrives, and it can move. */
 export const NAIRA_BUFFER = 1.02;
@@ -58,13 +58,26 @@ export function parseNgnToKobo(value: string | number | undefined | null): bigin
 }
 
 /** Formats exact integer kobo as Naira with 2 decimals and thousands grouping (e.g. 153000n -> "₦1,530.00"). */
-export function formatKobo(kobo: bigint): string {
-  const neg = kobo < 0n;
-  const abs = neg ? -kobo : kobo;
+export function formatKobo(kobo: bigint, locale = 'en'): string {
+  const negative = kobo < 0n;
+  const abs = negative ? -kobo : kobo;
   const whole = abs / 100n;
-  const frac = (abs % 100n).toString().padStart(2, '0');
-  const grouped = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return `${neg ? '-' : ''}₦${grouped}.${frac}`;
+  const fraction = (abs % 100n).toString().padStart(2, '0');
+  // The BigInt integral part goes straight to Intl. Override its fractional part
+  // with exact kobo digits, never converting the monetary amount through Number.
+  const displayWhole = negative ? -(whole || 1n) : whole;
+  const parts = new Intl.NumberFormat(displayLocale(locale), {
+    style: 'currency',
+    currency: 'NGN',
+    currencyDisplay: 'narrowSymbol',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).formatToParts(displayWhole);
+  return parts.map((part) => {
+    if (part.type === 'fraction') return fraction;
+    if (part.type === 'integer' && negative && whole === 0n) return '0';
+    return part.value;
+  }).join('');
 }
 
 /** Formats exact integer kobo as a plain decimal API payload string (omits ".00" for whole naira). */

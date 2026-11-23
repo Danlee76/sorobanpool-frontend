@@ -1,13 +1,14 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api, session } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
-import { formatUsdc } from '@/lib/format';
+import { formatDate, formatUsdc } from '@/lib/format';
 import type { Statement } from '@/lib/types';
 
 export default function StatementPage() {
+  const locale = useLocale();
   const t = useTranslations('statement');
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
@@ -27,7 +28,7 @@ export default function StatementPage() {
   if (!ready || q.isLoading) return <p>{common('loading')}</p>;
   if (q.error) return <ErrorExplainer error={q.error} onRetry={() => void q.refetch()} />;
   const s = q.data!;
-  const usd = (x: string) => formatUsdc(x);
+  const usd = (x: string) => formatUsdc(x, locale);
 
   return (
     <div className="space-y-4">
@@ -55,7 +56,7 @@ export default function StatementPage() {
                     <td className="px-4 py-3">
                       <p className="font-medium">{l.product}</p>
                       <p className="text-xs text-neutral-600">
-                        {new Date(l.settledAt).toLocaleDateString()} &middot; {l.unitsDelivered} {t('units')}
+                        {formatDate(l.settledAt, locale)} &middot; {l.unitsDelivered} {t('units')}
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right">{usd(l.gross)}</td>

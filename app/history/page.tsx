@@ -5,13 +5,13 @@ import { UserText } from '@/components/ui/UserText';
 import { PoolListItemSkeleton } from '@/components/ui/Skeleton';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { ClockIcon } from '@/components/brand/icons';
 import { api } from '@/lib/api';
 import { useRequireAuth } from '@/lib/auth';
-import { formatNaira, formatUsdc } from '@/lib/format';
+import { formatDate, formatNaira, formatTime, formatUsdc, watDateKey } from '@/lib/format';
 import { FINAL_STATES } from '@/lib/timeline';
 import type { PoolCard, WalletActivity } from '@/lib/types';
 
@@ -20,7 +20,7 @@ export interface HistoryProps {
   initialActivities?: WalletActivity[];
 }
 
-export function groupActivitiesByDate(activities: WalletActivity[]): Array<{
+export function groupActivitiesByDate(activities: WalletActivity[], locale = 'en'): Array<{
   dateKey: string;
   dateLabel: string;
   items: WalletActivity[];
@@ -29,10 +29,8 @@ export function groupActivitiesByDate(activities: WalletActivity[]): Array<{
   const map = new Map<string, { dateLabel: string; items: WalletActivity[] }>();
 
   for (const item of sorted) {
-    const d = new Date(item.timestamp);
-    // Local date components prevent timezone / midnight boundary leaks
-    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const dateLabel = d.toLocaleDateString(undefined, {
+    const dateKey = watDateKey(item.timestamp);
+    const dateLabel = formatDate(item.timestamp, locale, {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -52,7 +50,7 @@ export function groupActivitiesByDate(activities: WalletActivity[]): Array<{
   }));
 }
 
-export function getActivityDetails(item: WalletActivity): {
+export function getActivityDetails(item: WalletActivity, locale = 'en'): {
   title: string;
   sign: string;
   isPositive: boolean;
@@ -88,8 +86,8 @@ export function getActivityDetails(item: WalletActivity): {
   }
 
   const formattedAmount = item.amountNaira
-    ? `${sign}${formatNaira(item.amountNaira)}`
-    : `${sign}${formatUsdc(item.amountUsdc)} USDC`;
+    ? `${sign}${formatNaira(item.amountNaira, locale)}`
+    : `${sign}${formatUsdc(item.amountUsdc, locale)} USDC`;
 
   return { title, sign, isPositive, formattedAmount };
 }
@@ -131,6 +129,7 @@ function deriveActivitiesFromPools(pools: PoolCard[]): WalletActivity[] {
  */
 export default function History({ initialTab, initialActivities }: HistoryProps = {}) {
   const t = useTranslations('history');
+  const locale = useLocale();
   const states = useTranslations('states');
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
@@ -170,7 +169,7 @@ export default function History({ initialTab, initialActivities }: HistoryProps 
     .sort((a, b) => b.fillDeadline.localeCompare(a.fillDeadline));
 
   const activities = initialActivities ?? deriveActivitiesFromPools(q.data ?? []);
-  const groupedActivities = groupActivitiesByDate(activities);
+  const groupedActivities = groupActivitiesByDate(activities, locale);
 
   return (
     <div className="page-enter space-y-5">
@@ -263,10 +262,10 @@ export default function History({ initialTab, initialActivities }: HistoryProps 
                 </h2>
                 <ul className="space-y-2" role="list">
                   {group.items.map((item) => {
-                    const { title, isPositive, formattedAmount } = getActivityDetails(item);
+                    const { title, isPositive, formattedAmount } = getActivityDetails(item, locale);
                     const accessibleName = `${title}: ${formattedAmount}${
                       item.poolTitle ? ` for ${item.poolTitle}` : ''
-                    } on ${new Date(item.timestamp).toLocaleDateString()}`;
+                    } on ${formatDate(item.timestamp, locale)}`;
 
                     const content = (
                       <div className="flex items-center justify-between gap-4 p-4">
@@ -279,10 +278,7 @@ export default function History({ initialTab, initialActivities }: HistoryProps 
                             dateTime={item.timestamp}
                             className="text-xs text-neutral-500"
                           >
-                            {new Date(item.timestamp).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {formatTime(item.timestamp, locale)}
                           </time>
                         </div>
                         <div className="text-right">

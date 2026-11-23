@@ -2,7 +2,7 @@
 import { UserText } from '@/components/ui/UserText';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { ActivateRole } from '@/components/ActivateRole';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
@@ -54,6 +54,7 @@ function ApplyForm({ onDone }: { onDone: () => void }) {
 /** A group buy waiting on this supplier: accept or decline within the window, then mark dispatched. */
 export function PoolRow({ card }: { card: PoolCard }) {
   const t = useTranslations('supplier');
+  const locale = useLocale();
   const qc = useQueryClient();
   const { ask, dialog } = useConfirm();
   const view = useQuery({ queryKey: ['pool', card.id], queryFn: () => api<PoolView>(`/pools/${card.id}`), refetchInterval: 8_000 });
@@ -113,7 +114,7 @@ export function PoolRow({ card }: { card: PoolCard }) {
   }
 
   // finalUnitPriceUsdc is whole stroops. After the 1.5% platform fee the supplier gets about 98.5% of units x price.
-  const payout = p?.finalUnitPriceUsdc && p.ngnPerUsd ? formatNaira(stroopsToNairaCeil((BigInt(p.totalUnits) * BigInt(p.finalUnitPriceUsdc) * 985n) / 1000n, p.ngnPerUsd)) : null;
+  const payout = p?.finalUnitPriceUsdc && p.ngnPerUsd ? formatNaira(stroopsToNairaCeil((BigInt(p.totalUnits) * BigInt(p.finalUnitPriceUsdc) * 985n) / 1000n, p.ngnPerUsd), locale) : null;
   const btn = 'min-h-12 flex-1 rounded-xl font-bold disabled:opacity-60';
   // Accept window: use API-supplied value or fall back to 24 h (#128)
   const acceptWindowHours = p?.acceptWindowHours ?? 24;

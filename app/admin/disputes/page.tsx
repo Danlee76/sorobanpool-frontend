@@ -1,14 +1,16 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
 import { disputeOverview, formatDuration, type DisputeLike } from '@/lib/adminView';
+import { formatDateTime } from '@/lib/format';
 
 const WINDOWS = [7, 30, 90] as const;
 
 export default function AdminDisputes() {
+  const locale = useLocale();
   const t = useTranslations('admin');
   const q = useQuery({
     queryKey: ['admin', 'disputes'],
@@ -76,7 +78,7 @@ export default function AdminDisputes() {
                       <a href={`#dispute-${d.id}`} className="font-semibold underline">#{d.id}</a>
                     </th>
                     <td className="py-2 pr-3">{d.poolId}</td>
-                    <td className="py-2 pr-3">{new Date(d.slaDueAt).toLocaleString()}</td>
+                    <td className="py-2 pr-3">{formatDateTime(d.slaDueAt, locale)}</td>
                     <td className="py-2">{d.arbiterId ?? 'Unassigned'}</td>
                   </tr>
                 ))}
@@ -113,7 +115,7 @@ export default function AdminDisputes() {
           {q.data?.map((d) => (
             <li key={d.id} id={`dispute-${d.id}`} className="rounded-xl border border-neutral-200 bg-white p-4">
               <p className="font-semibold">#{d.id} · pool {d.poolId} · {d.state}</p>
-              <p className="text-sm text-neutral-700">{d.claimedAmount} USD · SLA {new Date(d.slaDueAt).toLocaleString()}</p>
+              <p className="text-sm text-neutral-700">{d.claimedAmount} USD · SLA {formatDateTime(d.slaDueAt, locale)}</p>
             </li>
           ))}
         </ul>

@@ -1,6 +1,7 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { formatDate } from '@/lib/format';
 
 interface PickupCardProps {
   hubAddress: string;
@@ -22,6 +23,7 @@ export function PickupCard({
   confirmed,
 }: PickupCardProps) {
   const t = useTranslations('pickup');
+  const locale = useLocale();
   const [confirming, setConfirming] = useState(false);
 
   const handleConfirm = async () => {
@@ -43,7 +45,7 @@ export function PickupCard({
 
   const formatTime = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleString(undefined, {
+      return formatDate(dateString, locale, {
         weekday: 'short',
         month: 'short',
         day: 'numeric',

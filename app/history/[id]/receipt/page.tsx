@@ -1,15 +1,17 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api } from '@/lib/api';
+import { formatDate, formatUsdNumber, formatUsdStroops } from '@/lib/format';
 import { useRequireAuth } from '@/lib/auth';
 import type { PoolView } from '@/lib/types';
 
 export default function ReceiptPage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations('receipt');
+  const locale = useLocale();
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
   const q = useQuery({
@@ -73,7 +75,7 @@ export default function ReceiptPage() {
             <div className="flex justify-between text-sm">
               <span className="text-neutral-600">{t('date')}</span>
               <span className="font-medium">
-                {pool.filledAt ? new Date(pool.filledAt).toLocaleDateString() : '—'}
+                {pool.filledAt ? formatDate(pool.filledAt, locale) : '—'}
               </span>
             </div>
           </div>
@@ -96,12 +98,12 @@ export default function ReceiptPage() {
             <div className="flex justify-between">
               <span className="text-neutral-700">{t('unitPrice')}</span>
               <span className="font-medium">
-                ${pool.finalUnitPriceUsdc || pool.currentUnitPriceUsdc}
+                {formatUsdStroops(pool.finalUnitPriceUsdc || pool.currentUnitPriceUsdc, locale)}
               </span>
             </div>
             <div className="flex justify-between border-t border-neutral-200 pt-2 font-semibold">
               <span>{t('totalPaid')}</span>
-              <span className="text-emerald-800">${mine.paid}</span>
+              <span className="text-emerald-800">{formatUsdStroops(mine.paid, locale)}</span>
             </div>
           </div>
 
@@ -112,24 +114,24 @@ export default function ReceiptPage() {
                 {tierAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-emerald-800">{t('tierRefund')}</span>
-                    <span className="font-medium">${tierAmount.toFixed(2)}</span>
+                    <span className="font-medium">{formatUsdNumber(tierAmount, locale)}</span>
                   </div>
                 )}
                 {shortfallAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-emerald-800">{t('shortfallRefund')}</span>
-                    <span className="font-medium">${shortfallAmount.toFixed(2)}</span>
+                    <span className="font-medium">{formatUsdNumber(shortfallAmount, locale)}</span>
                   </div>
                 )}
                 {disputeAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-emerald-800">{t('disputeRefund')}</span>
-                    <span className="font-medium">${disputeAmount.toFixed(2)}</span>
+                    <span className="font-medium">{formatUsdNumber(disputeAmount, locale)}</span>
                   </div>
                 )}
                 <div className="flex justify-between border-t border-emerald-300 pt-1 font-semibold">
                   <span>{t('totalRefund')}</span>
-                  <span>${totalRefund.toFixed(2)}</span>
+                  <span>{formatUsdNumber(totalRefund, locale)}</span>
                 </div>
               </div>
             </div>

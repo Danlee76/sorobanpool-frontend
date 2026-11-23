@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { api, ApiError } from '@/lib/api';
@@ -55,6 +55,7 @@ export function NairaDeposit({
   clock = Date.now,
 }: NairaDepositProps) {
   const t = useTranslations('naira');
+  const locale = useLocale();
   const [start, setStart] = useState<Start | null>(null);
   const [status, setStatus] = useState<Transfer['status'] | null>(null);
   const [unavailable, setUnavailable] = useState(false);
@@ -302,7 +303,7 @@ export function NairaDeposit({
           <div className="flex justify-between gap-2">
             <dt className="text-neutral-700">{t('quoteAmount')}</dt>
             <dd data-testid="quote-amount" className={`font-medium ${outOfDateClass}`}>
-              {evaluated.amountKobo !== null ? formatKobo(evaluated.amountKobo) : t('quoteTotalUnavailable')}
+              {evaluated.amountKobo !== null ? formatKobo(evaluated.amountKobo, locale) : t('quoteTotalUnavailable')}
               {isExpired && <span className="ml-1.5 text-xs font-normal text-red-700 no-underline">{t('quoteOutOfDate')}</span>}
             </dd>
           </div>
@@ -311,7 +312,7 @@ export function NairaDeposit({
             <dd data-testid="quote-fee" className={`font-medium ${outOfDateClass}`}>
               {evaluated.feeKobo !== null ? (
                 <>
-                  {formatKobo(evaluated.feeKobo)}
+                  {formatKobo(evaluated.feeKobo, locale)}
                   {isExpired && <span className="ml-1.5 text-xs font-normal text-red-700 no-underline">{t('quoteOutOfDate')}</span>}
                 </>
               ) : (
@@ -324,7 +325,7 @@ export function NairaDeposit({
             <dd data-testid="quote-rate" className={`font-medium ${outOfDateClass}`}>
               {evaluated.rateKobo !== null ? (
                 <>
-                  {t('quoteRateValue', { rate: formatKobo(evaluated.rateKobo) })}
+                  {t('quoteRateValue', { rate: formatKobo(evaluated.rateKobo, locale) })}
                   {isExpired && <span className="ml-1.5 text-xs font-normal text-red-700 no-underline">{t('quoteOutOfDate')}</span>}
                 </>
               ) : (
@@ -337,7 +338,7 @@ export function NairaDeposit({
             <dd data-testid="quote-total" className={`font-bold text-neutral-900 ${outOfDateClass}`}>
               {evaluated.totalKobo !== null ? (
                 <>
-                  {formatKobo(evaluated.totalKobo)}
+                  {formatKobo(evaluated.totalKobo, locale)}
                   {isExpired && <span className="ml-1.5 text-xs font-normal text-red-700 no-underline">{t('quoteOutOfDate')}</span>}
                 </>
               ) : (
@@ -383,7 +384,7 @@ export function NairaDeposit({
 
   return (
     <section id="naira-deposit" className="space-y-2 rounded-xl border border-neutral-300 p-3" aria-live="polite">
-      <p className="font-semibold">{t('send', { amount: formatNaira(start.amountNgn) })}</p>
+      <p className="font-semibold">{t('send', { amount: formatNaira(start.amountNgn, locale) })}</p>
       <dl className="text-sm">
         <div className="flex justify-between"><dt>{t('bank')}</dt><dd>{start.instructions.bank}</dd></div>
         <div className="flex justify-between"><dt>{t('account')}</dt><dd>{start.instructions.accountName} · {start.instructions.accountNumber}</dd></div>

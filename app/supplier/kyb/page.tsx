@@ -5,8 +5,10 @@
  */
 
 'use client';
+import { useLocale } from 'next-intl';
 
 import { useEffect, useState } from 'react';
+import { formatDate } from '@/lib/format';
 
 interface KYBStatus {
   status: 'pending' | 'in_review' | 'approved' | 'rejected';
@@ -17,6 +19,7 @@ interface KYBStatus {
 }
 
 export default function KYBStatusPage() {
+  const locale = useLocale();
   const [kybStatus, setKybStatus] = useState<KYBStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +133,7 @@ export default function KYBStatusPage() {
               <div className="bg-white bg-opacity-50 rounded p-4">
                 <p className="text-sm font-semibold text-gray-700">Submitted</p>
                 <p className="text-gray-600">
-                  {new Date(kybStatus.submittedAt).toLocaleDateString()}
+                  {formatDate(kybStatus.submittedAt, locale)}
                 </p>
               </div>
             )}
@@ -139,7 +142,7 @@ export default function KYBStatusPage() {
               <div className="bg-white bg-opacity-50 rounded p-4">
                 <p className="text-sm font-semibold text-gray-700">Reviewed</p>
                 <p className="text-gray-600">
-                  {new Date(kybStatus.reviewedAt).toLocaleDateString()}
+                  {formatDate(kybStatus.reviewedAt, locale)}
                 </p>
               </div>
             )}

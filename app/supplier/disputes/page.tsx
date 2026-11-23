@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { formatNumber } from '@/lib/format';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequireAuth } from '@/lib/auth';
 import { getSupplierDisputes, submitDisputeResponse } from '@/lib/api';
@@ -165,6 +166,7 @@ function ResponseForm({
 
 function DisputeCard({ dispute }: { dispute: DisputeItem }) {
   const t = useTranslations('supplier.disputes');
+  const locale = useLocale();
   const [responding, setResponding] = useState(false);
 
   return (
@@ -195,7 +197,7 @@ function DisputeCard({ dispute }: { dispute: DisputeItem }) {
       </div>
 
       <p className="text-sm text-gray-700 dark:text-gray-300">
-        {t('claimedAmount', { amount: dispute.claimedAmount.toLocaleString() })}
+        {t('claimedAmount', { amount: formatNumber(dispute.claimedAmount, locale) })}
       </p>
 
       {dispute.state === 'OPEN' && !responding && (

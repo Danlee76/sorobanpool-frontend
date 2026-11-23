@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import { formatNaira } from '@/lib/format';
 import { payPreview, type Tier } from '@/lib/pricing';
 
@@ -22,6 +23,7 @@ export interface RefundEstimateProps {
  */
 export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }: RefundEstimateProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const locale = useLocale();
 
   if (tiers.length === 0) return null;
 
@@ -99,11 +101,11 @@ export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }:
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-neutral-700">Maximum you pay:</dt>
-                    <dd className="font-bold">{formatNaira(maxNowNaira)}</dd>
+                    <dd className="font-bold">{formatNaira(maxNowNaira, locale)}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-neutral-700">Expected refund if pool closes now:</dt>
-                    <dd className="font-semibold text-emerald-900">{formatNaira(expectedRefundNaira)}</dd>
+                    <dd className="font-semibold text-emerald-900">{formatNaira(expectedRefundNaira, locale)}</dd>
                   </div>
                 </dl>
               </div>
@@ -126,7 +128,7 @@ export function RefundEstimate({ totalUnits, units, tiers, ngnPerUsd, toNaira }:
                           <dl className="space-y-1 text-sm">
                             <div className="flex justify-between">
                               <dt className="text-neutral-700">Refund:</dt>
-                              <dd className="font-semibold text-emerald-900">{formatNaira(refundNaira)}</dd>
+                              <dd className="font-semibold text-emerald-900">{formatNaira(refundNaira, locale)}</dd>
                             </div>
                           </dl>
                         </div>

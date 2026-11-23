@@ -129,3 +129,17 @@ describe('stroopsToNairaCeil: naira estimate rounded UP so a payer is never unde
     expect(stroopsToNairaCeil(10_000_000n, 0)).toBe(0n);
   });
 });
+
+describe('Intl integer precision and locale behavior (issue #48)', () => {
+  it('keeps rounding of naira quotes in BigInt, including huge values', () => {
+    const veryLarge = 9007199254740993123456789n;
+    expect(stroopsToNairaCeil(veryLarge, 1500))
+      .toBe((veryLarge * 1500n + 10_000_000n - 1n) / 10_000_000n);
+    expect(stroopsToNairaCeil(1n, 1500)).toBe(1n);
+  });
+
+  it.each(['en', 'pcm'])('prints the exact full amount in %s', (locale) => {
+    expect(formatNaira(10n ** 30n, locale)).toBe('₦1,000,000,000,000,000,000,000,000,000,000');
+    expect(groupDigits(-(10n ** 30n), locale)).toBe('-1,000,000,000,000,000,000,000,000,000,000');
+  });
+});
