@@ -143,6 +143,8 @@ button:active {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  a:active, button:active, .pool-card:hover { transform: none; }
 }
 
 /* Big, obvious focus for keyboard and switch users. */
@@ -205,3 +207,8 @@ button:active {
     font-size: 16px; /* Prevent zoom on iOS input focus */
   }
 }
+::placeholder { color: #5b6660; opacity: 1; }
+@media (prefers-color-scheme: dark) { ::placeholder { color: #9ca3af; } }
+
+/* The green focus ring is only 2.3:1 on the dark green hero, so use a light ring on dark surfaces. */
+.surface-dark :focus-visible { outline-color: #fde68a; }
