@@ -157,9 +157,9 @@
     "unitHours": "{count, plural, one {# hour} other {# hours}}",
     "unitMinutes": "{count, plural, one {# minute} other {# minutes}}",
     "lessThanMinute": "less than a minute",
-    "urgentWarning": "— act soon",
-    "urgentCritical": "— URGENT",
-    "acceptWindowExplainer": "Missing the window triggers buyer refunds and hurts your reputation.",
+    "urgentWarning": "Closing soon",
+    "urgentCritical": "Closing very soon",
+    "acceptWindowExplainer": "If you miss this window, buyers are refunded and it counts against you.",
     "hub": "Pickup place",
     "pickupWindow": "Pickup time",
     "organizer": "Organized by a trader in your market",
@@ -236,10 +236,7 @@
     "leaveGuardBody": "Your payment is still in progress. Leaving now may lose your choices.",
     "leaveGuardStay": "Stay on payment",
     "leaveGuardLeave": "Leave anyway",
-    "urgentWarning": "Closing soon",
-    "urgentCritical": "Closing very soon",
-    "urgentNearBreak": "{count, plural, one {Just # more unit for a lower price} other {Just # more units for a lower price}}",
-    "acceptWindowExplainer": "If you miss this window, buyers are refunded and it counts against you."
+    "urgentNearBreak": "{count, plural, one {Just # more unit for a lower price} other {Just # more units for a lower price}}"
   },
   "organize": {
     "title": "Organize a group buy",
@@ -323,7 +320,10 @@
     "pickup": "Pickup ready",
     "pickupHelp": "When your goods are ready for collection",
     "criticalMessages": "Critical messages are always sent",
-    "criticalMessagesHelp": "Security alerts and payment confirmations cannot be turned off"
+    "criticalMessagesHelp": "Security alerts and payment confirmations cannot be turned off",
+    "hausa": "Hausa",
+    "yoruba": "Yorùbá",
+    "igbo": "Igbo"
   },
   "errors": {
     "actions": {
