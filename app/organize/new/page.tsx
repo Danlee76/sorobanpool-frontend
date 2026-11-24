@@ -14,6 +14,7 @@ import type { OfferView } from '@/lib/types';
 
 const input = 'h-12 w-full rounded-lg border border-neutral-500 px-3 text-lg';
 const primary = 'min-h-12 w-full rounded-xl bg-emerald-800 text-lg font-bold text-white disabled:opacity-60';
+const MAX_ORGANIZER_FEE_PCT = 1;
 
 export default function NewPool() {
   const t = useTranslations('organize');
@@ -83,7 +84,8 @@ export default function NewPool() {
   const toTime = to ? fromWatDateTimeInput(to).getTime() : NaN;
   const validWindow = Number.isFinite(expectedDelivery) && Number.isFinite(fromTime) && Number.isFinite(toTime) && fromTime > expectedDelivery && toTime > fromTime && toTime - fromTime <= 7 * 86400_000;
   const validHub = address.trim().length >= 5 && validPhone && validWindow;
-  const validFee = feePct.trim() !== '' && Number.isFinite(Number(feePct)) && Number(feePct) >= 0 && Number(feePct) <= 1;
+  const feeValue = Number(feePct);
+  const validFee = feePct.trim() !== '' && Number.isFinite(feeValue) && feeValue >= 0 && feeValue <= MAX_ORGANIZER_FEE_PCT;
   const canNext = (step === 1 && !!offerId) || (step === 2 && !!deadline) || (step === 3 && validHub) || (step === 4 && validFee);
   return (
     <div className="space-y-5">
@@ -111,8 +113,8 @@ export default function NewPool() {
       )}
       {step === 4 && (
         <div className="space-y-3">
-          <label htmlFor="fee" className="block font-medium">{t('feeLabel')}</label><input id="fee" inputMode="decimal" value={feePct} onChange={(e) => setFeePct(e.target.value.replace(/[^\d.]/g, ''))} className={input} />
-          <p className="text-sm text-neutral-700">{t('feeHelp')}</p>{!validFee && <p role="alert" className="text-red-700">Fee must be between 0% and 1%.</p>}
+          <label htmlFor="fee" className="block font-medium">{t('feeLabel')}</label><input id="fee" inputMode="decimal" value={feePct} onChange={(e) => setFeePct(e.target.value.replace(/[^\d.]/g, '').slice(0, 5))} className={input} />
+          <p className="text-sm text-neutral-700">{t('feeHelp')}</p><p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900" role="note">Organizer fee is disclosed to members at checkout and is capped at {MAX_ORGANIZER_FEE_PCT}%.</p>{!validFee && <p role="alert" className="text-red-700">Fee must be between 0% and 1%.</p>}
           <label className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={clusterOnly} onChange={(e) => setClusterOnly(e.target.checked)} className="size-5" />{t('restrict')}</label>
         </div>
       )}

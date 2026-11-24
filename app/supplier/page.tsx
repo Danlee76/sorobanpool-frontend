@@ -225,7 +225,7 @@ export default function Supplier() {
       {status === 'REJECTED' && <p role="status" className="rounded-xl bg-red-50 p-4">{t('rejected')}</p>}
       {status === 'APPROVED' && (
         <>
-          <Link href="/supplier/offers/new" className="flex min-h-12 items-center justify-center rounded-xl bg-emerald-800 px-4 font-bold text-white">{t('newOffer')}</Link>
+          <div className="grid gap-3 sm:grid-cols-2"><Link href="/supplier/offers" className="flex min-h-12 items-center justify-center rounded-xl border border-emerald-800 px-4 font-bold text-emerald-900">Manage offers</Link><Link href="/supplier/offers/new" className="flex min-h-12 items-center justify-center rounded-xl bg-emerald-800 px-4 font-bold text-white">{t('newOffer')}</Link></div>
           <section aria-labelledby="sp-h" className="space-y-3">
             <h2 id="sp-h" className="font-semibold">{t('pools')}</h2>
             {pools.data?.filter((p) => p.supplier === me?.walletAddress).length === 0 && <p className="text-neutral-700">{t('noPools')}</p>}
