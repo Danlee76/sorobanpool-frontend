@@ -87,12 +87,6 @@ export function JoinPanel({ pool, streamFactory }: { pool: PoolView; streamFacto
         ? t('tierChangeAnnounce')
         : '';
 
-  useEffect(() => {
-    if (done) {
-      doneRef.current?.focus();
-    }
-  }, [done]);
-
   if (pool.state !== 'Open') return null;
   if (initialRoom === 0) return null;
 

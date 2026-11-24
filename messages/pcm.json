@@ -8,7 +8,8 @@
     "arbiter": "Arbiter",
     "admin": "Admin",
     "main": "Main",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "skipToContent": "Skip to content"
   },
   "common": {
     "loading": "E dey load…",
@@ -174,14 +175,14 @@
     "expectedRefund": "Refund if more people join",
     "expectedFinal": "Expected final price",
     "naira": "About {amount}",
-    "indicative": "Naira amount na estimate. You go pay the price wey dey now; if the group reach better price, dem go return the difference give you by itself.",
+    "indicative": "The naira amount no be exact amount. You go pay the price wey dey now. If the group get better price, dem go return the difference back to you.",
     "payNow": "Pay now",
     "paying": "We dey confirm with your phone…",
     "confirmTitle": "Approve this payment",
-    "confirmBody": "Press confirm to approve. Your money go stay for escrow till goods reach.",
+    "confirmBody": "Press confirm. Your money go safe for escrow till goods reach.",
     "joined": "You don join! We go tell you when price drop.",
-    "ifFails": "If e no fill or supplier no deliver, dem go refund you by itself.",
-    "rights": "If anything wrong with the goods, you fit report problem within 48 hours after delivery.",
+    "ifFails": "If group no full or supplier no deliver, dem go refund you.",
+    "rights": "If goods get problem, you fit complain within 48 hours of pickup.",
     "share": "Share for WhatsApp",
     "shareText": "Join our group buy: {product}. Price now na {price} per unit. {link}",
     "copyLink": "Copy link",
@@ -209,7 +210,7 @@
       "Failed": "The order no work. Dem go refund everybody full.",
       "Cancelled": "Dem cancel this group buy. Dem go refund everybody full."
     },
-    "pickupReadyShort": "Your goods don ready. Organizer go tell you how many units you go collect.",
+    "pickupReadyShort": "Your goods don ready. Organizer go tell you wetin you go collect.",
     "approved": "Payment don approve.",
     "perUnitLabel": "per unit",
     "nextBreakShort": "{count} more units and price go drop",
@@ -343,7 +344,7 @@
     },
     "generic": {
       "what": "Something don go wrong.",
-      "todo": "Abeg try again. If e continue, talk to support."
+      "todo": "Try again. If e continue, talk to support."
     },
     "network": {
       "what": "We no fit reach the server.",
@@ -351,14 +352,14 @@
     },
     "declined": {
       "what": "You no approve the payment.",
-      "todo": "Dem no collect anything. Try again when you ready."
+      "todo": "Nothing take. Try again when you ready."
     },
     "OTP_WRONG": {
-      "what": "That code no correct.",
+      "what": "That code wrong.",
       "todo": "Check the SMS and try again."
     },
     "OTP_EXPIRED": {
-      "what": "That code don expire.",
+      "what": "That code done expire.",
       "todo": "Ask for new code."
     },
     "OTP_LOCKED": {
@@ -366,20 +367,20 @@
       "todo": "Ask for new code."
     },
     "OTP_RATE_LIMITED": {
-      "what": "Too many code you don request.",
-      "todo": "Wait small minutes and try again."
+      "what": "You don request too many codes.",
+      "todo": "Wait few minutes and try again."
     },
     "INVALID_PHONE": {
       "what": "That phone number no correct.",
       "todo": "Use Nigerian phone number."
     },
     "FEE_TOO_HIGH": {
-      "what": "This payment need more fee pass wetin we fit cover.",
+      "what": "This payment need more fee than we fit cover.",
       "todo": "Talk to support."
     },
     "unsafe": {
-      "what": "This request no look correct, so we stop am.",
-      "todo": "Dem no collect anything. Try again, and talk to support if e continue."
+      "what": "This request no look right, so we stop am.",
+      "todo": "Nothing take. Try again, and contact support if e continue."
     },
     "IMAGE_INVALID": {
       "what": "We no fit read that photo.",
