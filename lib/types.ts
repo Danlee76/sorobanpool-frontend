@@ -42,6 +42,7 @@ export interface PoolView {
   members: number;
   membersList?: Array<Partial<PickupMember> & { displayName?: string | null; optedIn?: boolean }> | null;
   pickupMembers?: PickupMember[] | null;
+  membersList?: Array<{ displayName?: string | null; optedIn?: boolean }> | null;
   ngnPerUsd: number | null;
   filledAt: string | null;
   progressPct: number;

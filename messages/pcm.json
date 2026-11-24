@@ -20,8 +20,8 @@
     "cancel": "Cancel",
     "share": "Share",
     "close": "Close",
-    "unitsCount": "{count, plural, one {# unit} other {# units}}",
-    "members": "{count, plural, one {# member} other {# members}}",
+    "unitsCount": "{count} unit(s)",
+    "members": "{count} member(s)",
     "offline": "You no get network. Na the last thing wey we see dey show.",
     "learnMore": "How e dey work?",
     "signInFirst": "Abeg sign in first.",
@@ -117,7 +117,7 @@
     "empty": "No group buy dey open now. Come back soon.",
     "emptyAction": "See your history",
     "from": "From {price} per unit",
-    "minimum": "Minimum {count, plural, one {# unit} other {# units}}",
+    "minimum": "Minimum {count} units",
     "offers": "Offers",
     "openPools": "Open pools",
     "eyebrow": "Better price, together",
@@ -147,12 +147,12 @@
     "tierCurrent": "Price wey dey now",
     "tierReached": "Better price don unlock!",
     "tierUpcoming": "E never reach",
-    "toNext": "{count, plural, one {# more unit} other {# more units}} for {price} per unit",
-    "progress": "{count} of {moq, plural, one {# unit} other {# units}} to start",
+    "toNext": "{count} more units for {price} per unit",
+    "progress": "{count} of {moq} units to start",
     "progressLabel": "How far e reach the minimum",
     "refundRightNow": "Right now ({count, plural, one {# unit} other {# units}})",
     "refundUnitsNeeded": "{count, plural, one {# more unit} other {# more units}} still need",
-    "toGo": "{count, plural, one {# unit} other {# units}} remain",
+    "toGo": "{count} units remain",
     "reached": "Minimum don reach",
     "closes": "E go close in",
     "closed": "E don close for joining",
@@ -168,27 +168,27 @@
     "organizer": "Trader for your market organize am",
     "join": "Join this group buy",
     "addMore": "Add more units",
-    "youHave": "You join with {count, plural, one {# unit} other {# units}}",
+    "youHave": "You join with {count} units",
     "unitsLabel": "How many units?",
     "maxNow": "Most you go pay now",
     "expectedRefund": "Refund if more people join",
     "expectedFinal": "Expected final price",
     "naira": "About {amount}",
-    "indicative": "The naira amount no be exact amount. You go pay the price wey dey now. If the group get better price, dem go return the difference back to you.",
+    "indicative": "Naira amount na estimate. You go pay the price wey dey now; if the group reach better price, dem go return the difference give you by itself.",
     "payNow": "Pay now",
     "paying": "We dey confirm with your phone…",
     "confirmTitle": "Approve this payment",
-    "confirmBody": "Press confirm. Your money go safe for escrow till goods reach.",
+    "confirmBody": "Press confirm to approve. Your money go stay for escrow till goods reach.",
     "joined": "You don join! We go tell you when price drop.",
-    "ifFails": "If group no full or supplier no deliver, dem go refund you.",
-    "rights": "If goods get problem, you fit complain within 48 hours of pickup.",
+    "ifFails": "If e no fill or supplier no deliver, dem go refund you by itself.",
+    "rights": "If anything wrong with the goods, you fit report problem within 48 hours after delivery.",
     "share": "Share for WhatsApp",
     "shareText": "Join our group buy: {product}. Price now na {price} per unit. {link}",
     "copyLink": "Copy link",
     "linkCopied": "Link don copy",
     "pickup": "I don collect",
     "pickupDone": "Thank you! You don collect.",
-    "pickupReady": "Your goods don ready: come collect {count, plural, one {# unit} other {# units}}.",
+    "pickupReady": "Your goods don ready: come collect {count} units.",
     "refund": "Collect my refund",
     "refundDone": "You don collect your refund.",
     "refundDue": "Refund dey wait for you.",
@@ -209,10 +209,10 @@
       "Failed": "The order no work. Dem go refund everybody full.",
       "Cancelled": "Dem cancel this group buy. Dem go refund everybody full."
     },
-    "pickupReadyShort": "Your goods don ready. Organizer go tell you wetin you go collect.",
+    "pickupReadyShort": "Your goods don ready. Organizer go tell you how many units you go collect.",
     "approved": "Payment don approve.",
     "perUnitLabel": "per unit",
-    "nextBreakShort": "{count, plural, one {# more unit} other {# more units}} and price go drop",
+    "nextBreakShort": "{count} more units and price go drop",
     "newPrice": "New price",
     "savingsNow": "You dey save {amount} per unit",
     "failureExplainer": {
@@ -239,7 +239,8 @@
     "leaveGuardBody": "Your payment never finish. If you leave now, your choices fit lost.",
     "leaveGuardStay": "Stay for payment",
     "leaveGuardLeave": "Leave anyway",
-    "urgentNearBreak": "{count, plural, one {Just # more unit make price drop} other {Just # more units make price drop}}"
+    "urgentNearBreak": "{count, plural, one {Just # more unit make price drop} other {Just # more units make price drop}}",
+    "tierNow": "You dey here"
   },
   "organize": {
     "title": "Organize group buy",
@@ -273,7 +274,7 @@
       "ordered": "Units wey dem order: {count}",
       "photos": "Photo of the goods",
       "addPhoto": "Take or choose photo",
-      "short": "{count, plural, one {# unit} other {# units}} no reach. Dem go refund members for the missing goods.",
+      "short": "{count} units no reach. Dem go refund members for the missing goods.",
       "submit": "Confirm delivery",
       "success": "Delivery don confirm.",
       "checklistTitle": "Pickup checklist",
@@ -343,7 +344,7 @@
     },
     "generic": {
       "what": "Something don go wrong.",
-      "todo": "Try again. If e continue, talk to support."
+      "todo": "Abeg try again. If e continue, talk to support."
     },
     "network": {
       "what": "We no fit reach the server.",
@@ -351,14 +352,14 @@
     },
     "declined": {
       "what": "You no approve the payment.",
-      "todo": "Nothing take. Try again when you ready."
+      "todo": "Dem no collect anything. Try again when you ready."
     },
     "OTP_WRONG": {
-      "what": "That code wrong.",
+      "what": "That code no correct.",
       "todo": "Check the SMS and try again."
     },
     "OTP_EXPIRED": {
-      "what": "That code done expire.",
+      "what": "That code don expire.",
       "todo": "Ask for new code."
     },
     "OTP_LOCKED": {
@@ -366,20 +367,20 @@
       "todo": "Ask for new code."
     },
     "OTP_RATE_LIMITED": {
-      "what": "You don request too many codes.",
-      "todo": "Wait few minutes and try again."
+      "what": "Too many code you don request.",
+      "todo": "Wait small minutes and try again."
     },
     "INVALID_PHONE": {
       "what": "That phone number no correct.",
       "todo": "Use Nigerian phone number."
     },
     "FEE_TOO_HIGH": {
-      "what": "This payment need more fee than we fit cover.",
+      "what": "This payment need more fee pass wetin we fit cover.",
       "todo": "Talk to support."
     },
     "unsafe": {
-      "what": "This request no look right, so we stop am.",
-      "todo": "Nothing take. Try again, and contact support if e continue."
+      "what": "This request no look correct, so we stop am.",
+      "todo": "Dem no collect anything. Try again, and talk to support if e continue."
     },
     "IMAGE_INVALID": {
       "what": "We no fit read that photo.",
@@ -403,31 +404,7 @@
   },
   "supplier": {
     "title": "Supplier portal",
-    "reputation": {
-      "title": "My Reputation",
-      "subtitle": "Your track record as SorobanPool supplier",
-      "loading": "Dey load reputation…",
-      "loadError": "E fail to load reputation",
-      "basedOn": "Based on {count} ratings",
-      "completedPoolsStat": "Completed Pools",
-      "onTimeStat": "On-time Delivery",
-      "onTimeSub": "of orders wey reach on time",
-      "disputeWinRateStat": "Dispute Win Rate",
-      "disputeWinRateSub": "{won} of {total} disputes",
-      "disputesStat": "Disputes",
-      "noDisputes": "None",
-      "recentRatingsSection": "Recent Ratings",
-      "disputeHistorySection": "Dispute History",
-      "noHistory": "No ratings or dispute yet.",
-      "unknownItem": "Item wey we no know",
-      "resolutionLabel": "Resolution",
-      "resolutionREFUND": "Dem give refund",
-      "resolutionREPLACE": "Dem replace item",
-      "resolutionREJECT": "Claim rejected",
-      "outcomeWON": "Win",
-      "outcomeLOST": "Lost",
-      "outcomeSETTLED": "Settled"
-    },
+    "reputation": "Supplier reputation",
     "whatIsThis": "Wetin this one mean?",
     "settledPools": "{count} pool(s) wey don complete",
     "disputeRate": "dispute rate",
@@ -483,23 +460,7 @@
       "description": "Description",
       "photos": "Photos (at least 2)",
       "addPhoto": "Add photo",
-      "preview": {
-        "untitled": "Offer wey no get title",
-        "priceFrom": "from",
-        "unit": "unit",
-        "units": "units",
-        "tierBreaks": "Price breaks",
-        "minUnits": "Min units",
-        "pricePerUnit": "Price / unit",
-        "savingsRange": "Up to {pct}% savings for maximum volume",
-        "poolCap": "Pool cap",
-        "maxPerMember": "Max per member",
-        "leadTime": "Lead time",
-        "validFor": "Valid for",
-        "deliveryAreas": "Delivery areas",
-        "noAreas": "Nationwide",
-        "trustNote": "SorobanPool escrow dey protect am — payment dey released only when goods reach."
-      },
+      "preview": "About {usd} USD per unit at today's rate",
       "publish": "Publish offer",
       "published": "Your offer don live.",
       "fxBlocked": "Exchange rate no dey available now, so you no fit publish offer. Try again soon.",
@@ -705,7 +666,7 @@
       "pairs": "Organizer and supplier pairs",
       "pools": "{count} pools",
       "window": "Time window",
-      "days": "Last {days, plural, one {# day} other {# days}}"
+      "days": "Last {days} days"
     },
     "kyb": {
       "pending": "Applications wey dey wait",

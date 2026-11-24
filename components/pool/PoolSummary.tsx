@@ -75,6 +75,7 @@ export function PoolSummary({ pool }: { pool: PoolView }) {
         <MembersRow members={pool.membersList} totalCount={pool.members} />
       )}
       {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} unitsToNextBreak={pool.nextBreak?.unitsToGo} /></p>}
+      {open && <p className="text-sm"><Countdown deadline={pool.fillDeadline} /></p>}
       <TierLadder tiers={pool.tiersUsdc} totalUnits={pool.totalUnits} ngnPerUsd={pool.ngnPerUsd} />
       {(pool.supplierTier || pool.supplierSettledPools !== null || pool.supplierDisputeRate !== null) && (
         <SupplierBadge
