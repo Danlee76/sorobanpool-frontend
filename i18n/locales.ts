@@ -1,25 +1,49 @@
+export type TextDirection = 'ltr' | 'rtl';
+
+export interface LocaleConfig {
+  code: string;
+  name: string;
+  documentLang: string;
+  dir: TextDirection;
+}
+
+export const LOCALES: readonly LocaleConfig[] = [
+  { code: 'en', name: 'English', documentLang: 'en', dir: 'ltr' },
+  { code: 'pcm', name: 'Pidgin', documentLang: 'en-NG', dir: 'ltr' },
+  { code: 'ha', name: 'Hausa', documentLang: 'ha', dir: 'ltr' },
+  { code: 'yo', name: 'Yorùbá', documentLang: 'yo', dir: 'ltr' },
+  { code: 'ig', name: 'Igbo', documentLang: 'ig', dir: 'ltr' },
+] as const;
+
 /**
  * The locales the app ships. Add a code here (and its message files) to turn a language on.
  * Kept free of server-only imports so client components and tests can use it.
  */
-export const locales = ['en', 'pcm'] as const;
+export const locales = ['en', 'pcm', 'ha', 'yo', 'ig'] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'en';
+
+export const DEFAULT_LOCALE: Locale = 'en';
+/** @deprecated Use DEFAULT_LOCALE */
+export const defaultLocale: Locale = DEFAULT_LOCALE;
+
 export const LOCALE_COOKIE = 'locale';
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (locales as readonly string[]).includes(value);
 }
 
+export function getLocaleConfig(code: string): LocaleConfig {
+  return LOCALES.find((l) => l.code === code) ?? LOCALES[0];
+}
+
 /**
  * Picks the best supported locale from an `Accept-Language` header (RFC 9110), in order of q-value.
- * Only languages we ship are considered, so `ha`, `yo` and `ig` are picked automatically once their
- * catalogs are added to `locales`. Anything else falls back to English.
+ * Only languages we ship are considered. Anything else falls back to English.
  */
 export function matchAcceptLanguage<T extends string = Locale>(
   header: string | null | undefined,
   supported: readonly T[] = locales as unknown as readonly T[],
-  fallback: T = defaultLocale as T,
+  fallback: T = DEFAULT_LOCALE as T,
 ): T {
   if (!header) return fallback;
   const ranges = header

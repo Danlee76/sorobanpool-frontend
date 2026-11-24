@@ -2,8 +2,9 @@
 import { createPasskeyWallet, passkeyCancelled, usePasskeySupport, signInWithPasskey, type PasskeySession } from '@/lib/passkey';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Suspense, useState } from 'react';
+import { LOCALES, type Locale } from '@/i18n/request';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { FingerprintIcon, RefundIcon, ShieldIcon, TruckIcon } from '@/components/brand/icons';
 import { api } from '@/lib/api';
@@ -25,7 +26,13 @@ type FormErrors = Record<string, string>;
 function Onboarding() {
   const t = useTranslations('onboarding');
   const common = useTranslations('common');
+  const locale = useLocale();
   const router = useRouter();
+
+  function switchLocale(l: Locale) {
+    document.cookie = `locale=${l}; path=/; max-age=31536000; samesite=lax`;
+    router.refresh();
+  }
   const next = useSearchParams().get('next') ?? '/explore';
   const signedIn = useSession((s) => s.signedIn);
   const reload = useSession((s) => s.reload);
@@ -202,7 +209,28 @@ function Onboarding() {
       <div className="space-y-5 rounded-[1.75rem] border border-neutral-200 bg-white p-5 shadow-sm md:p-8">
         {step !== 'done' && (
           <div>
-            <p className="text-sm font-semibold text-emerald-800">{t('stepOf', { step: STEP_NO[step], total: TOTAL_STEPS })}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-emerald-800">{t('stepOf', { step: STEP_NO[step], total: TOTAL_STEPS })}</p>
+              {step === 'phone' && (
+                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Language">
+                  {LOCALES.map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      aria-pressed={locale === l.code}
+                      onClick={() => switchLocale(l.code as Locale)}
+                      className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
+                        locale === l.code
+                          ? 'bg-emerald-800 text-white'
+                          : 'border border-neutral-300 text-neutral-700 hover:bg-neutral-100'
+                      }`}
+                    >
+                      {l.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div role="progressbar" aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-valuenow={STEP_NO[step]} aria-label={t('stepOf', { step: STEP_NO[step], total: TOTAL_STEPS })} className="mt-2 flex gap-1.5">
               {Array.from({ length: TOTAL_STEPS }, (_, i) => (
                 <span key={i} className={`h-1.5 flex-1 rounded-full ${i < STEP_NO[step] ? 'bg-emerald-700' : 'bg-emerald-950/10'}`} />

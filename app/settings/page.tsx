@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { LOCALES, type Locale } from '@/i18n/request';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { useRequireAuth } from '@/lib/auth';
@@ -70,6 +71,11 @@ export default function Settings() {
     },
   });
 
+  function setLocale(l: Locale) {
+    document.cookie = `locale=${l}; path=/; max-age=31536000; samesite=lax`;
+    router.refresh();
+  }
+
   async function showBackup() {
     if ((await confirmWithDevice()) === 'denied') return;
     setSecret(await backupSecret());
@@ -113,7 +119,18 @@ export default function Settings() {
       
       <section aria-labelledby="lang-h" className="space-y-2">
         <h2 id="lang-h" className="font-semibold">{t('language')}</h2>
-        <LanguagePicker />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {LOCALES.map((l) => (
+            <button
+              key={l.code}
+              aria-pressed={locale === l.code}
+              onClick={() => setLocale(l.code as Locale)}
+              className={`${btn} ${locale === l.code ? 'border-emerald-800 bg-emerald-50' : ''}`}
+            >
+              {l.name}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section aria-labelledby="notifications-h" className="space-y-4">
