@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useConfirm } from '@/components/ConfirmDialog';
@@ -10,6 +10,7 @@ import { listPasskeys, passkeyCancelled, removePasskey, usePasskeySupport, regis
 import { backupSecret, confirmWithDevice, loadWallet } from '@/lib/wallet';
 import { api } from '@/lib/api';
 import { LanguagePicker } from '@/components/LanguagePicker';
+import { formatDate } from '@/lib/format';
 
 interface NotificationPreferences {
   sms: {
@@ -38,6 +39,7 @@ const defaultPreferences: NotificationPreferences = {
 export default function Settings() {
   const t = useTranslations('settings');
   const common = useTranslations('common');
+  const locale = useLocale();
   const router = useRouter();
   const { ready } = useRequireAuth();
   const signOut = useSession((s) => s.signOut);
@@ -222,7 +224,7 @@ export default function Settings() {
               <ul className="space-y-2">
                 {passkeyList.data.map((p) => (
                   <li key={p.id} className="flex items-center justify-between rounded-xl border border-neutral-300 p-3">
-                    <span className="text-sm">{t('passkeyAddedOn', { date: new Date(p.createdAt).toLocaleDateString() })}</span>
+                    <span className="text-sm">{t('passkeyAddedOn', { date: formatDate(p.createdAt, locale) })}</span>
                     <button onClick={() => void removeOne(p.id)} className="flex min-h-12 min-w-12 items-center justify-center rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-800">{t('passkeyRemove')}</button>
                   </li>
                 ))}

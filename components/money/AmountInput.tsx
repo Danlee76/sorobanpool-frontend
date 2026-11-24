@@ -1,6 +1,6 @@
 'use client';
 import { useRef, useState, useEffect, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from 'react';
-import { groupDigits } from '@/lib/format';
+import { formatNaira, groupDigits } from '@/lib/format';
 
 export interface AmountInputProps {
   /** Current value in smallest unit (kobo) */
@@ -64,10 +64,10 @@ export function AmountInput({ value, onChange, min, max, label, id, disabled, pl
   const validate = (val: bigint | null): string | null => {
     if (val === null) return null;
     if (min !== undefined && val < min) {
-      return `Minimum is ₦${groupDigits(min)}`;
+      return `Minimum is ${formatNaira(min)}`;
     }
     if (max !== undefined && val > max) {
-      return `Maximum is ₦${groupDigits(max)}`;
+      return `Maximum is ${formatNaira(max)}`;
     }
     return null;
   };
@@ -173,7 +173,7 @@ export function AmountInput({ value, onChange, min, max, label, id, disabled, pl
       )}
       {min !== undefined && max !== undefined && !error && (
         <p className="text-xs text-neutral-600">
-          Range: ₦{groupDigits(min)} – ₦{groupDigits(max)}
+          Range: {formatNaira(min)} – {formatNaira(max)}
         </p>
       )}
     </div>

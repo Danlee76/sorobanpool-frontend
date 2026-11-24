@@ -1,7 +1,7 @@
 'use client';
 import { useLocale } from 'next-intl';
 import { useSyncExternalStore } from 'react';
-import { relativeTimeParts } from '@/lib/format';
+import { formatDateTime, formatRelativeTime } from '@/lib/format';
 
 const subscribe = (cb: () => void) => {
   const id = setInterval(cb, 60_000);
@@ -20,10 +20,9 @@ export function RelativeTime({ value }: { value: string | number | Date }) {
   const now = useSyncExternalStore(subscribe, snapshot, () => null);
   const date = new Date(value);
   const iso = date.toISOString();
-  const absolute = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+  const absolute = formatDateTime(date, locale);
   if (now === null) return <time dateTime={iso} aria-hidden className="inline-block h-4 w-20 rounded bg-neutral-100 align-middle" />;
-  const { value: n, unit } = relativeTimeParts((date.getTime() - now) / 1000);
-  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(n, unit);
+  const relative = formatRelativeTime((date.getTime() - now) / 1000, locale);
   return (
     <time dateTime={iso} title={absolute} aria-label={absolute}>
       {relative}

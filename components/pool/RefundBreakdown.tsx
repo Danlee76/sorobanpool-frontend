@@ -1,5 +1,6 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { formatUsdNumber } from '@/lib/format';
 
 interface RefundBreakdownProps {
   tierDifferenceRefund?: string;
@@ -9,6 +10,7 @@ interface RefundBreakdownProps {
 
 export function RefundBreakdown({ tierDifferenceRefund, shortfallRefund, disputeRefund }: RefundBreakdownProps) {
   const t = useTranslations('refundBreakdown');
+  const locale = useLocale();
 
   const tierAmount = tierDifferenceRefund ? parseFloat(tierDifferenceRefund) : 0;
   const shortfallAmount = shortfallRefund ? parseFloat(shortfallRefund) : 0;
@@ -31,24 +33,24 @@ export function RefundBreakdown({ tierDifferenceRefund, shortfallRefund, dispute
         {tierAmount > 0 && (
           <div className="flex justify-between">
             <span className="text-neutral-700">{t('tierDifference')}</span>
-            <span className="font-medium">${tierAmount.toFixed(2)}</span>
+            <span className="font-medium">{formatUsdNumber(tierAmount, locale)}</span>
           </div>
         )}
         {shortfallAmount > 0 && (
           <div className="flex justify-between">
             <span className="text-neutral-700">{t('shortfall')}</span>
-            <span className="font-medium">${shortfallAmount.toFixed(2)}</span>
+            <span className="font-medium">{formatUsdNumber(shortfallAmount, locale)}</span>
           </div>
         )}
         {disputeAmount > 0 && (
           <div className="flex justify-between">
             <span className="text-neutral-700">{t('dispute')}</span>
-            <span className="font-medium">${disputeAmount.toFixed(2)}</span>
+            <span className="font-medium">{formatUsdNumber(disputeAmount, locale)}</span>
           </div>
         )}
         <div className="flex justify-between border-t border-neutral-200 pt-2 font-semibold">
           <span>{t('total')}</span>
-          <span className="text-emerald-800">${total.toFixed(2)}</span>
+          <span className="text-emerald-800">{formatUsdNumber(total, locale)}</span>
         </div>
       </div>
     </section>

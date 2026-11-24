@@ -4,7 +4,7 @@ import { UserText } from '@/components/ui/UserText';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ErrorExplainer } from '@/components/feedback/ErrorExplainer';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { PlusIcon } from '@/components/brand/icons';
@@ -15,6 +15,7 @@ import { useRequireAuth } from '@/lib/auth';
 import { useSession } from '@/lib/store';
 import type { PoolCard } from '@/lib/types';
 import { organizerNextAction } from '@/lib/timeline';
+import { formatDateTime } from '@/lib/format';
 import { PoolQr } from '@/components/pool/PoolQr';
 
 /** One-time on-chain activation of the organizer role, after support has approved the account. */
@@ -50,6 +51,7 @@ function ActivateOrganizer() {
 }
 
 export default function Organize() {
+  const locale = useLocale();
   const t = useTranslations('organize');
   const common = useTranslations('common');
   const { ready } = useRequireAuth();
@@ -77,7 +79,7 @@ export default function Organize() {
           <li key={p.id} className="rounded-xl border border-neutral-200 bg-white p-4">
             <Link href={`/pools/${p.id}`} className="block min-h-12"><UserText as="span" className="font-semibold" value={p.title} /><span className="block text-sm text-neutral-700">{p.state} · {p.totalUnits}/{p.moq ?? '—'} units</span></Link>
             <progress className="mt-2 w-full accent-emerald-800" max={100} value={Math.max(0, Math.min(100, p.progressPct))} aria-label="Pool progress" />
-            <p className="text-sm">{Math.round(p.progressPct)}% toward minimum · Closes {new Date(p.fillDeadline).toLocaleString()}</p>
+            <p className="text-sm">{Math.round(p.progressPct)}% toward minimum · Closes {formatDateTime(p.fillDeadline, locale)}</p>
             <p className="mt-2 font-semibold" role="status">{organizerNextAction(p.state).needsAction ? 'Needs your action: ' : 'Next: '}{organizerNextAction(p.state).label}</p>
             <button type="button" className="mt-2 min-h-12 rounded-lg border border-emerald-800 px-3 font-semibold text-emerald-900" onClick={() => void navigator.clipboard.writeText(`Join our group buy: ${p.title ?? 'Group buy'}. ${window.location.origin}/p/${p.shareSlug}`)}>Copy share text</button>
             <div className="mt-3">
