@@ -98,7 +98,8 @@ function Onboarding() {
   });
 
   async function afterSignIn(r: PasskeySession) {
-    await signedIn(r);
+    // The profile's language was applied: re-render the server-provided messages in it.
+    if (await signedIn(r)) router.refresh();
     const bound = r.user.walletAddress;
     // A passkey wallet needs nothing from this device but the passkey itself, so it works on any phone at once.
     if (bound?.startsWith('C')) {

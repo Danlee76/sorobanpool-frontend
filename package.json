@@ -11,6 +11,7 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "i18n:check": "node scripts/i18n-check.mjs",
     "test:e2e": "playwright test",
     "sync:contracts": "scripts/sync-contract-artifacts.sh",
     "mock:server": "tsx mock-server/server.ts"

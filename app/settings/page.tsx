@@ -9,6 +9,7 @@ import { useSession } from '@/lib/store';
 import { listPasskeys, passkeyCancelled, removePasskey, usePasskeySupport, registerPasskey } from '@/lib/passkey';
 import { backupSecret, confirmWithDevice, loadWallet } from '@/lib/wallet';
 import { api } from '@/lib/api';
+import { LanguagePicker } from '@/components/LanguagePicker';
 import { formatDate } from '@/lib/format';
 
 interface NotificationPreferences {
@@ -69,11 +70,6 @@ export default function Settings() {
     },
   });
 
-  function setLocale(l: 'en' | 'pcm') {
-    document.cookie = `locale=${l}; path=/; max-age=31536000; samesite=lax`;
-    router.refresh();
-  }
-
   async function showBackup() {
     if ((await confirmWithDevice()) === 'denied') return;
     setSecret(await backupSecret());
@@ -117,10 +113,7 @@ export default function Settings() {
       
       <section aria-labelledby="lang-h" className="space-y-2">
         <h2 id="lang-h" className="font-semibold">{t('language')}</h2>
-        <div className="flex gap-3">
-          <button aria-pressed={locale === 'en'} onClick={() => setLocale('en')} className={`${btn} ${locale === 'en' ? 'border-emerald-800 bg-emerald-50' : ''}`}>{t('english')}</button>
-          <button aria-pressed={locale === 'pcm'} onClick={() => setLocale('pcm')} className={`${btn} ${locale === 'pcm' ? 'border-emerald-800 bg-emerald-50' : ''}`}>{t('pidgin')}</button>
-        </div>
+        <LanguagePicker />
       </section>
 
       <section aria-labelledby="notifications-h" className="space-y-4">

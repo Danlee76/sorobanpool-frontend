@@ -1,0 +1,15 @@
+{
+  "greeting": {
+    "hello": "Hello",
+    "unused": "Nobody reads this",
+    "tier": {
+      "gold": "Gold",
+      "silver": "Silver"
+    }
+  },
+  "errors": {
+    "generic": {
+      "what": "Something went wrong"
+    }
+  }
+}

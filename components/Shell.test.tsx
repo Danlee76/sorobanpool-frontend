@@ -46,4 +46,13 @@ describe('Shell navigation', () => {
       expect(within(nav).queryByRole('link', { name: 'Supplier' })).toBeNull();
     }
   });
+
+  it('shows a visible language control to a first-time visitor, without setting a cookie (#52)', () => {
+    document.cookie = 'locale=; path=/; max-age=0';
+    renderIntl(<Shell>x</Shell>);
+    const group = screen.getByRole('group', { name: 'Language' });
+    expect(within(group).getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(group).getByRole('button', { name: 'Pidgin' })).toHaveAttribute('aria-pressed', 'false');
+    expect(document.cookie).not.toContain('locale=');
+  });
 });

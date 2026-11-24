@@ -1,18 +1,20 @@
+import { isLocale, locales, type Locale } from '@/i18n/locales';
 import { session } from './api';
 
 export const WHITELISTED_ACTION_CONFIG = {
   'save-language': {
-    endpoint: '/me/profile',
+    // The profile's language (PATCH /me), so the choice follows the person to a new phone.
+    endpoint: '/me',
     method: 'PATCH',
     dedupe: 'last-write-wins' as const,
     requiresAuth: true,
-    validate: (payload: unknown): { locale: 'en' | 'pcm' } => {
+    validate: (payload: unknown): { language: Locale } => {
       if (!payload || typeof payload !== 'object') throw new Error('Invalid payload for save-language: expected object');
       const p = payload as Record<string, unknown>;
-      if (p.locale !== 'en' && p.locale !== 'pcm') {
-        throw new Error('Invalid payload for save-language: locale must be "en" or "pcm"');
+      if (!isLocale(p.language)) {
+        throw new Error(`Invalid payload for save-language: language must be one of ${locales.join(', ')}`);
       }
-      return { locale: p.locale };
+      return { language: p.language };
     },
   },
   'update-profile': {

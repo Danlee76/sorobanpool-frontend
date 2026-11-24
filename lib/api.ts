@@ -1,13 +1,8 @@
-import { enqueueAction, initOfflineQueue, type WhitelistedActionType } from './offline-queue';
+import { enqueueAction, type WhitelistedActionType } from './offline-queue';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 export const apiUrl = (path: string): string => `${BASE}/v1${path}`;
 const REFRESH_KEY = 'sp.refresh';
-
-// Initialize offline queue replay listeners on startup
-if (typeof window !== 'undefined') {
-  initOfflineQueue();
-}
 
 export class ApiError extends Error {
   constructor(
